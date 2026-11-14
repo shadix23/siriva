@@ -57,7 +57,7 @@ def find_screen(key):
     """Cropped copy in es/pitch/assets/screens (sources are only read)."""
     if key == "site":
         import glob as _g
-        pinned = os.path.join(SITE_DIR, "landing-1440-fold.png")  # first screen of the landing
+        pinned = os.path.join(SCREENS_DIR, "landing.png")  # first screen of the landing, shot by src/snap.mjs
         files = [pinned] if os.path.exists(pinned) else sorted(_g.glob(os.path.join(SITE_DIR, "landing-*.png")))
         if not files:
             return find_screen("d2")
@@ -361,23 +361,25 @@ def slides():
     S.append(dict(sec="Дальнейшие шаги", els=els, foot=[
         "Один отзыв о прототипе, не клиническое исследование.   [1] Поиск 14.11.2026; «не нашли» не означает, что их нет."]))
 
-    # 08 Team and ask (deep) --------------------------------------------
+    # 08 Final: thesis, ask, repository QR (deep) ------------------------
+    REPO = "github.com/shadix23/siriva"
     els = [R(0, 0, W, H, fill="deep"),
-           R(1200, 560, 560, 560, fill="teal", radius=280),
-           title("Запрос", color="white")]
-    ax, aw = MX, 1100
-    els += [T(ax, 220, aw, 30, "Что нам нужно", size=23, bold=True, color="on_deep2", lh=1.0)]
-    asks = [("Научный руководитель", "вуза или клиники: доступ к DementiaBank выдают только по его заявке."),
-            ("Клиника-партнёр", "для пилота на 20-30 человек при участии врачей."),
-            ("Взгляд специалистов", "на упражнения, формулировки и экран близкого.")]
-    y = 270
-    for i, (h1, body) in enumerate(asks):
-        els += circle(ax, y, i + 1, fill="teal") + [
-                T(ax + 64, y + 4, aw - 64, 40, h1, size=30, bold=True, color="white", lh=1.1),
-                T(ax + 64, y + 48, aw - 64, 70, body, size=23, color="on_deep2", lh=1.3)]
-        y += 140
-    els.append(T(MX, 780, 900, 50, "Спасибо", size=44, bold=True, color="white", lh=1.0))
-    S.append(dict(sec="Запрос", dark=True, els=els))
+           R(-220, 620, 560, 560, fill="teal", radius=280),
+           T(MX, 120, 1408, 170, "Упражнения, которые измеряют, и подбор, который **обходит слабое место.**",
+             size=60, bold=True, color="white", lh=1.12, hl="on_deep2"),
+           T(MX, 340, 860, 30, "Что нам нужно", size=23, bold=True, color="on_deep2", lh=1.0)]
+    asks = ["Научный руководитель для доступа к DementiaBank",
+            "Клиника для пилота на 20-30 человек",
+            "Обратная связь специалистов по реабилитации"]
+    y = 392
+    for i, t in enumerate(asks):
+        els += circle(MX, y, i + 1, fill="teal") + [T(MX + 66, y + 6, 800, 40, t, size=30, bold=True, color="white", lh=1.1)]
+        y += 84
+    els += [R(1064, 330, 440, 470, fill="white", radius=RAD),
+            T(1088, 350, 392, 80, "Спасибо.\nПосмотрите код и демо", size=28, bold=True, color="deep", align="center", lh=1.2, gap=0),
+            IMG(1144, 434, 280, 280, os.path.join(PITCH, "assets", "qr-github.png")),
+            T(1088, 734, 392, 34, REPO, size=23, bold=True, color="teal", align="center", lh=1.1)]
+    S.append(dict(sec="Итог", dark=True, els=els))
     for i, sl in enumerate(S):
         sl["id"] = f"{i + 1:02d}"
     return S

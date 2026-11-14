@@ -2,7 +2,7 @@
 // Usage: node snap.mjs <outdir>   (demo must run on http://127.0.0.1:3000)
 import { spawn } from 'node:child_process'; import { writeFileSync } from 'node:fs';
 const out = process.argv[2]; const base = 'http://127.0.0.1:3000';
-const shots = { 'd2-live.png': '/demo?step=2', 'd3-profile.png': '/demo?step=3', 'd4-bypass.png': '/demo?step=4', 'd5-family.png': '/demo?step=5' };
+const shots = { 'landing.png': '/', 'd2-live.png': '/demo?step=2', 'd3-profile.png': '/demo?step=3', 'd4-bypass.png': '/demo?step=4', 'd5-family.png': '/demo?step=5' };
 const CH = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'; const port = 9400 + Math.floor(Math.random() * 150);
 const chrome = spawn(CH, ['--headless=new', '--hide-scrollbars', `--remote-debugging-port=${port}`, `--user-data-dir=${process.env.TMPDIR || '/tmp'}/es-snap-${port}`, 'about:blank'], { stdio: 'ignore' });
 const sleep = ms => new Promise(r => setTimeout(r, ms));

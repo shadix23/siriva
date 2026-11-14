@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-const ROOT = '..';
+const ROOT = '~/Desktop/ClaudeProject';
 const ES = path.join(ROOT, 'es');
 const PITCH = path.join(ES, 'pitch');
 export const OUT = path.join(PITCH, 'v2');

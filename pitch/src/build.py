@@ -150,6 +150,10 @@ def SHOT(x, y, w, h, key):
     return dict(k="shot", x=x, y=y, w=w, h=h, key=key)
 
 
+def IMG(x, y, w, h, path):
+    return dict(k="img", x=x, y=y, w=w, h=h, path=path)
+
+
 def OBJ(x, y, w, h, key):
     return dict(k="obj", x=x, y=y, w=w, h=h, key=key)
 
@@ -275,6 +279,23 @@ def slides():
             *capsule(MX + 764, 670, "Сайт Siriva" if find_screen("site") != find_screen("d2") else "Живая запись в /demo")]
     els += banner(750, "Модель мозга описывает **свойства упражнений, а не человека.** Человека измеряем только по речи и поведению.", h=88)
     S.append(dict(id="04", sec="Решение", els=els, foot=["[1] d'Ascoli S. et al., TRIBE v2, arXiv 2605.04326, 2026. Лицензия CC BY-NC 4.0."]))
+
+    # TRIBE v2 cortex maps -----------------------------------------------
+    TR = os.path.join(PITCH, "assets", "tribe")
+    els = [title("Как TRIBE v2 видит упражнения"),
+           T(MX, 184, 1408, 80, "Предсказание TRIBE v2 для каждого упражнения по 20 484 точкам коры. У речевых заданий выше отклик **в височной коре слева, в контуре языковой сети.**",
+             size=24, color="ink", lh=1.35, hl="teal"),
+           card(MX, 270, 900, 500, fill="white"),
+           T(MX + 26, 286, 848, 30, "Речевые минус зрительные задания (9 против 11)", size=23, bold=True, color="navy", lh=1.1),
+           IMG(MX + 16, 326, 868, 428, os.path.join(TR, "diff_lateral.png"))]
+    for j, (lab, f) in enumerate([("Речевое: пересказ рассказа", "speech_lateral.png"),
+                                   ("Зрительное: повторить последовательность на поле", "visual_lateral.png")]):
+        y = 270 + j * 256
+        els += [card(MX + 924, y, 484, 244, fill="white"),
+                T(MX + 948, y + 12, 436, 66, lab, size=23, bold=True, color="navy", lh=1.2),
+                IMG(MX + 940, y + 80, 452, 156, os.path.join(TR, f))]
+    els += banner(786, "Модель усреднённого мозга по звуку и тексту стимула, **не измерение человека.** TRIBE v2 (Meta), fsaverage5.", h=84)
+    S.append(dict(id="xx", sec="Решение", els=els))
 
     # 05 Before / now table ---------------------------------------------
     els = [title(f"Тренажёры и {BRAND}")]
@@ -433,6 +454,8 @@ def slides():
         y += 140
     els.append(T(MX, 780, 900, 50, "Спасибо", size=44, bold=True, color="white", lh=1.0))
     S.append(dict(id="11", sec="Команда и запрос", dark=True, els=els))
+    for i, sl in enumerate(S):
+        sl["id"] = f"{i + 1:02d}"
     return S
 
 
@@ -483,6 +506,8 @@ def html_el(e):
         if p:
             return f'<div class="el shot" style="{st}"><img src="{html.escape(os.path.relpath(p, PITCH))}"></div>'
         return f'<div class="el ph" style="{st}">{html.escape(SCREEN_LABEL[e["key"]])}</div>'
+    if e["k"] == "img":
+        return f'<div class="el obj" style="{st}"><img src="{html.escape(os.path.relpath(e["path"], PITCH))}"></div>'
     if e["k"] == "obj":
         p = find_object(e["key"])
         if not p:
@@ -583,8 +608,8 @@ def pptx_el(slide, e):
         else:
             pptx_el(slide, R(e["x"], e["y"], e["w"], e["h"], fill="card", line="line_strong", dash=True, radius=RAD))
         return
-    if e["k"] == "obj":
-        p = find_object(e["key"])
+    if e["k"] in ("obj", "img"):
+        p = e["path"] if e["k"] == "img" else find_object(e["key"])
         if p:
             iw, ih = Image.open(p).size
             s = min(e["w"] / iw, e["h"] / ih)

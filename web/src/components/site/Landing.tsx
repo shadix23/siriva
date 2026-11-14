@@ -137,7 +137,27 @@ export function Landing() {
       { rootMargin: "0px 0px -12% 0px", threshold: 0.01 },
     );
     pending.forEach((el) => io.observe(el));
-    return () => io.disconnect();
+    // страховка: если блок проскочили быстрой прокруткой или он сдвинулся, раскрываем по позиции
+    let raf = 0;
+    const sweep = () => {
+      raf = 0;
+      const limit = window.innerHeight * 0.95;
+      for (const el of pending) {
+        if (!el.classList.contains("rv-in") && el.getBoundingClientRect().top < limit) {
+          el.classList.add("rv-in");
+          io.unobserve(el);
+        }
+      }
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(sweep);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      io.disconnect();
+      window.removeEventListener("scroll", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
   }, []);
 
   // шапка и лёгкий параллакс скриншотов в hero

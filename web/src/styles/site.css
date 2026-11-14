@@ -799,7 +799,13 @@
   background: linear-gradient(90deg, #dce3e8 0%, #dce3e8 50%, #2f5d7c 80%, #1c5a51 100%);
 }
 .s-brain__legend i.is-diverging {
-  background: linear-gradient(90deg, #2f5d7c 0%, #dce3e8 50%, #1c5a51 100%);
+  background: linear-gradient(90deg, #b05e45 0%, #edebe6 50%, #1c5a51 100%);
+}
+.s-brain__legend {
+  flex-wrap: wrap;
+}
+.s-brain__mask {
+  flex-basis: 100%;
 }
 .s-brain__caption {
   margin-top: var(--sp-2);

@@ -15,7 +15,7 @@ import type { Lang } from "./i18n";
 type Mesh = { positions: number[]; indices: number[]; hemi_split?: number };
 type Exercise = { title_ru?: string; title_en?: string; group?: string; values: number[] };
 type Loads = {
-  meta?: { model?: string; caveat_ru?: string; caveat_en?: string };
+  meta?: { model?: string; caveat_ru?: string; caveat_en?: string; language_mask?: number[] };
   exercises: Record<string, Exercise>;
   diff_speech_minus_visual?: number[] | { values: number[] };
 };
@@ -33,12 +33,15 @@ export type BrainText = {
   loading: string;
   alt: string;
   unavailable: string;
+  mask: string;
 };
 
 // цвета палитры Siriva
 const GREY: [number, number, number] = [0.86, 0.89, 0.91]; // #DCE3E8
 const BLUE: [number, number, number] = [0x2f / 255, 0x5d / 255, 0x7c / 255];
 const GREEN: [number, number, number] = [0x1c / 255, 0x5a / 255, 0x51 / 255];
+const TERRA: [number, number, number] = [0xb0 / 255, 0x5e / 255, 0x45 / 255]; // тёплый терракотовый
+const NEUTRAL: [number, number, number] = [0.93, 0.92, 0.9];
 
 function mix(a: number[], b: number[], t: number, out: number[]) {
   out[0] = a[0] + (b[0] - a[0]) * t;
@@ -53,17 +56,19 @@ function colorize(values: number[], diverging: boolean, n: number): Float32Array
   for (let i = 0; i < n; i++) {
     const v = Math.min(255, Math.max(0, values[i] ?? 0)) / 255;
     if (diverging) {
-      if (v < 0.5) mix(BLUE, GREY, v / 0.5, c);
-      else mix(GREY, GREEN, (v - 0.5) / 0.5, c);
+      // 128 = ноль: ниже терракотовый (сильнее в зрительных заданиях), выше зелёный (в речевых)
+      if (v < 0.5) mix(TERRA, NEUTRAL, v / 0.5, c);
+      else mix(NEUTRAL, GREEN, (v - 0.5) / 0.5, c);
     } else {
       // 128 = средний отклик; ниже среднего остаётся серым
       const t = Math.max(0, (v - 0.5) / 0.5);
       if (t < 0.6) mix(GREY, BLUE, t / 0.6, c);
       else mix(BLUE, GREEN, (t - 0.6) / 0.4, c);
     }
-    out[i * 3] = c[0];
-    out[i * 3 + 1] = c[1];
-    out[i * 3 + 2] = c[2];
+    // цвета вершин в three.js линейные: переводим из sRGB
+    out[i * 3] = Math.pow(c[0], 2.2);
+    out[i * 3 + 1] = Math.pow(c[1], 2.2);
+    out[i * 3 + 2] = Math.pow(c[2], 2.2);
   }
   return out;
 }
@@ -254,21 +259,54 @@ export function BrainViewer({ lang, text }: { lang: Lang; text: BrainText }) {
       const scale = 1 / bs.radius;
       geo.scale(scale, scale, scale);
 
+      // тонкий контур языковой маски (meta.language_mask) по рёбрам треугольников
+      const maskIdx = data.loads.meta?.language_mask;
+      let contour: InstanceType<typeof THREE.LineSegments> | null = null;
+      if (Array.isArray(maskIdx) && maskIdx.length) {
+        const inMask = new Uint8Array(n);
+        maskIdx.forEach((i) => {
+          if (i >= 0 && i < n) inMask[i] = 1;
+        });
+        const P = geo.getAttribute("position").array as Float32Array;
+        const N = geo.getAttribute("normal").array as Float32Array;
+        const seg: number[] = [];
+        const mid = (a: number, b: number) => {
+          for (let k = 0; k < 3; k++) seg.push((P[a * 3 + k] + P[b * 3 + k]) / 2 + ((N[a * 3 + k] + N[b * 3 + k]) / 2) * 0.004);
+        };
+        for (let t = 0; t < indices.length; t += 3) {
+          const a = indices[t], b = indices[t + 1], c = indices[t + 2];
+          const sum = inMask[a] + inMask[b] + inMask[c];
+          if (sum === 0 || sum === 3) continue;
+          const edges: [number, number][] = [];
+          if (inMask[a] !== inMask[b]) edges.push([a, b]);
+          if (inMask[b] !== inMask[c]) edges.push([b, c]);
+          if (inMask[c] !== inMask[a]) edges.push([c, a]);
+          if (edges.length === 2) {
+            mid(edges[0][0], edges[0][1]);
+            mid(edges[1][0], edges[1][1]);
+          }
+        }
+        const lg = new THREE.BufferGeometry();
+        lg.setAttribute("position", new THREE.Float32BufferAttribute(seg, 3));
+        contour = new THREE.LineSegments(lg, new THREE.LineBasicMaterial({ color: 0x0b201d, transparent: true, opacity: 0.85 }));
+      }
+
       const colorAttr = new THREE.BufferAttribute(new Float32Array(n * 3), 3);
       geo.setAttribute("color", colorAttr);
       const mat = new THREE.MeshLambertMaterial({ vertexColors: true });
       const mesh = new THREE.Mesh(geo, mat);
       // fsaverage: X вправо, Y вперёд, Z вверх -> поворачиваем в Y-вверх
       mesh.rotation.x = -Math.PI / 2;
+      if (contour) mesh.add(contour);
       const group = new THREE.Group();
       group.add(mesh);
 
       const scene = new THREE.Scene();
       scene.add(group);
-      scene.add(new THREE.AmbientLight(0xffffff, 1.6));
+      scene.add(new THREE.AmbientLight(0xffffff, 1.1));
       const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 50);
       camera.position.set(-3.1, 0.9, -1.3);
-      const key = new THREE.DirectionalLight(0xffffff, 1.4);
+      const key = new THREE.DirectionalLight(0xffffff, 1.5);
       key.position.set(0.5, 1, 1);
       camera.add(key);
       scene.add(camera);
@@ -358,6 +396,10 @@ export function BrainViewer({ lang, text }: { lang: Lang; text: BrainText }) {
         controls.dispose();
         geo.dispose();
         mat.dispose();
+        if (contour) {
+          contour.geometry.dispose();
+          (contour.material as InstanceType<typeof THREE.LineBasicMaterial>).dispose();
+        }
         renderer.dispose();
         renderer.domElement.remove();
         setColorsRef.current = null;
@@ -435,11 +477,16 @@ export function BrainViewer({ lang, text }: { lang: Lang; text: BrainText }) {
           <span>{legendLow}</span>
           <i className={current?.diverging ? "is-diverging" : undefined} />
           <span>{legendHigh}</span>
+          {data?.loads.meta?.language_mask ? <span className="s-brain__mask">{text.mask}</span> : null}
         </div>
       )}
 
       <figcaption className="s-small s-brain__caption">
-        {data?.loads.meta?.model === "synthetic" ? `${text.caption} (${caveat})` : caveat || text.caption}
+        {data?.loads.meta?.model === "synthetic"
+          ? `${text.caption} (${caveat})`
+          : lang === "en" && caveat
+            ? `TRIBE v2 (Meta). ${caveat}`
+            : text.caption}
       </figcaption>
       <p className="s-brain__agree">{text.agreement}</p>
     </figure>

@@ -2413,3 +2413,300 @@ a.item:hover {
   align-items: center;
   justify-self: start;
 }
+
+/* ==========================================================================
+   Редизайн 15.11: экраны пациента в системе лендинга и демо (site.css, слой
+   «Редизайн 15.11» в demo.css). Только IBM Plex Sans, трекинг -0,02em, белый фон,
+   белые блоки с рамкой 1 px #DCE3E8, радиус 8-12, сетка 8 px, шапка 64 px.
+   Масштаб для пожилых: база 18 px (не 20), заголовок страницы 32 px, кнопки 48 px.
+   Лендинг (.site) задан в px, демо (:root.demo-mode) задаёт свои 16 px: слой их не меняет.
+   ========================================================================== */
+html {
+  font-size: 112.5%; /* 18 px */
+}
+:root {
+  --bg: #ffffff;
+  --surface-2: #f3f6f8;
+  --line-control: #b7c4cc;
+  --dark: #12332e;
+  --info: #2f5d7c;
+  --font-display: var(--font-sans);
+  --text-sm: 0.889rem; /* 16 px */
+  --text-base: 1rem; /* 18 px */
+  --text-lg: 1.111rem; /* 20 px */
+  --text-h3: 1.111rem; /* 20 px */
+  --text-h2: 1.333rem; /* 24 px */
+  --text-h1: 1.778rem; /* 32 px */
+  --tap-min: 44px;
+  --tap-main: 48px;
+  --gutter: 40px;
+  --wrap: 1200px;
+}
+@media (max-width: 959px) {
+  :root {
+    --gutter: 24px;
+  }
+}
+@media (max-width: 560px) {
+  :root {
+    --gutter: 16px;
+  }
+}
+body {
+  background: var(--bg);
+  line-height: 1.6;
+}
+h1,
+h2,
+h3 {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+h1 {
+  line-height: 1.15;
+}
+h2 {
+  line-height: 1.2;
+}
+h3 {
+  font-weight: 600;
+  line-height: 1.3;
+}
+.story-text,
+.category-card .cat-name {
+  font-family: var(--font-sans);
+}
+::selection {
+  background: #cfe3de;
+  color: var(--dark);
+}
+/* Фокус как на сайте: синяя рамка 3 px, контраст 7:1 к белому */
+:focus-visible {
+  outline: 3px solid var(--info);
+  outline-offset: 3px;
+  box-shadow: none;
+  border-radius: 8px;
+}
+
+/* Шапка: как .s-header и .dh: 64 px, белая, тонкая граница, поля контейнера сайта */
+.app-header,
+.ex-top {
+  min-height: 64px;
+  padding: 8px max(var(--gutter), calc((100% - var(--wrap)) / 2));
+  gap: 8px 24px;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+}
+.wordmark {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--dark);
+  min-height: 44px;
+  gap: 8px;
+}
+.wordmark small {
+  margin-left: 4px;
+  padding-left: 12px;
+  border-left: 1px solid var(--line);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--ink-3);
+}
+.header-link,
+.back {
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--ink-2);
+  text-decoration: none;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+.back {
+  margin-left: -12px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .header-link:hover,
+  .back:hover {
+    background: var(--surface-2);
+    color: var(--ink);
+  }
+}
+.ex-step {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--ink-2);
+}
+
+/* Пометка «Синтетический пациент»: компактный бейдж как в демо, без фиолетовой плашки */
+.badge-synth {
+  gap: 6px;
+  min-height: 24px;
+  padding: 2px 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+.badge-synth .icon {
+  width: 14px;
+  height: 14px;
+  color: var(--ink-3);
+}
+@media (max-width: 640px) {
+  /* на телефоне пометка уходит тонкой строкой под шапку, без рамки */
+  .app-header .badge-synth,
+  .ex-top .badge-synth {
+    order: 3;
+    flex-basis: 100%;
+    width: auto;
+    min-height: 0;
+    padding: 0 0 4px;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+  .ex-top .ex-step {
+    font-size: 14px;
+  }
+}
+
+/* Колонка и поля как у сайта */
+.page {
+  max-width: calc(760px + var(--gutter) * 2);
+  padding: 48px var(--gutter) 96px;
+}
+.ex-wrap {
+  max-width: calc(var(--wrap) + var(--gutter) * 2);
+  padding-left: var(--gutter);
+  padding-right: var(--gutter);
+}
+.ex-wrap.single {
+  max-width: calc(760px + var(--gutter) * 2);
+}
+@media (max-width: 640px) {
+  .page {
+    padding: 32px var(--gutter) 80px;
+  }
+}
+.page-head {
+  gap: 8px;
+  margin-bottom: 32px;
+}
+.lead {
+  font-size: var(--text-lg);
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+/* Кнопки как .s-btn: 48 px, радиус 8, главная #12332E, нажатие scale(0.97) */
+.btn {
+  min-height: var(--tap-min);
+  padding: 0 20px;
+  border-radius: 8px;
+  border-width: 1px;
+  font-size: var(--text-base);
+  font-weight: 500;
+  line-height: 1.2;
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease,
+    transform 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-primary {
+  min-height: var(--tap-main);
+  padding: 0 24px;
+  font-size: var(--text-base);
+  font-weight: 500;
+  background: var(--dark);
+  border-color: var(--dark);
+}
+.btn-primary:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.btn-secondary {
+  min-height: var(--tap-main);
+  background: #fff;
+  border-color: var(--line-control);
+}
+.btn-secondary:hover {
+  background: var(--surface-2);
+  border-color: var(--line-strong);
+}
+.btn-danger {
+  min-height: var(--tap-main);
+}
+.btn-tertiary {
+  min-height: var(--tap-min);
+}
+
+/* Блоки: белые, рамка 1 px, радиус 12 */
+.notice,
+.program,
+.settings-section,
+.emergency,
+.hint-box,
+.story-text,
+.stimulus .frame,
+.category-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.notice-attention {
+  background: var(--attention-soft);
+  border-color: #e2cb98;
+}
+.notice-error {
+  border-color: var(--danger);
+}
+.settings-section h2 {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.item-name {
+  letter-spacing: -0.01em;
+}
+.item-num {
+  border-radius: 8px;
+}
+.check,
+.choice label {
+  border-radius: 12px;
+}
+@media (max-width: 959px) {
+  .actions.sticky {
+    border-top: 1px solid var(--line);
+    background: #fff;
+  }
+}
+
+/* Проявление этапа не оставляет transform после окончания: иначе .stage становится
+   контейнером для position: fixed и нижняя панель кнопок на телефоне встаёт поверх вариантов. */
+.ex-wrap > .panel > .stage,
+.es-enter,
+.ex-wrap.with-stimulus > .stimulus {
+  animation-fill-mode: backwards;
+}
+/* Строки программы внутри карточки с overflow: hidden: фокус рисуем внутри строки */
+.program .item:focus-visible {
+  outline-offset: -3px;
+  border-radius: 0;
+}
+.program li:first-child .item:focus-visible {
+  border-radius: 12px 12px 0 0;
+}
+.program li:last-child .item:focus-visible {
+  border-radius: 0 0 12px 12px;
+}

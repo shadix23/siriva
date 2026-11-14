@@ -4100,3 +4100,433 @@ details[open] > .bp-row .bp-chev {
     max-height: calc(100dvh - 64px - 64px - 24px - 52px - 16px - 16px);
   }
 }
+
+/* ==========================================================================
+   Редизайн 15.11: экран близкого (/family, /family/profile) в системе демо.
+   Те же токены, кнопки, блоки, бейджи, профиль (D3) и сводка (D5), что у .demo-root,
+   с корнем .clinical. Демо этот слой не задевает. База 16 px, как в демо.
+   ========================================================================== */
+:root:has(.clinical) {
+  font-size: 16px;
+}
+.clinical {
+  --d-dark: #12332e;
+  --d-accent: #1c5a51;
+  --d-blue: #2f5d7c;
+  --d-line: #dce3e8;
+  --d-line-2: #b7c4cc;
+  --d-panel: #f3f6f8;
+  --d-ink: #1e2320;
+  --d-ink-2: #454c47;
+  --d-ink-3: #5a625c;
+  --d-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --fs-h1: clamp(26px, 2.1vw, 32px);
+  --fs-h2: 20px;
+  --fs-body: 16px;
+  --fs-small: 14px;
+  --fs-xs: 13px;
+  --d-wrap: 1200px;
+  --d-gutter: 40px;
+  --line: var(--d-line);
+  --info: var(--d-blue);
+  --accent: var(--d-accent);
+  font-size: var(--fs-body);
+  line-height: 1.5;
+  color: var(--d-ink);
+  -webkit-font-smoothing: antialiased;
+}
+/* ---------- Кнопки: как .s-btn--sm ---------- */
+.clinical .btn {
+  min-height: 40px;
+  padding: 0 16px;
+  gap: 8px;
+  border-radius: 8px;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  line-height: 1;
+  box-shadow: none;
+}
+.clinical .btn .icon {
+  width: 18px;
+  height: 18px;
+}
+.clinical .btn-primary {
+  background: var(--d-dark);
+  border: 1px solid var(--d-dark);
+  color: #fff;
+}
+.clinical .btn-primary:hover {
+  background: var(--d-accent);
+  border-color: var(--d-accent);
+}
+.clinical .btn-secondary {
+  background: #fff;
+  border: 1px solid var(--d-line);
+  color: var(--d-ink);
+}
+@media (hover: hover) and (pointer: fine) {
+  .clinical .btn-secondary:hover {
+    background: var(--d-panel);
+    border-color: var(--d-line-2);
+  }
+}
+.clinical .btn-tertiary {
+  font-weight: 500;
+  color: var(--d-accent);
+}
+.clinical .btn:focus-visible {
+  outline: 2px solid var(--d-blue);
+  outline-offset: 2px;
+}
+.clinical .btn[aria-pressed="true"] {
+  border-color: var(--d-dark);
+  box-shadow: inset 0 0 0 1px var(--d-dark);
+}
+
+/* ---------- Заголовки и текст ---------- */
+.clinical h1,
+.clinical h2,
+.clinical h3 {
+  letter-spacing: -0.02em;
+  color: var(--d-ink);
+  text-wrap: balance;
+}
+.clinical .d-titlebar {
+  align-items: flex-end;
+  gap: 8px 24px;
+  margin-bottom: 24px;
+}
+.clinical .d-titlebar h1,
+.clinical .bp-heading h1 {
+  font-size: var(--fs-h1);
+  font-weight: 500;
+  line-height: 1.15;
+}
+.clinical .d-sub,
+.clinical .bp-heading p {
+  margin-top: 6px;
+  font-size: var(--fs-body);
+  color: var(--d-ink-2);
+}
+.clinical .muted,
+.clinical .lead {
+  font-size: var(--fs-body);
+}
+
+/* Блоки: белые, рамка 1 px, радиус 12 как у карточек лендинга. Внутри блоков без вложенных плашек */
+.clinical .lv,
+.clinical .bp-col,
+.clinical .num-card,
+.clinical .pv-card,
+.clinical .prep {
+  background: #fff;
+  border: 1px solid var(--d-line);
+  border-radius: 12px;
+  box-shadow: none;
+}
+
+/* Бейдж статуса: один стиль, 24 px, без заливки (кроме внимания) */
+.clinical .chip,
+.clinical .mode-badge,
+.clinical .backup-label,
+.clinical .num-status,
+.clinical .badge-synth {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 24px;
+  padding: 0 8px;
+  border: 1px solid var(--d-line);
+  border-radius: 6px;
+  background: #fff;
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--d-ink-2);
+  white-space: nowrap;
+}
+.clinical .chip .icon,
+.clinical .mode-badge .icon,
+.clinical .num-status .icon {
+  width: 14px;
+  height: 14px;
+}
+.clinical .chip-ok,
+.clinical .num-status.is-on {
+  color: var(--d-accent);
+  border-color: #b9d3cc;
+}
+.clinical .chip-low,
+.clinical .mode-badge.is-backup,
+.clinical .backup-label {
+  color: var(--attention);
+  border-color: var(--attention-line);
+  background: var(--attention-soft);
+}
+
+/* ---------- D3 ---------- */
+.clinical .pv-split {
+  gap: 24px 32px;
+}
+.clinical .pv-card {
+  padding: 20px 24px;
+}
+.clinical .pv-card-table {
+  padding: 0;
+}
+.clinical .pv-week strong {
+  font-family: var(--font-ui);
+  font-size: var(--fs-h2);
+  font-weight: 600;
+}
+.clinical .pv-side-title {
+  font-size: var(--fs-h2);
+  font-weight: 500;
+}
+.clinical .pv-split .radar {
+  max-width: min(400px, 44vh);
+}
+.clinical .pv-split .week-control .btn {
+  min-height: 36px;
+}
+.clinical .pv-keys {
+  gap: 16px;
+}
+.clinical .pv-key {
+  gap: 4px;
+  padding: 16px 20px;
+  background: #fff;
+  border: 1px solid var(--d-line);
+  border-radius: 12px;
+}
+.clinical .pv-key-label {
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  color: var(--d-ink-2);
+}
+.clinical .pv-key-was {
+  font-family: var(--mono);
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--d-ink-3);
+}
+.clinical .pv-key-now {
+  font-family: var(--mono);
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  color: var(--d-blue);
+}
+.clinical .pv-key-sub {
+  font-size: 12px;
+  color: var(--d-ink-3);
+}
+.clinical .pv-split .data-table th,
+.clinical .pv-split .data-table td {
+  padding: 8px 12px;
+  font-size: var(--fs-xs);
+  line-height: 1.35;
+}
+.clinical .pv-split .data-table td.n {
+  font-family: var(--mono);
+}
+.clinical .pv-split .data-table thead th {
+  background: var(--d-panel);
+  font-weight: 500;
+  color: var(--d-ink-2);
+}
+.clinical .data-table tr.is-key td {
+  background: #eef5f3;
+}
+.clinical .pv-split .note {
+  font-size: var(--fs-xs);
+  color: var(--d-ink-3);
+}
+/* ---------- D5 ---------- */
+.clinical .fv {
+  gap: 0 40px;
+}
+.clinical .fv .block > h2 {
+  font-size: var(--fs-h2);
+  font-weight: 500;
+}
+.clinical .fv .flag {
+  padding: 20px 24px;
+  border-radius: 12px;
+}
+.clinical .fv .flag-title {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+.clinical .fv .flag p,
+.clinical .fv .prep li {
+  font-size: var(--fs-body);
+  line-height: 1.5;
+}
+.clinical .fv .prep {
+  padding: 20px 24px;
+}
+.clinical .fv .prep h3 {
+  font-size: var(--fs-body);
+  font-weight: 600;
+}
+.clinical .fv .multiple-name,
+.clinical .fv .multiple strong {
+  font-size: var(--fs-small);
+}
+.clinical .fv .multiple svg rect {
+  stroke: var(--d-line);
+}
+.clinical .fv .fv-s {
+  background: #fff;
+  border-color: var(--d-line);
+  border-radius: 8px;
+}
+.clinical .fv .fv-s-num {
+  font-family: var(--mono);
+  font-size: 22px;
+  font-weight: 500;
+}
+
+/* Шапка близкого: та же, что у демо и сайта (64 px, белая, поля контейнера) */
+.clinical .app-header {
+  min-height: 64px;
+  padding: 8px max(var(--d-gutter), calc((100% - var(--d-wrap)) / 2));
+  background: #fff;
+  border-bottom: 1px solid var(--d-line);
+}
+.clinical .wordmark {
+  font-size: 20px;
+}
+.clinical .header-link {
+  font-size: var(--fs-small);
+  color: var(--d-ink-2);
+}
+.clinical .app-header .badge-synth {
+  font-size: var(--fs-xs);
+}
+/* Колонка: ширина и поля как у демо */
+.clinical .family-page {
+  max-width: calc(var(--d-wrap) + var(--d-gutter) * 2);
+  padding: 32px var(--d-gutter) 96px;
+}
+.clinical .page-head {
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.clinical h1 {
+  font-size: var(--fs-h1);
+  font-weight: 500;
+  line-height: 1.15;
+}
+.clinical h2,
+.clinical .block > h2 {
+  font-size: var(--fs-h2);
+  font-weight: 500;
+  line-height: 1.3;
+}
+.clinical .page-head .muted,
+.clinical .device-note {
+  font-size: var(--fs-small);
+  color: var(--d-ink-2);
+}
+.clinical .back-link {
+  font-size: var(--fs-small);
+  font-weight: 500;
+}
+@media (min-width: 900px) {
+  .clinical .fv {
+    gap: 24px;
+  }
+  .clinical .fv > .block {
+    padding: 24px;
+    background: #fff;
+    border: 1px solid var(--d-line);
+    border-radius: 12px;
+  }
+}
+.clinical .fv .fv-s-num {
+  font-family: var(--font-ui);
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+.clinical .fv-s-label,
+.clinical .fv-regular,
+.clinical .fv-legend {
+  font-size: var(--fs-small);
+}
+/* Переключатель языка как .dh-seg в шапке демо */
+.clinical .ui-lang-toggle {
+  display: inline-flex;
+  justify-self: start;
+  border: 1px solid var(--d-line);
+  border-radius: 999px;
+  padding: 3px;
+}
+.clinical .ui-lang-toggle button {
+  min-width: 36px;
+  min-height: 32px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--d-ink-2);
+}
+.clinical .ui-lang-toggle button + button {
+  border-left: 0;
+}
+.clinical .ui-lang-toggle button[aria-pressed="true"] {
+  background: var(--d-dark);
+  color: #fff;
+}
+.clinical .ui-lang-toggle button:focus-visible {
+  outline: 2px solid var(--d-blue);
+  outline-offset: 2px;
+}
+@media (max-width: 899px) {
+  .clinical {
+    --d-gutter: 16px;
+  }
+}
+@media (max-width: 899px) {
+  .clinical .fv {
+    display: grid;
+    gap: 16px;
+  }
+  .clinical .fv > .block {
+    padding: 20px 16px;
+    background: #fff;
+    border: 1px solid var(--d-line);
+    border-radius: 12px;
+  }
+}
+@media (max-width: 640px) {
+  /* как у пациента: пометка тонкой строкой под шапкой, без рамки */
+  .clinical .app-header .badge-synth {
+    order: 3;
+    flex-basis: 100%;
+    min-height: 0;
+    padding: 0 0 4px;
+    border: 0;
+    background: none;
+    color: var(--d-ink-3);
+  }
+  /* шапка в одну строку: у «Настроек» остаётся значок, подпись доступна экранному диктору */
+  .clinical .header-link {
+    min-width: 44px;
+    padding: 0 10px;
+  }
+  .clinical .header-link .label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}

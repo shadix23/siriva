@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import "@/styles/site.css";
 import { dict, LANG_KEY, type Channel, type Lang } from "./i18n";
-import { BrainViewer } from "./BrainViewer";
+import { BrainPlayer } from "./BrainPlayer";
 
 function Arrow() {
   return (
@@ -316,6 +316,23 @@ export function Landing() {
           </div>
         </section>
 
+        {/* МОЗГ ВО ВРЕМЕНИ: предсказанная активность по секундам */}
+        <section className="s-section s-section--panel s-live" id="brain" aria-labelledby="s-live-title">
+          <div className="s-wrap">
+            <BrainPlayer lang={lang} text={t.live.player}>
+              <h2 id="s-live-title" className="s-h2" data-reveal>
+                {t.live.title}
+              </h2>
+              <p className="s-lead" data-reveal style={{ ["--i" as string]: 1 }}>
+                {t.live.lead}
+              </p>
+              <p className="s-lead" data-reveal style={{ ["--i" as string]: 2 }}>
+                {t.live.lead2}
+              </p>
+            </BrainPlayer>
+          </div>
+        </section>
+
         {/* ПРОБЛЕМА */}
         <section className="s-section" aria-labelledby="s-problem-title">
           <div className="s-wrap">
@@ -408,9 +425,6 @@ export function Landing() {
               <p className="s-text s-sci__honest" data-reveal style={{ ["--i" as string]: 2 }}>
                 {t.science.honest}
               </p>
-            </div>
-            <div className="s-sci__brain" data-reveal style={{ ["--i" as string]: 1 }}>
-              <BrainViewer lang={lang} text={t.science.brain} />
             </div>
             <div className="s-sci__table" data-reveal>
               <p className="s-small">{t.science.tableTitle}</p>

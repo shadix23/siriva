@@ -3,7 +3,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Icon } from "./Icon";
 import { LoadBars, RadarChart } from "./charts";
-import { BrainViewer } from "./site/BrainViewer";
+import { BrainPlayer, type BrainPlayerText } from "./site/BrainPlayer";
 import type { ApiError } from "@/lib/api/client";
 import type {
   BypassPatient,
@@ -742,21 +742,26 @@ function agreementSplit(g: AgreementBlock) {
 }
 
 
-/** Подписи для интерактивного мозга лендинга (BrainViewer) на языке экрана. */
-function brainText() {
+/** Подписи для проигрывателя активности мозга (BrainPlayer) на языке экрана. */
+function brainText(): BrainPlayerText {
   return {
     group: L("Упражнение", "Exercise"),
-    caption: L("Предсказание TRIBE v2, модель усреднённого мозга", "TRIBE v2 prediction, an average-brain model"),
-    agreement: "",
-    diff: L("Речевые минус зрительные задания", "Speech minus visual tasks"),
-    low: L("средняя", "average"),
-    high: L("выше", "higher"),
-    diffLow: L("сильнее в зрительных", "stronger in visual"),
-    diffHigh: L("в речевых", "in speech"),
+    play: L("Воспроизвести", "Play"),
+    pause: L("Пауза", "Pause"),
+    time: L("Время упражнения, секунды", "Exercise time, seconds"),
+    sec: L("с", "s"),
+    of: L("из", "of"),
+    low: L("ниже среднего", "below average"),
+    high: L("выше среднего", "above average"),
+    zones: { language: L("Языковая сеть", "Language network"), auditory: L("Слуховая кора", "Auditory cortex") },
+    levels: [L("ниже среднего", "below average"), L("около среднего", "around average"), L("выше среднего", "above average")],
+    caption: L(
+      "Предсказание TRIBE v2 (Meta) по звуку и тексту упражнения, модель усреднённого мозга, не измерение человека.",
+      "TRIBE v2 (Meta) prediction from the exercise's sound and text. An average-brain model, not a measurement of a person.",
+    ),
     loading: L("Загружаем модель мозга", "Loading the brain model"),
-    alt: L("Предсказанная нагрузка на кору по TRIBE v2", "Predicted cortical load from TRIBE v2"),
-    unavailable: L("Модель мозга недоступна", "Brain model unavailable"),
-    mask: L("линия: языковая зона", "line: language area"),
+    alt: L("Предсказанная активность коры по TRIBE v2", "Predicted cortical activity from TRIBE v2"),
+    drag: L("Потяните, чтобы повернуть", "Drag to rotate"),
   };
 }
 
@@ -770,7 +775,7 @@ export function NumbersCards({ numbers }: { numbers: (DemoNumbers & { fromFixtur
   return (
     <div className="d6-grid">
       <figure className="d6-brain">
-        <BrainViewer lang={isEn() ? "en" : "ru"} text={brainText()} />
+        <BrainPlayer lang={isEn() ? "en" : "ru"} text={brainText()} variant="compact" />
       </figure>
 
       <div className="d6-side">

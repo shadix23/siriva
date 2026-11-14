@@ -1,6 +1,7 @@
 // Словарь лендинга Siriva (ru и en). Только для src/components/site/*.
 
 import type { BrainText } from "./BrainViewer";
+import type { BrainPlayerText } from "./BrainPlayer";
 
 export type Lang = "ru" | "en";
 
@@ -32,6 +33,7 @@ export type Dict = {
     altBrowser: string;
   };
   problem: { title: string; facts: Fact[]; caveat: string };
+  live: { title: string; lead: string; lead2: string; player: BrainPlayerText };
   how: { title: string; lead: string; steps: Step[]; alt: string };
   who: { title: string; items: Who[]; altFamily: string };
   science: {
@@ -86,6 +88,27 @@ const ru: Dict = {
       },
     ],
     caveat: "Framingham: одна англоязычная когорта, для русского не проверено.",
+  },
+  live: {
+    title: "Как упражнение нагружает мозг",
+    lead: "Выберите упражнение: модель покажет, какие зоны коры откликаются секунда за секундой.",
+    lead2: "В речевых заданиях поднимаются языковая сеть и слуховая кора. В задании на поле они остаются ниже среднего.",
+    player: {
+      group: "Упражнение",
+      play: "Воспроизвести",
+      pause: "Пауза",
+      time: "Время упражнения, секунды",
+      sec: "с",
+      of: "из",
+      low: "ниже среднего",
+      high: "выше среднего",
+      zones: { language: "Языковая сеть", auditory: "Слуховая кора" },
+      levels: ["ниже среднего", "около среднего", "выше среднего"],
+      caption: "Предсказание TRIBE v2 (Meta) по звуку и тексту упражнения, модель усреднённого мозга, не измерение человека.",
+      loading: "Загружаем модель мозга",
+      alt: "Предсказанная активность коры по TRIBE v2",
+      drag: "Потяните, чтобы повернуть",
+    },
   },
   how: {
     title: "Три шага каждый день",
@@ -252,6 +275,27 @@ const en: Dict = {
       },
     ],
     caveat: "Framingham: one English-speaking cohort, not validated for Russian.",
+  },
+  live: {
+    title: "How an exercise loads the brain",
+    lead: "Pick an exercise and the model shows which cortical areas respond, second by second.",
+    lead2: "Speech tasks lift the language network and the auditory cortex. In the grid task they stay below average.",
+    player: {
+      group: "Exercise",
+      play: "Play",
+      pause: "Pause",
+      time: "Exercise time, seconds",
+      sec: "s",
+      of: "of",
+      low: "below average",
+      high: "above average",
+      zones: { language: "Language network", auditory: "Auditory cortex" },
+      levels: ["below average", "around average", "above average"],
+      caption: "TRIBE v2 (Meta) prediction from the exercise's sound and text. An average-brain model, not a measurement of a person.",
+      loading: "Loading the brain model",
+      alt: "Predicted cortical activity from TRIBE v2",
+      drag: "Drag to rotate",
+    },
   },
   how: {
     title: "Three steps a day",

@@ -25,7 +25,7 @@ AGREEMENT = "0,53"   # mean agreement of predicted load with expert labels over 
 AGREEMENT_DETAIL = "Подбор слов 0,88, фразы 0,68, внимание 0,03. Речевые и зрительные задания разделяются (rbc +1,0). Разметки специалистов пока нет."
 TRIBE_DONE = True    # hybrid: speech and attention load from TRIBE v2, memory and speed from task-type estimate
 BRAND = "Siriva"
-TEAM = [("Shadil Nurmukhammed", "founder"), ("Amangeldiev Kaisar", "co-founder")]
+TEAM = []  # names removed from the slides at the user's request
 EVENT = "Хакатон, ноябрь 2026"
 
 # Screens are 1280x800 viewport shots (re-shot by frontend at 19:35): use them whole.
@@ -222,7 +222,7 @@ def slides():
              size=36, bold=True, color="white", lh=1.22, hl="on_deep2"),
            T(MX, 556, 700, 124, "Короткие ежедневные упражнения по речи; профиль из пяти функций и подбор следующих заданий по предсказанной нагрузке.",
              size=24, color="on_deep2", lh=1.4),
-           T(MX, 712, 760, 80, "\n".join(f"{n}, {r}" for n, r in TEAM), size=24, bold=True, color="white", lh=1.35, gap=0)]
+           ]
     S.append(dict(sec=None, dark=True, els=els))
 
     # 02 Problem and evidence -------------------------------------------
@@ -364,14 +364,8 @@ def slides():
     # 08 Team and ask (deep) --------------------------------------------
     els = [R(0, 0, W, H, fill="deep"),
            R(1200, 560, 560, 560, fill="teal", radius=280),
-           title("Команда и запрос", color="white"),
-           T(MX, 220, 440, 30, "Команда", size=23, bold=True, color="on_deep2", lh=1.0)]
-    y = 270
-    for n, r in TEAM:
-        els += [T(MX, y, 480, 44, n, size=34, bold=True, color="white", lh=1.15),
-                T(MX, y + 50, 480, 30, r, size=23, color="on_deep2", lh=1.0)]
-        y += 130
-    ax, aw = MX + 560, 848
+           title("Запрос", color="white")]
+    ax, aw = MX, 1100
     els += [T(ax, 220, aw, 30, "Что нам нужно", size=23, bold=True, color="on_deep2", lh=1.0)]
     asks = [("Научный руководитель", "вуза или клиники: доступ к DementiaBank выдают только по его заявке."),
             ("Клиника-партнёр", "для пилота на 20-30 человек при участии врачей."),
@@ -383,7 +377,7 @@ def slides():
                 T(ax + 64, y + 48, aw - 64, 70, body, size=23, color="on_deep2", lh=1.3)]
         y += 140
     els.append(T(MX, 780, 900, 50, "Спасибо", size=44, bold=True, color="white", lh=1.0))
-    S.append(dict(sec="Команда и запрос", dark=True, els=els))
+    S.append(dict(sec="Запрос", dark=True, els=els))
     for i, sl in enumerate(S):
         sl["id"] = f"{i + 1:02d}"
     return S
@@ -474,7 +468,7 @@ html,body{{margin:0;background:#{C['bg']};font-family:{FONT_HTML};font-variant-n
 .el{{position:absolute}}
 .txt b{{font-weight:600;color:#{C['ink']}}}
 .ph{{border:1px dashed #{C['line_strong']};border-radius:{RAD}px;background:#{C['card']};display:flex;align-items:center;justify-content:center;font-size:18px;color:#{C['ink3']}}}
-.shot{{border:1px solid #{C['line']};border-radius:20px;overflow:hidden;background:#fff;box-shadow:0 2px 6px rgba(19,32,46,.06),0 18px 44px rgba(19,32,46,.14)}}
+.shot{{border:1px solid #DCE3E8;border-radius:8px;overflow:hidden;background:#fff;box-shadow:0 1px 3px rgba(30,35,32,.06)}}
 .shot img{{width:100%;height:100%;object-fit:cover;object-position:top left;display:block}}
 .obj img{{width:100%;height:100%;object-fit:contain;display:block}}
 .glass{{background:rgba(255,255,255,.9);border:1px solid rgba(30,35,32,.14);backdrop-filter:blur(12px) saturate(1.1);-webkit-backdrop-filter:blur(12px) saturate(1.1);box-shadow:0 1px 2px rgba(30,35,32,.06),0 8px 24px rgba(30,35,32,.12)}}
@@ -527,7 +521,6 @@ def pptx_el(slide, e):
     if e["k"] == "shot":
         p = find_screen(e["key"])
         if p:
-            pptx_el(slide, R(e["x"] + 2, e["y"] + 10, e["w"], e["h"], fill="shadow", radius=20))
             iw, ih = Image.open(p).size
             box_r, img_r = e["w"] / e["h"], iw / ih
             pic = slide.shapes.add_picture(p, E(e["x"]), E(e["y"]), E(e["w"]), E(e["h"]))
@@ -572,6 +565,8 @@ def pptx_el(slide, e):
 def build_pptx(S, notes, out):
     prs = Presentation()
     prs.slide_width, prs.slide_height = Emu(12192000), Emu(6858000)
+    cp = prs.core_properties
+    cp.author = ""; cp.last_modified_by = ""; cp.title = "Siriva"; cp.subject = ""; cp.keywords = ""; cp.comments = ""
     total = len(S)
     for s in S:
         sl = prs.slides.add_slide(prs.slide_layouts[6])

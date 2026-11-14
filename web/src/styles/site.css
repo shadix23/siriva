@@ -712,6 +712,108 @@
 }
 
 
+/* Обходной путь: два пациента, нативная вёрстка */
+.s-bypass {
+  border: 1px solid rgba(243, 246, 248, 0.14);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: var(--sp-4);
+}
+.s-bypass__title {
+  font-size: var(--fs-h3);
+  font-weight: 600;
+  line-height: var(--lh-h3);
+  color: #fff;
+}
+.s-bypass__cols {
+  margin-top: var(--sp-3);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-4);
+}
+.s-bypass__name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-1);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: #fff;
+}
+.s-bypass__chip {
+  font-size: var(--fs-small);
+  font-weight: 500;
+  line-height: 1.5;
+  padding: 0 var(--sp-1);
+  border-radius: 999px;
+  border: 1px solid rgba(156, 205, 190, 0.5);
+  color: #bfe0d6;
+}
+.s-bypass__chip.is-weak {
+  border-color: rgba(222, 160, 130, 0.6);
+  color: #f0c3ab;
+}
+.s-bypass ul {
+  list-style: none;
+  margin: var(--sp-2) 0 0;
+  padding: 0;
+}
+.s-bypass li {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: var(--sp-2);
+  align-items: center;
+  padding: var(--sp-2) 0;
+  border-top: 1px solid rgba(243, 246, 248, 0.12);
+}
+.s-bypass__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.06);
+  color: #dce3e8;
+}
+.s-bypass__icon.is-speech {
+  color: #f0c3ab;
+}
+.s-bypass__icon.is-visual {
+  color: #a9c8de;
+}
+.s-bypass__icon.is-spatial {
+  color: #9ccdbe;
+}
+.s-bypass__item {
+  display: block;
+  font-size: var(--fs-body);
+  line-height: 1.4;
+  color: var(--s-on-dark);
+}
+.s-bypass__ch {
+  display: block;
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--s-on-dark-2);
+}
+.s-bypass__note {
+  margin-top: var(--sp-2);
+  padding-top: var(--sp-2);
+  border-top: 1px solid rgba(243, 246, 248, 0.12);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+  color: var(--s-on-dark-2);
+}
+@media (max-width: 560px) {
+  .s-bypass {
+    padding: var(--sp-3);
+  }
+  .s-bypass__cols {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--sp-3);
+  }
+}
+
 /* 3D-мозг TRIBE v2 */
 .s-brain {
   margin: 0;

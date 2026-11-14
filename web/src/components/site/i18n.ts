@@ -10,6 +10,14 @@ type Fact = { figure: string; text: string; source: string; href: string };
 type Step = { title: string; text: string };
 type Who = { title: string; text: string; link: string; href: string };
 type Point = { title: string; text: string };
+export type Channel = "speech" | "visual" | "spatial";
+type BypassPatient = { name: string; chip: string; weak: boolean; items: { title: string; channel: Channel }[] };
+type Bypass = {
+  title: string;
+  channels: Record<Channel, string>;
+  patients: [BypassPatient, BypassPatient];
+  note: string;
+};
 
 export type Dict = {
   meta: { skip: string; langLabel: string; menu: string };
@@ -36,6 +44,7 @@ export type Dict = {
     link: string;
     alt: string;
     brain: BrainText;
+    bypass: Bypass;
   };
   privacy: { title: string; lead: string; points: Point[] };
   cta: { title: string; sub: string };
@@ -125,7 +134,7 @@ const ru: Dict = {
     title: "Обходной путь: память тренируется через то, что сохранно",
     body: "Нагрузку упражнений на речь и внимание предсказывает TRIBE v2 от Meta. Если подбор слов снижен, Siriva тренирует память в обход речи.",
     honest: "Это предсказанная нагрузка, не измерение мозга человека.",
-    tableTitle: "Согласованность TRIBE v2 с экспертной разметкой",
+    tableTitle: "Согласованность TRIBE v2 с оценкой по типу задания",
     rows: [
       { label: "В целом", value: "0,53" },
       { label: "Подбор слов", value: "0,88" },
@@ -147,6 +156,34 @@ const ru: Dict = {
       alt: "Предсказанная нагрузка на кору по TRIBE v2",
       unavailable: "Модель мозга недоступна",
       mask: "линия: языковая зона",
+    },
+    // программы из GET /demo/bypass-scenario (синтетические пациенты, снято 15.11.2026)
+    bypass: {
+      title: "Одна цель, память на события. Разные программы",
+      channels: { speech: "речь", visual: "зрение", spatial: "пространство" },
+      patients: [
+        {
+          name: "Пациент А",
+          chip: "речь сохранна",
+          weak: false,
+          items: [
+            { title: "Пересказ рассказа", channel: "speech" },
+            { title: "Узнать картинки, показанные раньше", channel: "visual" },
+            { title: "Повторить ряд цифр нажатиями", channel: "visual" },
+          ],
+        },
+        {
+          name: "Пациент Б",
+          chip: "речь снижена",
+          weak: true,
+          items: [
+            { title: "Вспомнить покупки по картинкам", channel: "visual" },
+            { title: "Вспомнить маршрут на карте", channel: "spatial" },
+            { title: "Повторить последовательность на поле", channel: "spatial" },
+          ],
+        },
+      ],
+      note: "Пациенту Б пересказ не даём: он сильно нагружает подбор слов.",
     },
   },
   privacy: {
@@ -263,7 +300,7 @@ const en: Dict = {
     title: "The bypass: memory is trained through what still works",
     body: "TRIBE v2 by Meta predicts each exercise's load on speech and attention. If word finding is reduced, Siriva trains memory around speech.",
     honest: "This is a predicted load, not a measurement of the person's brain.",
-    tableTitle: "TRIBE v2 agreement with expert labels",
+    tableTitle: "TRIBE v2 agreement with our task-type estimate",
     rows: [
       { label: "Overall", value: "0.53" },
       { label: "Word finding", value: "0.88" },
@@ -285,6 +322,33 @@ const en: Dict = {
       alt: "Predicted cortical load from TRIBE v2",
       unavailable: "Brain model unavailable",
       mask: "line: language area",
+    },
+    bypass: {
+      title: "One goal, episodic memory. Different plans",
+      channels: { speech: "speech", visual: "vision", spatial: "space" },
+      patients: [
+        {
+          name: "Patient A",
+          chip: "speech intact",
+          weak: false,
+          items: [
+            { title: "Retell a story", channel: "speech" },
+            { title: "Recognise pictures shown earlier", channel: "visual" },
+            { title: "Repeat a digit sequence by tapping", channel: "visual" },
+          ],
+        },
+        {
+          name: "Patient B",
+          chip: "speech reduced",
+          weak: true,
+          items: [
+            { title: "Recall a shopping list from pictures", channel: "visual" },
+            { title: "Recall a route on a map", channel: "spatial" },
+            { title: "Repeat a sequence on a grid", channel: "spatial" },
+          ],
+        },
+      ],
+      note: "Patient B gets no story retelling: it loads word finding heavily.",
     },
   },
   privacy: {

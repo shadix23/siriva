@@ -311,7 +311,7 @@ export function BrainViewer({ lang, text }: { lang: Lang; text: BrainText }) {
       camera.add(key);
       scene.add(camera);
 
-      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "low-power" });
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "low-power", preserveDrawingBuffer: true });
       renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
       renderer.setClearColor(0x000000, 0);
       host.appendChild(renderer.domElement);

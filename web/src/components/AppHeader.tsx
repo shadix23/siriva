@@ -26,6 +26,8 @@ export function AppHeader({
       </a>
       <header className="app-header">
         <Link className="wordmark" href={variant === "family" ? "/family" : "/app"} aria-label={t("app.home_aria")}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/site/logo-mark.png" width={28} height={28} alt="" />
           Siriva{variant === "family" ? <small>{t("header.family_sub")}</small> : null}
         </Link>
         {patient?.is_demo ? <SyntheticBadge /> : null}

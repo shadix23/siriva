@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Icon } from "./Icon";
 import { RadarChart, TrendSmallMultiples } from "./charts";
 import { DOMAINS, type Domain, type DomainScores, type Profile, type Trajectory } from "@/lib/api/types";
-import { daysCount, weeksCount } from "@/lib/i18n";
+import { daysCount } from "@/lib/i18n";
 import { L, daysText, domainLabel, isEn, metricValue, num, t, type MsgKey } from "./demo-i18n";
 
 /** Какая недельная микрометрика к какой функции относится (по весам профиля в backend). */
@@ -293,21 +293,6 @@ function evidence(traj: Trajectory, d: Domain): string | null {
   return null;
 }
 
-/** Неделя, с которой линия домена заметно ниже ориентира от первой недели. */
-function sinceWeek(traj: Trajectory, d: Domain): number | null {
-  const s = traj.series[d] ?? [];
-  const i0 = s.findIndex((v) => v !== null && v !== undefined);
-  if (i0 < 0) return null;
-  const v0 = s[i0] as number;
-  for (let i = i0 + 1; i < s.length; i++) {
-    const v = s[i];
-    if (v === null || v === undefined) continue;
-    const ref = v0 + traj.trend_flag.reference_slope_per_week * (i - i0);
-    if (ref - v >= 5) return traj.weeks[i]?.week ?? i + 1;
-  }
-  return null;
-}
-
 export function FlagCallout({ traj }: { traj: Trajectory }) {
   const f = traj.trend_flag;
   if (!f.active || !f.domains.length) {
@@ -321,7 +306,6 @@ export function FlagCallout({ traj }: { traj: Trajectory }) {
   const names = f.domains.map(domainLabel);
   const domainText = names.length > 1 ? `${names.slice(0, -1).join(", ")} ${L("и", "and")} ${names[names.length - 1].toLowerCase()}` : names[0];
   const text = t("flag.faster_than_usual", { domain: domainText }).replace("снижается", names.length > 1 ? "снижаются" : "снижается");
-  const w = f.per_domain?.[f.domains[0]]?.weeks ?? traj.weeks.length;
   const ev = evidence(traj, f.domains[0]);
   return (
     <div className="flag" role="region" aria-label={t("family.discuss")}>
@@ -330,7 +314,7 @@ export function FlagCallout({ traj }: { traj: Trajectory }) {
         <p className="flag-title">{text}</p>
       </div>
       {ev ? <p className="flag-ev">{ev}</p> : null}
-      <p className="flag-meaning">{L(`Это описание динамики за ${weeksCount(w)}, а не вывод о здоровье. Причины бывают разными: сон, усталость, лекарства.`, `This describes a ${w}-week trend, not a health conclusion. Causes vary: sleep, tiredness, medication.`)}</p>
+      <p className="flag-meaning">{L("Описание динамики, а не вывод о здоровье.", "A trend, not a health conclusion.")}</p>
     </div>
   );
 }
@@ -340,7 +324,6 @@ function PrepareTalk({ traj }: { traj: Trajectory }) {
   const f = traj.trend_flag;
   if (!f.active || !f.domains.length) return null;
   const d = f.domains[0];
-  const since = sinceWeek(traj, d);
   const whatEn: Record<Domain, string> = {
     word_access: "whether you notice that words are harder to find, and since when",
     episodic_memory: "whether you notice that recent events are harder to remember, and since when",
@@ -361,10 +344,6 @@ function PrepareTalk({ traj }: { traj: Trajectory }) {
       <ol>
         <li>
           <strong>{L("Что рассказать:", "What to tell:")}</strong> {L(what[d].replace(/^замечаете ли вы сами, что /, "").replace(/, и с каких пор$/, ""), whatEn[d].replace(/^whether you notice that /, "").replace(/, and since when$/, ""))}.
-        </li>
-        <li>
-          <strong>{L("С какой недели:", "Since week:")}</strong>{" "}
-          {since ? L(`с недели ${since} из ${traj.weeks.length}.`, `since week ${since} of ${traj.weeks.length}.`) : L(`за последние ${weeksCount(traj.weeks.length)}.`, `over the last ${traj.weeks.length} weeks.`)}
         </li>
         <li>
           <strong>{L("Что взять:", "What to bring:")}</strong> {L("этот экран и список лекарств.", "this screen and a list of medications.")}
@@ -412,7 +391,16 @@ export function FamilyView({
   const trajectory = (
     <section className="block fv-traj" aria-labelledby="b-traj">
       <h2 id="b-traj">{t("family.trajectory")}</h2>
-      <p className="muted small">{t("family.trajectory_note")}</p>
+      <p className="fv-legend" aria-hidden="true">
+        <span>
+          <i className="lg-ref" />
+          {L("ориентир", "reference")}
+        </span>
+        <span>
+          <i className="lg-flag" />
+          {L("стоит обсудить", "worth discussing")}
+        </span>
+      </p>
       <TrendSmallMultiples
         series={traj.series}
         flagged={traj.trend_flag.active ? traj.trend_flag.domains : []}

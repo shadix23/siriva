@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Icon } from "./Icon";
 import { LoadBars, RadarChart } from "./charts";
 import { SyntheticBadge } from "./ui";
+import { BrainViewer } from "./site/BrainViewer";
 import type { ApiError } from "@/lib/api/client";
 import type {
   BypassPatient,
@@ -517,17 +518,27 @@ export function BypassCompare({
   );
 }
 
-/** Источник нагрузки упражнений одной плашкой по-русски. */
+/** Источник нагрузки: короткий бейдж с превью мозга, полный текст в подсказке. */
 export function LoadSourceNote({ loadSource, loadLabel }: { loadSource?: string | null; loadLabel?: string | null }) {
   const placeholder = !loadSource || loadSource.includes("placeholder");
-  let text: string;
-  if (placeholder) text = t("badge.stub_matrix");
-  else if (loadLabel) text = L(`${loadLabel.replace(/\.$/, "")}. TRIBE v2: Meta, CC BY-NC 4.0, только некоммерческое использование.`, "Load on speech and attention: TRIBE v2; on memory and speed: task-type estimate. TRIBE v2: Meta, CC BY-NC 4.0, non-commercial use only.");
-  else text = t("badge.tribe");
+  const full = placeholder
+    ? t("badge.stub_matrix")
+    : loadLabel
+      ? L(`${loadLabel.replace(/\.$/, "")}. TRIBE v2: Meta, CC BY-NC 4.0, только некоммерческое использование.`, "Load on speech and attention: TRIBE v2; on memory and speed: task-type estimate. TRIBE v2: Meta, CC BY-NC 4.0, non-commercial use only.")
+      : t("badge.tribe");
+  const short = placeholder ? L("Нагрузка: оценка по типу задания", "Load: task-type estimate") : L("Нагрузка: TRIBE v2 + оценка по типу", "Load: TRIBE v2 + task-type estimate");
   return (
-    <p className={`src-note${placeholder ? "" : " is-tribe"}`}>
-      <Icon name="info" />
-      <span>{text}</span>
+    <p className={`src-note src-badge${placeholder ? "" : " is-tribe"}`} title={full} tabIndex={0} aria-label={full}>
+      {placeholder ? (
+        <Icon name="info" />
+      ) : (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img className="src-brain" src={`/site/brain-static-${isEn() ? "en" : "ru"}.webp`} alt="" width={28} height={26} />
+      )}
+      <span aria-hidden="true">{short}</span>
+      <span className="src-tip" aria-hidden="true">
+        {full}
+      </span>
     </p>
   );
 }
@@ -599,27 +610,25 @@ function BypassColumn({
   if (withBypass) {
     why = lowWatch ? (
       <>
-        {L("Речь снижена, поэтому память тренируем ", "Speech is reduced, so memory is trained ")}
-        <em>{L("через картинки и пространство", "through pictures and space")}</em>
-        {L(", а речь обходим.", ", bypassing speech.")}
+        {L("Речь снижена: память ", "Speech reduced: memory ")}
+        <em>{L("через картинки и пространство", "via pictures and space")}</em>
       </>
     ) : (
       <>
-        {L("Речь сохранна, поэтому память тренируем ", "Speech is intact, so memory is trained ")}
-        <em>{L("и через пересказ", "through retelling as well")}</em>.
+        {L("Речь сохранна: память ", "Speech intact: memory ")}
+        <em>{L("и через пересказ", "via retelling too")}</em>
       </>
     );
   } else {
     why = lowWatch ? (
       <>
-        {L("Подбор только по цели: ", "Selected by goal only: ")}
         <em className="warn">
           {heavyCount} {L("из", "of")} {items.length}
         </em>
-        {L(" упражнений нагружают речь, а она снижена.", " exercises load speech, which is reduced.")}
+        {L(" упражнений нагружают снижённую речь", " exercises load reduced speech")}
       </>
     ) : (
-      <>{L(`Подбор только по цели. Для ${letter} это подходит: речь сохранна.`, `Selected by goal only. This suits ${letter}: speech is intact.`)}</>
+      <>{L("Подходит: речь сохранна", "Fits: speech intact")}</>
     );
   }
 
@@ -698,14 +707,14 @@ function BypassColumn({
                   .slice(0, 2)
                   .map((r) => {
                     const hh = maxOf(r.predicted_load, avoid);
-                    return hh ? `«${exTitle(r.exercise_id, r.title)}» (${domainLabel(hh.d).toLowerCase()} ${num(hh.v, 2)})` : `«${exTitle(r.exercise_id, r.title)}»`;
+                    return hh ? `${exTitle(r.exercise_id, r.title)} (${num(hh.v, 2)})` : exTitle(r.exercise_id, r.title);
                   })
                   .join(", ")
               : L("ничего, программа совпадает с обычной", "nothing, the program matches the standard one")}
           </p>
         ) : (
           <p className="bp-skipped">
-            <strong>{L("Без обходного пути", "Without bypass")}</strong> {L("у обоих одна и та же программа.", "both get the same program.")}
+            {L("Одна программа на обоих", "Same program for both")}
           </p>
         )}
       </div>
@@ -723,24 +732,7 @@ type AgreementBlock = NumbersBlock & {
   domain_sources?: Partial<Record<Domain, string>>;
 };
 
-const COUNT_DAT: Record<number, string> = { 1: "одной функции", 2: "двум функциям", 3: "трём функциям", 4: "четырём функциям", 5: "пяти функциям" };
-const COUNT_EN: Record<number, string> = { 1: "one function", 2: "two functions", 3: "three functions", 4: "four functions", 5: "five functions" };
-const SHORT_EN: Record<Domain, string> = { episodic_memory: "memory", word_access: "word finding", phrase_building: "phrase building", attention: "attention", processing_speed: "speed" };
-const SHORT_NAME: Record<Domain, string> = {
-  episodic_memory: "память",
-  word_access: "подбор слов",
-  phrase_building: "построение фраз",
-  attention: "внимание",
-  processing_speed: "скорость",
-};
 
-function exercisesWord(n: number) {
-  const a = n % 10;
-  const b = n % 100;
-  if (a === 1 && b !== 11) return "упражнение";
-  if (a >= 2 && a <= 4 && (b < 12 || b > 14)) return "упражнения";
-  return "упражнений";
-}
 
 /** Какие функции входят в среднее согласованности и какие взяты из оценки по типу задания. */
 function agreementSplit(g: AgreementBlock) {
@@ -755,139 +747,87 @@ function agreementSplit(g: AgreementBlock) {
   return { inMean, rest };
 }
 
-/** Опубликованные ориентиры ADReSS 2020 (английская речь, описание картинки). */
-const ADRESS_REFS = [
-  { v: 0.75, label: "базовый уровень организаторов", en: "organisers’ baseline" },
-  { v: 0.896, label: "лучший результат конкурса", en: "best challenge result" },
-];
+
+/** Подписи для интерактивного мозга лендинга (BrainViewer) на языке экрана. */
+function brainText() {
+  return {
+    group: L("Упражнение", "Exercise"),
+    caption: L("Предсказание TRIBE v2, модель усреднённого мозга", "TRIBE v2 prediction, an average-brain model"),
+    agreement: "",
+    diff: L("Речевые минус зрительные задания", "Speech minus visual tasks"),
+    low: L("средняя", "average"),
+    high: L("выше", "higher"),
+    diffLow: L("сильнее в зрительных", "stronger in visual"),
+    diffHigh: L("в речевых", "in speech"),
+    loading: L("Загружаем модель мозга", "Loading the brain model"),
+    alt: L("Предсказанная нагрузка на кору по TRIBE v2", "Predicted cortical load from TRIBE v2"),
+    unavailable: L("Модель мозга недоступна", "Brain model unavailable"),
+    mask: L("линия: языковая зона", "line: language area"),
+  };
+}
 
 export function NumbersCards({ numbers }: { numbers: (DemoNumbers & { fromFixture?: boolean }) | null }) {
   const a = numbers?.adress;
   const g = numbers?.agreement as AgreementBlock | undefined;
   const aReady = a?.status === "ready" && typeof a.accuracy === "number";
   const gReady = g?.status === "ready" && typeof g.value === "number";
+  const split = g ? agreementSplit(g) : { inMean: [] as Domain[], rest: [] as Domain[] };
+  const per = g?.per_domain ?? {};
   return (
-    <div className="nums-wrap">
-      <div className="nums">
-        <section className={`num-card${aReady ? " is-ready" : ""}`} aria-labelledby="n-adress">
-          <p className="num-kicker">{L("Английская речь", "English speech")}</p>
-          <h2 id="n-adress">{L("Классификатор речи", "Speech classifier")}</h2>
-          <div className="num-figure">
-            {aReady ? (
-              <>
-                <p className="num-big">
-                  <CountUp value={a!.accuracy!} digits={2} />
-                </p>
-                <p className="num-unit">{L("точность на ADReSS", "accuracy on ADReSS")}</p>
-              </>
-            ) : (
-              <>
-                <p className="num-status is-on">
-                  <Icon name="check" />
-                  {L("Подключён: xlm-roberta (готовая модель, английская речь)", "Connected: xlm-roberta (ready-made model, English speech)")}
-                </p>
-                <p className="num-unit">{L("Точность на ADReSS не подтверждена: нет доступа к данным.", "Accuracy on ADReSS not confirmed: no data access.")}</p>
-              </>
-            )}
-          </div>
-          <div className="num-refs num-refs-small">
-            <p className="num-refs-title">{L("опубликованные ориентиры ADReSS", "published ADReSS references")}</p>
-            <dl>
-              {ADRESS_REFS.map((r, i) => (
-                <div key={r.v}>
-                  <dt>{i === 0 && typeof a?.baseline === "number" ? L("базовый уровень", "baseline") : L(r.label, r.en)}</dt>
-                  <dd>{num(i === 0 && typeof a?.baseline === "number" ? a.baseline : r.v, i === 0 ? 2 : 3)}</dd>
-                </div>
-              ))}
+    <div className="d6-grid">
+      <figure className="d6-brain">
+        <BrainViewer lang={isEn() ? "en" : "ru"} text={brainText()} />
+      </figure>
+
+      <div className="d6-side">
+        <section className="num-card d6-tribe" aria-labelledby="n-agree">
+          <h2 id="n-agree">{L("Согласованность с TRIBE v2", "Agreement with TRIBE v2")}</h2>
+          {gReady ? (
+            <dl className="d6-rho">
+              {split.inMean
+                .filter((d) => typeof per[d] === "number")
+                .map((d) => (
+                  <div key={d}>
+                    <dd>
+                      <CountUp value={per[d]!} digits={2} />
+                    </dd>
+                    <dt>{domainLabel(d)}</dt>
+                  </div>
+                ))}
             </dl>
-          </div>
+          ) : (
+            <p className="num-status">
+              <Icon name="clock" />
+              {t("numbers.pending")}
+            </p>
+          )}
+          <p className="d6-note">
+            {L("Корреляция Спирмена, ", "Spearman correlation, ")}
+            {typeof g?.exercises_compared === "number" ? L(`${g.exercises_compared} упражнений`, `${g.exercises_compared} exercises`) : ""}
+            {split.rest.length ? L(". Память и скорость: по типу задания", ". Memory and speed: task-type estimate") : ""}
+          </p>
         </section>
 
-        <section className={`num-card${gReady ? " is-ready" : ""}`} aria-labelledby="n-agree">
-          <p className="num-kicker">{L("Нагрузка упражнений", "Exercise load")}</p>
-          <h2 id="n-agree">{L("Согласованность с TRIBE v2", "Agreement with TRIBE v2")}</h2>
-          {gReady
-            ? (() => {
-                const { inMean, rest } = agreementSplit(g!);
-                const n = g!.exercises_compared;
-                const memSpeed = rest.length === 2 && rest.includes("episodic_memory") && rest.includes("processing_speed");
-                const restNames = rest.map((d) => (isEn() ? SHORT_EN[d] : SHORT_NAME[d]));
-                const restText = restNames.length
-                  ? `${restNames.length > 1 ? `${restNames.slice(0, -1).join(", ")} ${L("и", "and")} ${restNames[restNames.length - 1]}` : restNames[0]}`
-                  : "";
-                return (
-                  <>
-                    <div className="num-figure">
-                      <p className="num-big">
-                        <CountUp value={g!.value!} digits={2} />
-                      </p>
-                      <p className="num-unit">
-                        {L(
-                          `Корреляция Спирмена с оценкой по типу задания: среднее по ${COUNT_DAT[inMean.length] ?? `${inMean.length} функциям`} из TRIBE v2${typeof n === "number" ? `, ${n} ${exercisesWord(n)}` : ""}.`,
-                          `Spearman correlation with the task-type estimate: mean over ${COUNT_EN[inMean.length] ?? `${inMean.length} functions`} from TRIBE v2${typeof n === "number" ? `, ${n} exercises` : ""}.`,
-                        )}
-                      </p>
-                    </div>
-                    {g!.per_domain && inMean.length ? (
-                      <dl className="num-domains">
-                        {inMean
-                          .filter((d) => typeof g!.per_domain![d] === "number")
-                          .map((d) => (
-                            <div key={d}>
-                              <dt>{domainLabel(d)}</dt>
-                              <dd>
-                                <CountUp value={g!.per_domain![d]!} digits={2} />
-                              </dd>
-                            </div>
-                          ))}
-                      </dl>
-                    ) : null}
-                    {restText ? (
-                      <p className="num-rest">
-                        {restText.charAt(0).toUpperCase() + restText.slice(1)}
-                        {L(
-                          `: оценка по типу задания, TRIBE v2 для ${rest.length > 1 ? "них" : "неё"} не используется${memSpeed ? " (в публичной модели нет гиппокампа, скорость не локализуется)" : ""}.`,
-                          `: task-type estimate; TRIBE v2 is not used for ${rest.length > 1 ? "them" : "it"}${memSpeed ? " (the public model has no hippocampus, and speed is not localised)" : ""}.`,
-                        )}
-                      </p>
-                    ) : null}
-                  </>
-                );
-              })()
-            : (
-            <>
-              <div className="num-figure">
-                <p className="num-status">
-                  <Icon name="clock" />
-                  {t("numbers.pending")}
-                </p>
-                <p className="num-unit">{L("Число появится здесь само после прогона модели.", "The number will appear here after the model run.")}</p>
-              </div>
-              <ol className="num-how">
-                <li>{L("TRIBE v2 предсказывает, какие функции нагружает каждое упражнение.", "TRIBE v2 predicts which functions each exercise loads.")}</li>
-                <li>{L("Сравниваем с нынешней оценкой по типу задания: корреляция по упражнениям для каждой функции.", "We compare it with the current task-type estimate: correlation across exercises per function.")}</li>
-                <li>{L("Подбор программы сразу переходит на новую нагрузку, структура остаётся той же.", "Program selection switches to the new load; the structure stays the same.")}</li>
-              </ol>
-            </>
+        <section className={`num-card d6-adress${aReady ? " is-ready" : ""}`} aria-labelledby="n-adress">
+          <h2 id="n-adress">{L("Классификатор речи", "Speech classifier")}</h2>
+          {aReady ? (
+            <p className="num-big">
+              <CountUp value={a!.accuracy!} digits={2} />
+            </p>
+          ) : (
+            <p className="num-status is-on">
+              <Icon name="check" />
+              {L("Подключён: xlm-roberta, английская речь", "Connected: xlm-roberta, English speech")}
+            </p>
           )}
+          <p className="d6-note">{L("Точность на ADReSS не подтверждена: нет доступа к данным", "ADReSS accuracy not confirmed: no data access")}</p>
+          <p className="d6-refs">
+            {L("Ориентиры ADReSS:", "ADReSS references:")} <b>{num(a?.baseline ?? 0.75, 2)}</b> {L("базовый", "baseline")},{" "}
+            <b>{num(0.896, 3)}</b> {L("лучший", "best")}
+          </p>
         </section>
       </div>
-
-      <section className="num-final" aria-labelledby="n-final">
-        <h2 id="n-final">{L("Что уже работает", "What already works")}</h2>
-        <ul>
-          <li>
-            <strong>{L("Запись и показатели речи", "Recording and speech measures")}</strong> {L("на этом компьютере, без интернета", "on this computer, offline")}
-          </li>
-          <li>
-            <strong>{L("Профиль по пяти функциям", "Five-function profile")}</strong> {L("и спокойный флаг для близкого", "and a calm flag for family")}
-          </li>
-          <li>
-            <strong>{L("Подбор с обходным путём:", "Bypass selection:")}</strong> {L("память тренируется через то, что сохранно", "memory is trained through what remains intact")}
-          </li>
-        </ul>
-      </section>
-      {numbers?.fromFixture ? <p className="small muted">{L("Данные из локальной заглушки: сервер не отдаёт /demo/numbers.", "Local fixture data: the server does not serve /demo/numbers.")}</p> : null}
+      {numbers?.fromFixture ? <p className="small muted">{L("Локальная заглушка /demo/numbers", "Local /demo/numbers fixture")}</p> : null}
     </div>
   );
 }

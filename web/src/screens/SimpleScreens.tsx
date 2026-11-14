@@ -168,21 +168,15 @@ export function SettingsScreen() {
               {t("settings.save_error")}
             </p>
           ) : null}
-          <section className="settings-section">
-            <p>
-              <Link href="/">{t("settings.about")}</Link>
-            </p>
+          <section className="settings-section settings-links">
+            <Link href="/">{t("settings.about")}</Link>
+            {p ? (
+              <Link href="/settings/delete" className="btn btn-tertiary" style={{ color: "var(--danger)", justifySelf: "start" }}>
+                <Icon name="trash" />
+                {t("settings.delete_link")}
+              </Link>
+            ) : null}
           </section>
-          {p ? (
-            <section className="settings-section">
-              <p>
-                <Link href="/settings/delete" className="btn btn-tertiary" style={{ color: "var(--danger)" }}>
-                  <Icon name="trash" />
-                  {t("settings.delete_link")}
-                </Link>
-              </p>
-            </section>
-          ) : null}
         </div>
       </main>
     </>

@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import "@/styles/site.css";
-import { dict, LANG_KEY, type Lang } from "./i18n";
+import { dict, LANG_KEY, type Channel, type Lang } from "./i18n";
 import { BrainViewer } from "./BrainViewer";
 
 function Arrow() {
@@ -29,6 +29,25 @@ const privacyIcons = [
     <path d="M4.5 6.5h15M9.5 6.5V4h5v2.5M6.5 6.5l1 13.5h9l1-13.5M10.5 10v6.5M13.5 10v6.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>,
 ];
+
+const channelIcons: Record<Channel, React.ReactNode> = {
+  speech: (
+    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M9 5a3 3 0 0 1 6 0v6a3 3 0 0 1-6 0zM5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  ),
+  visual: (
+    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" strokeWidth="1.6" />
+    </svg>
+  ),
+  spatial: (
+    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+    </svg>
+  ),
+};
 
 function BrowserFrame({ src, alt, eager }: { src: string; alt: string; eager?: boolean }) {
   return (
@@ -409,8 +428,30 @@ export function Landing() {
                 <Arrow />
               </Link>
             </div>
-            <div className="s-sci__visual" data-reveal style={{ ["--i" as string]: 1 }}>
-              <img className="s-shot" src="/site/d4-patient-b.png" alt={t.science.alt} width={600} height={553} loading="lazy" decoding="async" />
+            <div className="s-bypass" data-reveal style={{ ["--i" as string]: 1 }}>
+              <h3 className="s-bypass__title">{t.science.bypass.title}</h3>
+              <div className="s-bypass__cols">
+                {t.science.bypass.patients.map((p) => (
+                  <div key={p.name} className="s-bypass__col">
+                    <p className="s-bypass__name">
+                      {p.name}
+                      <span className={`s-bypass__chip${p.weak ? " is-weak" : ""}`}>{p.chip}</span>
+                    </p>
+                    <ul>
+                      {p.items.map((it) => (
+                        <li key={it.title}>
+                          <span className={`s-bypass__icon is-${it.channel}`}>{channelIcons[it.channel]}</span>
+                          <span>
+                            <span className="s-bypass__item">{it.title}</span>
+                            <span className="s-bypass__ch">{t.science.bypass.channels[it.channel]}</span>
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+              <p className="s-bypass__note">{t.science.bypass.note}</p>
             </div>
           </div>
         </section>

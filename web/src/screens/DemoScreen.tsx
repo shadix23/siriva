@@ -29,6 +29,7 @@ import { EXERCISES, PICTURES, type SpeechDef } from "@/lib/exercises";
 import { useHealth } from "@/lib/hooks";
 import { setDemoMode } from "@/lib/demo-mode";
 import { L, clock, personName, setUiLang, t, useUiLang } from "@/components/demo-i18n";
+import "@/styles/site.css";
 import "@/styles/demo.css";
 
 const STEPS_RU = ["Проблема", "Живая запись", "Профиль", "Обходной путь", "Близкий", "Цифры"];

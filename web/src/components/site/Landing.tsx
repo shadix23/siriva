@@ -309,7 +309,7 @@ export function Landing() {
               </div>
               <div className="s-hero__front" ref={frontRef}>
                 <div className="s-enter s-enter--far" style={{ ["--d" as string]: "300ms" }}>
-                  <PhoneFrame src="/site/p1-today-375.png" alt={t.hero.altPhone} eager />
+                  <PhoneFrame src="/site/p1-today-390.png" alt={t.hero.altPhone} eager />
                 </div>
               </div>
             </div>

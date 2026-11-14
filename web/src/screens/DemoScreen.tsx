@@ -5,7 +5,7 @@ import { browser } from "react-dom";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Icon } from "@/components/Icon";
-import { SyntheticBadge, useAnnounce } from "@/components/ui";
+import { useAnnounce } from "@/components/ui";
 import { SpeechFlow } from "@/components/exercise/SpeechFlow";
 import { StimulusPicture } from "@/components/exercise/parts";
 import { BypassCompare, LiveSpeechPanel, NumbersCards, ServerStatus } from "@/components/demo";
@@ -376,7 +376,6 @@ export function DemoScreen() {
   if (step === 1) {
     content = (
       <section className="d1" aria-labelledby="d1">
-        <p className="d-kicker">{L("Почему речь", "Why speech")}</p>
         <div className="d1-grid">
           <h1 id="d1" className="d1-claim">
             {L(
@@ -540,7 +539,6 @@ export function DemoScreen() {
       <section className="d3" aria-labelledby="d3">
         <div className="d-titlebar">
           <h1 id="d3">{L("Профиль функций за 12 недель", "Function profile over 12 weeks")}: {trendName}</h1>
-          <SyntheticBadge text={t("badge.synthetic")} />
         </div>
         {data ? (
           data.profile && data.trajectory ? (
@@ -585,7 +583,6 @@ export function DemoScreen() {
             <h1 id="d5">{L("Так это видит близкий", "What family sees")}</h1>
             <p className="d-sub">{L("Те же записи, что на шаге 2, за 12 недель.", "The same recordings as step 2, over 12 weeks.")}</p>
           </div>
-          <SyntheticBadge text={t("badge.synthetic")} />
         </div>
         {data?.trajectory ? (
           <FamilyView traj={data.trajectory} profileHref="/demo?step=3" layout="split" name={trendName.split(",")[0]} />
@@ -612,57 +609,50 @@ export function DemoScreen() {
 
   return (
     <div className={`demo-root demo-step-${step}${glass ? " is-glass" : ""}`}>
-      <header className="demo-header">
-        <Link className="wordmark" href="/demo?step=1">
-          Siriva<small>{L("Демо", "Demo")}</small>
-        </Link>
-        <nav aria-label={L("Шаги демо", "Demo steps")}>
-          <ol className="demo-tabs">
-            {STEPS.map((s, i) => (
-              <li key={s}>
-                <Link href={`/demo?step=${i + 1}`} aria-current={step === i + 1 ? "step" : undefined}>
-                  <span className="num">{i + 1}</span> {s}
-                </Link>
-              </li>
-            ))}
-          </ol>
-        </nav>
-        <div className="header-tools">
-          <span className="badge-synth hdr-synth">
-            <Icon name="flask" />
-            <span className="hdr-full">{L("Синтетические данные", "Synthetic data")}</span>
-            <span className="hdr-short" aria-hidden="true">
-              {L("Синтетика", "Synthetic")}
-            </span>
-          </span>
-          <div className="lang-group">
-            <span className="lang-cap" id="speech-lang">{L("Речь", "Speech")}</span>
-            <div className="seg-toggle" role="group" aria-labelledby="speech-lang">
-              <button type="button" aria-pressed={lang === "ru"} onClick={() => setLang("ru")} disabled={recording}>
-                RU
-              </button>
-              <button type="button" aria-pressed={lang === "en"} onClick={() => setLang("en")} disabled={recording} lang="en">
-                EN
-              </button>
+      <header className="dh">
+        <div className="dh-row">
+          <Link className="dh-logo" href="/demo?step=1">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/site/logo-mark.png" width={28} height={28} alt="" />
+            <span>Siriva</span>
+            <small>{L("Демо", "Demo")}</small>
+          </Link>
+          <nav className="dh-steps" aria-label={L("Шаги демо", "Demo steps")}>
+            <ol>
+              {STEPS.map((s, i) => (
+                <li key={s}>
+                  <Link href={`/demo?step=${i + 1}`} aria-current={step === i + 1 ? "step" : undefined}>
+                    <span className="dh-num">{i + 1}</span>
+                    {s}
+                  </Link>
+                </li>
+              ))}
+            </ol>
+          </nav>
+          <div className="dh-tools">
+            <div className="dh-lang">
+              <span id="speech-lang">{L("Речь", "Speech")}</span>
+              <div className="dh-seg" role="group" aria-labelledby="speech-lang">
+                <button type="button" aria-pressed={lang === "ru"} onClick={() => setLang("ru")} disabled={recording}>
+                  RU
+                </button>
+                <button type="button" aria-pressed={lang === "en"} onClick={() => setLang("en")} disabled={recording} lang="en">
+                  EN
+                </button>
+              </div>
+            </div>
+            <div className="dh-lang">
+              <span id="ui-lang">{L("Экран", "UI")}</span>
+              <div className="dh-seg" role="group" aria-labelledby="ui-lang">
+                <button type="button" aria-pressed={uiLang === "ru"} onClick={() => setUiLang("ru")}>
+                  RU
+                </button>
+                <button type="button" aria-pressed={uiLang === "en"} onClick={() => setUiLang("en")} lang="en">
+                  EN
+                </button>
+              </div>
             </div>
           </div>
-          <div className="lang-group">
-            <span className="lang-cap" id="ui-lang">{L("Экран", "UI")}</span>
-            <div className="seg-toggle" role="group" aria-labelledby="ui-lang">
-              <button type="button" aria-pressed={uiLang === "ru"} onClick={() => setUiLang("ru")}>
-                RU
-              </button>
-              <button type="button" aria-pressed={uiLang === "en"} onClick={() => setUiLang("en")} lang="en">
-                EN
-              </button>
-            </div>
-          </div>
-          <ServerStatus health={health} down={down} onBackup={() => void runBackup()} compact />
-          {down ? (
-            <button className="btn btn-tertiary" type="button" onClick={check}>
-              {t("server.retry")}
-            </button>
-          ) : null}
         </div>
       </header>
       {warning ? (
@@ -675,39 +665,51 @@ export function DemoScreen() {
           {content}
         </div>
       </main>
-      <footer className="demo-foot">
-        <nav className="demo-steps-nav" aria-label={L("Переход по шагам", "Step navigation")}>
-          {step > 1 ? (
-            <Link className="btn btn-secondary" href={`/demo?step=${step - 1}`}>
-              <Icon name="back" />
-              {L("Назад", "Back")}
-            </Link>
-          ) : null}
-          {step < 6 ? (
-            <Link className="btn btn-primary" href={`/demo?step=${step + 1}`}>
-              {L("Дальше", "Next")}: {STEPS[step]}
-              <Icon name="arrow" />
-            </Link>
-          ) : null}
-        </nav>
-        <p className="demo-keys">
-          <span>
-            <span className="kbd">→</span> {L("дальше", "next")}
-          </span>
-          <span>
-            <span className="kbd">←</span> {L("назад", "back")}
-          </span>
-          {step === 2 ? (
-            <>
-              <span>
-                <span className="kbd">R</span> {L("запись", "record")}
-              </span>
-              <span>
-                <span className="kbd">B</span> {L("пример", "example")}
-              </span>
-            </>
-          ) : null}
-        </p>
+      <footer className="df">
+        <div className="df-row">
+          <div className="df-meta">
+            <span className="df-synth">
+              <Icon name="flask" />
+              {L("Синтетические данные", "Synthetic data")}
+            </span>
+            <ServerStatus health={health} down={down} onBackup={() => void runBackup()} compact />
+            {down ? (
+              <button className="btn btn-tertiary" type="button" onClick={check}>
+                {t("server.retry")}
+              </button>
+            ) : null}
+          </div>
+          <p className="df-keys">
+            <span>
+              <kbd>←</kbd>
+              <kbd>→</kbd> {L("шаги", "steps")}
+            </span>
+            {step === 2 ? (
+              <>
+                <span>
+                  <kbd>R</kbd> {L("запись", "record")}
+                </span>
+                <span>
+                  <kbd>B</kbd> {L("пример", "example")}
+                </span>
+              </>
+            ) : null}
+          </p>
+          <nav className="df-nav" aria-label={L("Переход по шагам", "Step navigation")}>
+            {step > 1 ? (
+              <Link className="btn btn-secondary" href={`/demo?step=${step - 1}`}>
+                <Icon name="back" />
+                {L("Назад", "Back")}
+              </Link>
+            ) : null}
+            {step < 6 ? (
+              <Link className="btn btn-primary" href={`/demo?step=${step + 1}`}>
+                {L("Дальше", "Next")}: {STEPS[step]}
+                <Icon name="arrow" />
+              </Link>
+            ) : null}
+          </nav>
+        </div>
       </footer>
     </div>
   );

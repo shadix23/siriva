@@ -1,12 +1,11 @@
 /* Стили экранов жюри (D1-D6) и близкого (/family). Владелец: frontend-demo.
    Подключается из DemoScreen.tsx и FamilyScreens.tsx. globals.css не меняем, только уточняем внутри своих корневых классов. */
 
-/* ---------- Масштаб под проектор ----------
-   1280x800 и 1920x1080 выглядят одинаково: корневой размер считается от окна. */
-@media (min-width: 900px) {
-  :root.demo-mode {
-    font-size: clamp(14px, min(1.3vw, 2.08vh), 30px);
-  }
+/* ---------- Масштаб ----------
+   Как на лендинге: фиксированная шкала в пикселях, не от ширины окна.
+   На проекторе масштаб задаёт браузер (Cmd +), а не вёрстка. */
+:root.demo-mode {
+  font-size: 16px;
 }
 
 .demo-root {
@@ -2760,4 +2759,1344 @@ details[open] > .bp-row .bp-chev {
 .clinical .seg-toggle button[aria-pressed="true"] {
   background: var(--info);
   color: #ffffff;
+}
+
+/* ==========================================================================
+   Редизайн 15.11: демо в системе лендинга (src/styles/site.css).
+   IBM Plex Sans, 5 размеров (display, h2, h3, body, small), 400/500/600, трекинг -0,02em,
+   белые блоки с рамкой 1 px #DCE3E8, радиус 8-12, сетка 8 px. Шкала в пикселях, не от окна.
+   Слой последний: перекрывает накопленные правила выше только внутри .demo-root.
+   ========================================================================== */
+.demo-root {
+  --d-dark: #12332e;
+  --d-accent: #1c5a51;
+  --d-blue: #2f5d7c;
+  --d-line: #dce3e8;
+  --d-line-2: #b7c4cc;
+  --d-panel: #f3f6f8;
+  --d-ink: #1e2320;
+  --d-ink-2: #454c47;
+  --d-ink-3: #5a625c;
+  --d-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --fs-h1: clamp(26px, 2.1vw, 32px);
+  --fs-h2: 20px;
+  --fs-body: 16px;
+  --fs-small: 14px;
+  --fs-xs: 13px;
+  --d-wrap: 1200px;
+  --d-gutter: 40px;
+  --line: var(--d-line);
+  --info: var(--d-blue);
+  --accent: var(--d-accent);
+  font-size: var(--fs-body);
+  line-height: 1.5;
+  color: var(--d-ink);
+  -webkit-font-smoothing: antialiased;
+}
+.demo-root ::selection {
+  background: #cfe3de;
+  color: var(--d-dark);
+}
+
+/* Контейнер: те же поля и ширина, что у лендинга */
+.demo-root .demo-main,
+.demo-root .dh-row,
+.demo-root .df-row {
+  width: 100%;
+  max-width: calc(var(--d-wrap) + var(--d-gutter) * 2);
+  margin: 0 auto;
+  padding-left: var(--d-gutter);
+  padding-right: var(--d-gutter);
+}
+.demo-root .demo-main {
+  flex: 1;
+  padding-top: 24px;
+  padding-bottom: 24px;
+}
+
+/* ---------- Шапка: как .s-header ---------- */
+.dh {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: #fff;
+  border-bottom: 1px solid var(--d-line);
+}
+.dh-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  height: 64px;
+}
+.dh-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  min-height: 44px;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--d-dark);
+  text-decoration: none;
+}
+.dh-logo img {
+  display: block;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+}
+.dh-logo small {
+  margin-left: 4px;
+  padding-left: 12px;
+  border-left: 1px solid var(--d-line);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--d-ink-3);
+}
+.dh-steps {
+  flex: 1 1 auto;
+  min-width: 0;
+  align-self: stretch;
+}
+.dh-steps ol {
+  display: flex;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.dh-steps li {
+  display: flex;
+}
+.dh-steps a {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--d-ink-2);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 150ms ease;
+}
+.dh-steps a::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: -1px;
+  height: 2px;
+  background: var(--d-dark);
+  transform: scaleX(0);
+  transition: transform 240ms var(--d-ease);
+}
+.dh-steps a[aria-current="step"] {
+  color: var(--d-dark);
+}
+.dh-steps a[aria-current="step"]::after {
+  transform: scaleX(1);
+}
+.dh-num {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--d-ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.dh-steps a[aria-current="step"] .dh-num {
+  color: var(--d-accent);
+}
+@media (hover: hover) and (pointer: fine) {
+  .dh-steps a:hover {
+    color: var(--d-ink);
+  }
+}
+.dh-steps a:focus-visible,
+.dh-logo:focus-visible {
+  outline: 2px solid var(--d-blue);
+  outline-offset: -2px;
+  border-radius: 8px;
+}
+.dh-tools {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: none;
+}
+.dh-lang {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-xs);
+  color: var(--d-ink-3);
+}
+/* переключатель как .s-lang на лендинге */
+.dh-seg {
+  display: inline-flex;
+  border: 1px solid var(--d-line);
+  border-radius: 999px;
+  padding: 3px;
+}
+.dh-seg button {
+  font: inherit;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  line-height: 1;
+  min-width: 36px;
+  min-height: 32px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--d-ink-2);
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+.dh-seg button[aria-pressed="true"] {
+  background: var(--d-dark);
+  color: #fff;
+}
+.dh-seg button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+.dh-seg button:focus-visible {
+  outline: 2px solid var(--d-blue);
+  outline-offset: 2px;
+}
+
+/* ---------- Нижняя полоса: зеркало шапки ---------- */
+.df {
+  position: sticky;
+  bottom: 0;
+  z-index: 30;
+  background: #fff;
+  border-top: 1px solid var(--d-line);
+}
+.df-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  min-height: 64px;
+}
+.df-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-right: auto;
+  font-size: var(--fs-small);
+  color: var(--d-ink-2);
+}
+.df-synth {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.df-synth .icon {
+  width: 16px;
+  height: 16px;
+  color: var(--d-ink-3);
+}
+.demo-root .df .server {
+  font-size: var(--fs-small);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.df-keys {
+  display: flex;
+  gap: 16px;
+  margin: 0;
+  font-size: var(--fs-xs);
+  color: var(--d-ink-3);
+  white-space: nowrap;
+}
+.df-keys kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  margin-right: 2px;
+  padding: 0 5px;
+  border: 1px solid var(--d-line);
+  border-radius: 6px;
+  background: #fff;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--d-ink-2);
+}
+.df-nav {
+  display: flex;
+  gap: 8px;
+}
+
+/* ---------- Кнопки: как .s-btn--sm ---------- */
+.demo-root .btn {
+  min-height: 40px;
+  padding: 0 16px;
+  gap: 8px;
+  border-radius: 8px;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  line-height: 1;
+  box-shadow: none;
+}
+.demo-root .btn .icon {
+  width: 18px;
+  height: 18px;
+}
+.demo-root .btn-primary {
+  background: var(--d-dark);
+  border: 1px solid var(--d-dark);
+  color: #fff;
+}
+.demo-root .btn-primary:hover {
+  background: var(--d-accent);
+  border-color: var(--d-accent);
+}
+.demo-root .btn-secondary {
+  background: #fff;
+  border: 1px solid var(--d-line);
+  color: var(--d-ink);
+}
+@media (hover: hover) and (pointer: fine) {
+  .demo-root .btn-secondary:hover {
+    background: var(--d-panel);
+    border-color: var(--d-line-2);
+  }
+}
+.demo-root .btn-tertiary {
+  font-weight: 500;
+  color: var(--d-accent);
+}
+.demo-root .btn:focus-visible {
+  outline: 2px solid var(--d-blue);
+  outline-offset: 2px;
+}
+.demo-root .btn[aria-pressed="true"] {
+  border-color: var(--d-dark);
+  box-shadow: inset 0 0 0 1px var(--d-dark);
+}
+
+/* ---------- Заголовки и текст ---------- */
+.demo-root h1,
+.demo-root h2,
+.demo-root h3 {
+  letter-spacing: -0.02em;
+  color: var(--d-ink);
+  text-wrap: balance;
+}
+.demo-root .d-titlebar {
+  align-items: flex-end;
+  gap: 8px 24px;
+  margin-bottom: 24px;
+}
+.demo-root .d-titlebar h1,
+.demo-root .bp-heading h1 {
+  font-size: var(--fs-h1);
+  font-weight: 500;
+  line-height: 1.15;
+}
+.demo-root .d-sub,
+.demo-root .bp-heading p {
+  margin-top: 6px;
+  font-size: var(--fs-body);
+  color: var(--d-ink-2);
+}
+.demo-root .muted,
+.demo-root .lead {
+  font-size: var(--fs-body);
+}
+
+/* Блоки: белые, рамка 1 px, радиус 12 как у карточек лендинга. Внутри блоков без вложенных плашек */
+.demo-root .lv,
+.demo-root .bp-col,
+.demo-root .num-card,
+.demo-root .pv-card,
+.demo-root .prep {
+  background: #fff;
+  border: 1px solid var(--d-line);
+  border-radius: 12px;
+  box-shadow: none;
+}
+
+/* Бейдж статуса: один стиль, 24 px, без заливки (кроме внимания) */
+.demo-root .chip,
+.demo-root .mode-badge,
+.demo-root .backup-label,
+.demo-root .num-status,
+.demo-root .badge-synth {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 24px;
+  padding: 0 8px;
+  border: 1px solid var(--d-line);
+  border-radius: 6px;
+  background: #fff;
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--d-ink-2);
+  white-space: nowrap;
+}
+.demo-root .chip .icon,
+.demo-root .mode-badge .icon,
+.demo-root .num-status .icon {
+  width: 14px;
+  height: 14px;
+}
+.demo-root .chip-ok,
+.demo-root .num-status.is-on {
+  color: var(--d-accent);
+  border-color: #b9d3cc;
+}
+.demo-root .chip-low,
+.demo-root .mode-badge.is-backup,
+.demo-root .backup-label {
+  color: var(--attention);
+  border-color: var(--attention-line);
+  background: var(--attention-soft);
+}
+
+/* ---------- D1 ---------- */
+.demo-root .d1 {
+  min-height: 0;
+  height: 100%;
+  max-width: none;
+  gap: 24px;
+  align-content: center;
+}
+.demo-step-1 .demo-main {
+  display: grid;
+}
+.demo-root .d1-grid {
+  grid-template-columns: minmax(0, 8fr) minmax(0, 3fr);
+  gap: 64px;
+}
+.demo-root .d1-claim {
+  font-size: clamp(30px, 3.1vw, 44px);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  max-width: 30ch;
+}
+.demo-root .d1-figure {
+  justify-items: start;
+  padding-left: 40px;
+  border-left: 1px solid var(--d-line);
+}
+.demo-root .d1-num {
+  font-family: var(--font-ui);
+  font-size: clamp(96px, 11vw, 152px);
+  font-weight: 500;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  color: var(--d-accent);
+}
+.demo-root .d1-unit {
+  font-family: var(--font-ui);
+  margin-top: 8px;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--d-ink-2);
+}
+.demo-root .d1-source {
+  font-size: var(--fs-small);
+  color: var(--d-ink-3);
+}
+.demo-root .d1-lead {
+  margin: 8px 0 0;
+  padding-top: 24px;
+  border-top: 1px solid var(--d-line);
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--d-ink-2);
+  max-width: none;
+}
+
+/* ---------- D2 ---------- */
+.demo-root .demo-live {
+  gap: 24px;
+}
+@media (min-width: 900px) {
+  .demo-root .demo-live {
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    align-items: start;
+  }
+  .demo-step-2 .demo-left .stimulus img {
+    max-height: min(44vh, 400px);
+    border-radius: 12px;
+  }
+}
+.demo-step-2 .demo-left .stimulus {
+  border-radius: 12px;
+}
+.demo-root .demo-left h2,
+.demo-root .demo-left .ex-title {
+  font-size: var(--fs-h2);
+  font-weight: 500;
+  line-height: 1.3;
+}
+.demo-root .demo-left p {
+  font-size: var(--fs-body);
+}
+.demo-root .demo-left .btn {
+  min-height: 48px;
+  font-size: var(--fs-body);
+}
+.demo-root .mode-badge.is-live {
+  border: 0;
+  padding: 0;
+  background: none;
+  color: var(--d-ink-2);
+}
+.demo-root .mode-badge.is-live .icon {
+  color: var(--d-ink-3);
+}
+.demo-root .lv {
+  gap: 16px;
+  padding: 20px 24px 24px;
+}
+.demo-root .lv-head h2 {
+  font-size: var(--fs-h2);
+  font-weight: 500;
+}
+.demo-root .lv-backup {
+  min-height: 36px;
+}
+.demo-root .lv-source {
+  font-size: var(--fs-small);
+}
+/* блоки панели без вложенной заливки: разделены линией */
+.demo-root .lv-block {
+  gap: 12px;
+  padding: 16px 0 0;
+  background: none;
+  border: 0;
+  border-top: 1px solid var(--d-line);
+  border-radius: 0;
+}
+.demo-root .lv-block h3 {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--d-ink);
+}
+.demo-root .lv-clock {
+  font-family: var(--mono);
+  font-size: var(--fs-xs);
+  color: var(--d-ink-3);
+}
+.demo-root .lv-clock strong {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--d-ink);
+}
+.demo-root .lv-progress {
+  height: 2px;
+  background: var(--d-line);
+}
+.demo-root .tl2-bar {
+  height: 32px;
+  background: #fff;
+  border-color: var(--d-line);
+  border-radius: 8px;
+}
+.demo-root .tl2-seg {
+  top: 34%;
+  bottom: 34%;
+  border-radius: 2px;
+  background: var(--d-accent);
+}
+.demo-root .tl2-labels {
+  height: 36px;
+  font-size: 12px;
+}
+.demo-root .tl2-label {
+  font-family: var(--mono);
+  font-weight: 500;
+}
+.demo-root .tl2-legend {
+  gap: 4px 16px;
+  font-size: var(--fs-xs);
+}
+.demo-root .lv-stats {
+  gap: 8px 16px;
+}
+.demo-root .lv-stat {
+  padding-top: 8px;
+  border-top: 1px solid var(--d-line);
+}
+.demo-root .lv-stat dt {
+  min-height: 2.6em;
+  font-size: var(--fs-xs);
+  font-weight: 400;
+  color: var(--d-ink-3);
+}
+.demo-root .lv-stat dd {
+  font-family: var(--mono);
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.demo-root .lv-stats-6 .lv-stat dd {
+  font-size: 18px;
+}
+.demo-root .lv-hint,
+.demo-root .lv .lang-line {
+  font-size: var(--fs-xs);
+  line-height: 1.5;
+  color: var(--d-ink-3);
+}
+.demo-root .lv .transcript {
+  font-size: var(--fs-small);
+}
+.demo-root .lv.is-after .lv-block {
+  padding: 12px 0 0;
+}
+.demo-root .lv.is-after .lv-stats-6 .lv-stat dt {
+  font-size: 12px;
+}
+.demo-root .lv.is-after .lv-stats-6 .lv-stat dd {
+  font-size: 17px;
+}
+.demo-root .units li {
+  border-radius: 6px;
+}
+.demo-root .rc-card {
+  border-radius: 8px;
+}
+@media (min-width: 1100px) {
+  .demo-root .demo-live.has-result {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+  }
+  .demo-root .lv {
+    max-height: calc(100dvh - 64px - 64px - 48px - 60px);
+  }
+}
+
+/* ---------- D3 ---------- */
+.demo-root .pv-split {
+  gap: 24px 32px;
+}
+.demo-root .pv-card {
+  padding: 20px 24px;
+}
+.demo-root .pv-card-table {
+  padding: 0;
+}
+.demo-root .pv-week strong {
+  font-family: var(--font-ui);
+  font-size: var(--fs-h2);
+  font-weight: 600;
+}
+.demo-root .pv-side-title {
+  font-size: var(--fs-h2);
+  font-weight: 500;
+}
+.demo-root .pv-split .radar {
+  max-width: min(400px, 44vh);
+}
+.demo-root .pv-split .week-control .btn {
+  min-height: 36px;
+}
+.demo-root .pv-keys {
+  gap: 16px;
+}
+.demo-root .pv-key {
+  gap: 4px;
+  padding: 16px 20px;
+  background: #fff;
+  border: 1px solid var(--d-line);
+  border-radius: 12px;
+}
+.demo-root .pv-key-label {
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  color: var(--d-ink-2);
+}
+.demo-root .pv-key-was {
+  font-family: var(--mono);
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--d-ink-3);
+}
+.demo-root .pv-key-now {
+  font-family: var(--mono);
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  color: var(--d-blue);
+}
+.demo-root .pv-key-sub {
+  font-size: 12px;
+  color: var(--d-ink-3);
+}
+.demo-root .pv-split .data-table th,
+.demo-root .pv-split .data-table td {
+  padding: 8px 12px;
+  font-size: var(--fs-xs);
+  line-height: 1.35;
+}
+.demo-root .pv-split .data-table td.n {
+  font-family: var(--mono);
+}
+.demo-root .pv-split .data-table thead th {
+  background: var(--d-panel);
+  font-weight: 500;
+  color: var(--d-ink-2);
+}
+.demo-root .data-table tr.is-key td {
+  background: #eef5f3;
+}
+.demo-root .pv-split .note {
+  font-size: var(--fs-xs);
+  color: var(--d-ink-3);
+}
+
+/* ---------- D4: таблица нагрузки легче ---------- */
+.demo-root .bp {
+  gap: 24px;
+}
+.demo-root .bp-top {
+  align-items: flex-end;
+}
+.demo-root .bp-cols {
+  gap: 24px;
+}
+.demo-root .bp-col {
+  gap: 16px;
+  padding: 20px 24px 20px;
+}
+.demo-root .bp-head {
+  grid-template-columns: minmax(0, 1fr) 152px;
+  gap: 8px 16px;
+}
+.demo-root .bp-name {
+  gap: 8px 12px;
+}
+.demo-root .bp-name h2 {
+  font-size: var(--fs-h2);
+  font-weight: 600;
+  line-height: 1.3;
+}
+.bp-same {
+  margin: 4px 0 0;
+  font-size: var(--fs-small);
+  color: var(--d-ink-3);
+}
+.demo-root .bp-why {
+  margin-top: 12px;
+  font-family: var(--font-ui);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+.demo-root .radar-thumb {
+  max-width: 152px;
+}
+.demo-root .bp-prog {
+  gap: 0;
+}
+.demo-root .bp-prog-head,
+.demo-root .bp-row,
+.demo-root .bp-total {
+  grid-template-columns: minmax(0, 1fr) 104px 104px 14px;
+  gap: 16px;
+}
+.demo-root .bp-prog-head {
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--d-line);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--d-ink-3);
+}
+.demo-root .bp-prog-head h3 {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.bp-col-target {
+  color: var(--d-accent);
+}
+.bp-col-avoid {
+  color: var(--attention);
+}
+.demo-root .bp-item {
+  border-bottom-color: var(--d-line);
+}
+.demo-root .bp-row {
+  min-height: 48px;
+  margin: 0 -8px;
+  padding: 8px;
+  border-radius: 6px;
+}
+.demo-root .bp-item.is-heavy .bp-row {
+  background: var(--attention-soft);
+}
+.demo-root .bp-title {
+  font-size: var(--fs-small);
+  font-weight: 500;
+  line-height: 1.35;
+}
+.demo-root .bp-title .channel-tag {
+  display: inline;
+  margin-left: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--d-ink-3);
+  vertical-align: 0;
+}
+.demo-root .bp-meter {
+  grid-template-columns: minmax(0, 1fr) 36px;
+  gap: 8px;
+}
+.demo-root .bp-track {
+  height: 4px;
+  background: var(--d-line);
+}
+.demo-root .bp-total .bp-track {
+  height: 4px;
+}
+.demo-root .bp-val {
+  font-family: var(--mono);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  color: var(--d-ink-2);
+}
+.demo-root .bp-meter.is-target .bp-val {
+  color: var(--d-accent);
+}
+.demo-root .bp-meter.is-avoid .bp-val {
+  color: var(--attention);
+}
+.demo-root .bp-chev {
+  width: 7px;
+  height: 7px;
+  border-width: 0 1.5px 1.5px 0;
+}
+.demo-root .bp-total {
+  padding-top: 12px;
+  font-weight: 600;
+}
+.demo-root .bp-total-label {
+  font-size: var(--fs-small);
+}
+.demo-root .bp-total .bp-val {
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+.demo-root .bp-skipped {
+  margin-top: 8px;
+  font-size: var(--fs-xs);
+  color: var(--d-ink-3);
+}
+.demo-root .bp-skipped strong {
+  font-weight: 500;
+  color: var(--d-ink-2);
+}
+.demo-root .bp-more {
+  background: none;
+  padding: 4px 0 12px;
+}
+/* переключатель режима: сегменты 8 px, тёмный активный, как кнопки лендинга */
+.demo-root .bp-toggle {
+  display: inline-flex;
+  border: 1px solid var(--d-line);
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
+  background: #fff;
+}
+.demo-root .bp-toggle button {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--d-ink-2);
+}
+.demo-root .bp-toggle button + button {
+  border-left: 0;
+}
+.demo-root .bp-toggle button[aria-pressed="true"] {
+  background: var(--d-dark);
+  color: #fff;
+}
+.demo-root .bp-controls {
+  gap: 16px;
+}
+.demo-root .bp-controls .src-note {
+  max-width: none;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: var(--fs-xs);
+  color: var(--d-ink-3);
+}
+.demo-root .src-brain {
+  width: 22px;
+}
+
+/* ---------- D5 ---------- */
+.demo-root .fv-split {
+  gap: 0 40px;
+}
+.demo-root .fv-split .block > h2 {
+  font-size: var(--fs-h2);
+  font-weight: 500;
+}
+.demo-root .fv-split .flag {
+  padding: 20px 24px;
+  border-radius: 12px;
+}
+.demo-root .fv-split .flag-title {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+.demo-root .fv-split .flag p,
+.demo-root .fv-split .prep li {
+  font-size: var(--fs-body);
+  line-height: 1.5;
+}
+.demo-root .fv-split .prep {
+  padding: 20px 24px;
+}
+.demo-root .fv-split .prep h3 {
+  font-size: var(--fs-body);
+  font-weight: 600;
+}
+.demo-root .fv-split .multiple-name,
+.demo-root .fv-split .multiple strong {
+  font-size: var(--fs-small);
+}
+.demo-root .fv-split .multiple svg rect {
+  stroke: var(--d-line);
+}
+.demo-root .fv-split .fv-s {
+  background: #fff;
+  border-color: var(--d-line);
+  border-radius: 8px;
+}
+.demo-root .fv-split .fv-s-num {
+  font-family: var(--mono);
+  font-size: 22px;
+  font-weight: 500;
+}
+
+/* ---------- D6: мозг на светлом фоне, как блоки сайта ---------- */
+.demo-root .d6-grid {
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: 24px;
+}
+.demo-root .d6-brain .s-brain__stage,
+.demo-root .d6-brain .s-brain__stage.is-static {
+  height: min(46vh, 420px);
+  border: 1px solid var(--d-line);
+  border-radius: 12px;
+  background: radial-gradient(90% 80% at 50% 45%, #ffffff 0%, #eef2f4 62%, #e4eaee 100%);
+}
+.demo-root .d6-brain .s-brain__loading {
+  color: var(--d-ink-3);
+}
+.demo-root .d6-brain .s-brain__switch {
+  margin-top: 16px;
+  gap: 8px;
+}
+.demo-root .d6-brain .s-brain__switch button {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--d-line);
+  border-radius: 999px;
+  background: #fff;
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  color: var(--d-ink-2);
+}
+.demo-root .d6-brain .s-brain__switch button:hover {
+  border-color: var(--d-line-2);
+}
+.demo-root .d6-brain .s-brain__switch button[aria-checked="true"] {
+  background: var(--d-dark);
+  border-color: var(--d-dark);
+  color: #fff;
+}
+.demo-root .d6-brain .s-brain__switch button:focus-visible {
+  outline: 2px solid var(--d-blue);
+  outline-offset: 2px;
+}
+.demo-root .d6-brain .s-brain__legend,
+.demo-root .d6-brain .s-brain__caption {
+  margin-top: 12px;
+  font-size: var(--fs-xs);
+  color: var(--d-ink-3);
+}
+.demo-root .d6-brain .s-brain__legend i {
+  flex-basis: 96px;
+  height: 4px;
+}
+.demo-root .d6-brain .s-brain__mask {
+  flex-basis: auto;
+  margin-left: 8px;
+}
+.demo-root .d6-brain .s-brain__caption {
+  margin-top: 4px;
+}
+.demo-root .d6-side {
+  gap: 24px;
+}
+.demo-root .d6-grid .num-card {
+  gap: 12px;
+  padding: 20px 24px;
+}
+.demo-root .d6-grid .num-card h2 {
+  font-size: var(--fs-h2);
+  font-weight: 500;
+}
+.demo-root .d6-rho {
+  gap: 16px;
+  margin-top: 4px;
+}
+.demo-root .d6-rho > div {
+  padding-top: 12px;
+  border-top: 1px solid var(--d-line);
+  gap: 4px;
+}
+.demo-root .d6-rho dd {
+  font-family: var(--mono);
+  font-size: 36px;
+  font-weight: 500;
+  letter-spacing: -0.04em;
+}
+.demo-root .d6-rho dt {
+  font-size: var(--fs-xs);
+  color: var(--d-ink-3);
+}
+.demo-root .d6-note,
+.demo-root .d6-refs {
+  font-size: var(--fs-xs);
+  line-height: 1.5;
+  color: var(--d-ink-3);
+}
+.demo-root .d6-refs b {
+  font-family: var(--mono);
+  font-weight: 500;
+}
+.demo-root .d-links {
+  margin-top: 16px;
+  font-size: var(--fs-small);
+  color: var(--d-ink-2);
+}
+.demo-root .d-links a {
+  color: var(--d-accent);
+  text-underline-offset: 3px;
+}
+
+/* Предупреждение над экраном */
+.demo-root .demo-warning {
+  max-width: calc(var(--d-wrap) + var(--d-gutter) * 2);
+  margin: 16px auto 0;
+  padding: 0 var(--d-gutter);
+  font-size: var(--fs-small);
+}
+
+/* ---------- Переход между шагами: короче, шаги листают с клавиатуры ---------- */
+.d-step .d-titlebar,
+.d-step .bp-top,
+.d-step .d1 > .d1-grid > .d1-claim {
+  animation: d-in-x 280ms var(--d-ease) both;
+}
+.d-step[data-dir="fwd"] {
+  --dx: 8px;
+}
+.d-step[data-dir="back"] {
+  --dx: -8px;
+}
+.d-step .demo-live > :nth-child(1),
+.d-step .pv-split > :nth-child(1),
+.d-step .bp-cols > :nth-child(1),
+.d-step .fv-split > :nth-child(1),
+.d-step .d6-grid > :nth-child(1),
+.d-step .d1 > .d1-source {
+  animation: d-rise 320ms var(--d-ease) both;
+  animation-delay: 40ms;
+}
+.d-step .demo-live > :nth-child(2),
+.d-step .pv-split > :nth-child(2),
+.d-step .bp-cols > :nth-child(2),
+.d-step .fv-split > :nth-child(2),
+.d-step .d6-grid > :nth-child(2),
+.d-step .d1 > .d1-lead {
+  animation: d-rise 320ms var(--d-ease) both;
+  animation-delay: 90ms;
+}
+@keyframes d-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/* ---------- Узкий экран ---------- */
+@media (max-width: 1180px) {
+  .df-keys {
+    display: none;
+  }
+}
+@media (max-width: 1099px) and (min-width: 900px) {
+  .demo-root .dh-steps a {
+    padding: 0 8px;
+  }
+  .demo-root .dh-lang > span {
+    display: none;
+  }
+}
+@media (max-width: 899px) {
+  .demo-root {
+    --d-gutter: 16px;
+  }
+  .dh-row {
+    flex-wrap: wrap;
+    height: auto;
+    gap: 0 16px;
+    padding-top: 8px;
+  }
+  .dh-tools {
+    margin-left: auto;
+    gap: 8px;
+  }
+  .dh-lang > span {
+    display: none;
+  }
+  .dh-steps {
+    order: 3;
+    flex: 1 0 100%;
+    height: 48px;
+    margin: 0 calc(var(--d-gutter) * -1);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .dh-steps ol {
+    padding: 0 4px;
+  }
+  .demo-root .demo-main {
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+  .df-row {
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+  .df-meta {
+    flex: 1 0 100%;
+    justify-content: space-between;
+    font-size: var(--fs-xs);
+  }
+  .df-nav {
+    flex: 1 0 100%;
+  }
+  .df-nav .btn {
+    flex: 1 1 auto;
+    min-height: 44px;
+  }
+  .df-nav .btn-secondary {
+    flex: 0 0 auto;
+  }
+  .demo-root .d1-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .demo-root .d1-claim {
+    font-size: 26px;
+  }
+  .demo-root .d1-figure {
+    padding: 0;
+    border: 0;
+  }
+  .demo-root .d1-num {
+    font-size: 64px;
+  }
+  .demo-root .d6-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .demo-root .d6-brain .s-brain__stage,
+  .demo-root .d6-brain .s-brain__stage.is-static {
+    height: auto;
+    aspect-ratio: 4 / 3;
+  }
+  .demo-root .bp-col,
+  .demo-root .lv {
+    padding: 16px;
+  }
+  .demo-root .bp-toggle {
+    display: flex;
+    width: 100%;
+  }
+  .demo-root .bp-toggle button {
+    flex: 1 1 50%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dh-steps a::after {
+    transition: none;
+  }
+}
+
+/* Крупные числа: тот же гротеск, табличные цифры (моноширинный только для мелких значений и часов) */
+.demo-root .lv-stat dd,
+.demo-root .pv-key-now,
+.demo-root .d6-rho dd,
+.demo-root .fv-split .fv-s-num {
+  font-family: var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+.demo-root .d6-rho dd {
+  font-size: 40px;
+}
+.demo-root .pv-key-now {
+  font-size: 36px;
+}
+.demo-root .pv-split .data-table td.n {
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+}
+.demo-root .pv-split .data-table td.n strong,
+.demo-root .pv-split .data-table td.n b {
+  font-weight: 600;
+}
+.demo-root .bp-total .bp-val {
+  font-weight: 500;
+}
+/* «Открыть крупно» поверх картинки: компактная кнопка */
+.demo-root .zoom .btn {
+  min-height: 32px;
+  padding: 0 10px;
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.94);
+}
+.demo-root .zoom .btn .icon {
+  width: 14px;
+  height: 14px;
+}
+.demo-root .pv-key-was {
+  font-family: var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  font-size: 20px;
+}
+/* D2: в режиме примера один бейдж (в заголовке), в панели та же мысль обычной строкой */
+.demo-root .lv-source .backup-label {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: var(--fs-small);
+  color: var(--attention);
+}
+
+/* Узкая колонка D4 (телефон): значения под названием упражнения */
+@container (max-width: 30rem) {
+  .demo-root .bp-prog-head {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .demo-root .bp-row,
+  .demo-root .bp-total {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 14px;
+    gap: 6px 16px;
+  }
+  .demo-root .bp-head {
+    grid-template-columns: minmax(0, 1fr) 120px;
+  }
+  .demo-root .radar-thumb {
+    max-width: 120px;
+  }
+}
+
+/* Телефон: шапка и нижняя полоса в потоке, ничего не перекрывает контент */
+@media (max-width: 899px) {
+  .dh,
+  .df {
+    position: static;
+  }
+  .dh-tools {
+    order: 2;
+    flex: 1 0 100%;
+    justify-content: space-between;
+    margin: 4px 0 4px;
+  }
+  .dh-lang > span {
+    display: inline;
+  }
+  .dh-steps {
+    order: 3;
+  }
+  .dh-steps a[aria-current="step"]::after {
+    bottom: 0;
+  }
+}
+.demo-root .d6-brain .s-brain__mask {
+  margin-left: 0;
+}
+.demo-root .d6-grid .num-card {
+  min-width: 0;
+}
+@media (max-width: 899px) {
+  .demo-root .d6-rho dd {
+    font-size: 32px;
+  }
+  .demo-root .d6-rho {
+    gap: 12px;
+  }
+}
+/* D2 после распознавания: плотнее, чтобы панель помещалась на 1280x800 */
+.demo-root .lv.is-after {
+  gap: 12px;
+  padding: 16px 24px 16px;
+}
+.demo-root .lv.is-after .transcript {
+  max-height: 68px;
+  padding: 8px 12px;
+  font-size: var(--fs-xs);
+}
+.demo-root .lv.is-after .lv-stats-6 {
+  gap: 4px 16px;
+}
+.demo-root .lv.is-after .lv-stats-6 .lv-stat {
+  padding-top: 6px;
+}
+.demo-root .lv.is-after .lv-stats-6 .lv-stat dt {
+  min-height: 2.4em;
+}
+.demo-root .lv.is-after .units {
+  gap: 4px;
+}
+.demo-root .lv.is-after .units li {
+  font-size: 12px;
+  padding: 1px 6px;
+}
+.demo-root .lv.is-after .lv-units-title {
+  font-size: var(--fs-xs);
+}
+.demo-step-2 .d-titlebar {
+  margin-bottom: 16px;
+}
+@media (min-width: 1100px) {
+  .demo-root .demo-live.has-result .lv {
+    max-height: calc(100dvh - 64px - 64px - 24px - 52px - 16px - 16px);
+  }
 }

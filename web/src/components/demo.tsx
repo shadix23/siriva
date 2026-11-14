@@ -3,7 +3,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Icon } from "./Icon";
 import { LoadBars, RadarChart } from "./charts";
-import { SyntheticBadge } from "./ui";
 import { BrainViewer } from "./site/BrainViewer";
 import type { ApiError } from "@/lib/api/client";
 import type {
@@ -638,12 +637,9 @@ function BypassColumn({
         <div className="bp-who">
           <div className="bp-name">
             <h2 id={id}>{L("Пациент", "Patient")} {letter}</h2>
-            <SyntheticBadge text={t("badge.synthetic_short")} />
+            <span className={`chip ${lowWatch ? "chip-low" : "chip-ok"}`}>{lowWatch ? L("речь снижена", "speech reduced") : L("речь сохранна", "speech intact")}</span>
           </div>
-          <ul className="bp-facts" aria-label={L("Профиль", "Profile")}>
-            <li className="chip chip-same">{L(`память снижена, как у ${other}`, `memory reduced, same as ${other}`)}</li>
-            <li className={`chip ${lowWatch ? "chip-low" : "chip-ok"}`}>{lowWatch ? L("речь снижена", "speech reduced") : L("речь сохранна", "speech intact")}</li>
-          </ul>
+          <p className="bp-same">{L(`Память снижена, как у ${other}`, `Memory reduced, same as ${other}`)}</p>
           <p className={`bp-why${!withBypass && lowWatch ? " is-warn" : ""}`} aria-live="polite">
             {why}
           </p>
@@ -659,12 +655,10 @@ function BypassColumn({
       <div className="bp-prog">
         <div className="bp-prog-head">
           <h3>{L("Программа на сегодня", "Today’s program")}</h3>
-          <span aria-hidden="true">
-            <i className="sw-target" />
+          <span className="bp-col-target" aria-hidden="true">
             {L("цель", "goal")}
           </span>
-          <span aria-hidden="true">
-            <i className="sw-avoid" />
+          <span className={lowWatch ? "bp-col-avoid" : "bp-col-neutral"} aria-hidden="true">
             {wName}
           </span>
           <span aria-hidden="true" />

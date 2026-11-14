@@ -1,0 +1,194 @@
+{
+ "source": "placeholder, not TRIBE v2",
+ "label_ru": "Предварительная нагрузка по типу задания, не результат TRIBE v2",
+ "model_version": null,
+ "atlas": null,
+ "domains": [
+  "episodic_memory",
+  "word_access",
+  "phrase_building",
+  "attention",
+  "processing_speed"
+ ],
+ "domain_notes": {
+  "processing_speed": "proxy of stimulus tempo, not a brain-based value",
+  "episodic_memory": "low reliability in TRIBE v2; profile uses behavioural retell metrics"
+ },
+ "loads": {
+  "story_retell": {
+   "episodic_memory": 0.9,
+   "word_access": 0.4,
+   "phrase_building": 0.6,
+   "attention": 0.3,
+   "processing_speed": 0.1
+  },
+  "picture_description": {
+   "episodic_memory": 0.2,
+   "word_access": 0.7,
+   "phrase_building": 0.8,
+   "attention": 0.4,
+   "processing_speed": 0.3
+  },
+  "naming_fluency": {
+   "episodic_memory": 0.2,
+   "word_access": 0.9,
+   "phrase_building": 0.1,
+   "attention": 0.4,
+   "processing_speed": 0.6
+  },
+  "word_list_recall_spoken": {
+   "episodic_memory": 0.8,
+   "word_access": 0.5,
+   "phrase_building": 0.1,
+   "attention": 0.4,
+   "processing_speed": 0.2
+  },
+  "naming_from_definition": {
+   "episodic_memory": 0.3,
+   "word_access": 0.9,
+   "phrase_building": 0.3,
+   "attention": 0.3,
+   "processing_speed": 0.3
+  },
+  "picture_naming": {
+   "episodic_memory": 0.2,
+   "word_access": 0.9,
+   "phrase_building": 0.1,
+   "attention": 0.3,
+   "processing_speed": 0.4
+  },
+  "sentence_completion_spoken": {
+   "episodic_memory": 0.2,
+   "word_access": 0.6,
+   "phrase_building": 0.8,
+   "attention": 0.3,
+   "processing_speed": 0.3
+  },
+  "describe_daily_routine": {
+   "episodic_memory": 0.5,
+   "word_access": 0.6,
+   "phrase_building": 0.8,
+   "attention": 0.3,
+   "processing_speed": 0.2
+  },
+  "read_aloud_short_text": {
+   "episodic_memory": 0.1,
+   "word_access": 0.5,
+   "phrase_building": 0.5,
+   "attention": 0.4,
+   "processing_speed": 0.5
+  },
+  "sentence_building_cards": {
+   "episodic_memory": 0.2,
+   "word_access": 0.3,
+   "phrase_building": 0.8,
+   "attention": 0.3,
+   "processing_speed": 0.2
+  },
+  "word_picture_matching": {
+   "episodic_memory": 0.2,
+   "word_access": 0.6,
+   "phrase_building": 0.1,
+   "attention": 0.4,
+   "processing_speed": 0.5
+  },
+  "sound_to_picture": {
+   "episodic_memory": 0.2,
+   "word_access": 0.4,
+   "phrase_building": 0.0,
+   "attention": 0.5,
+   "processing_speed": 0.5
+  },
+  "odd_one_out": {
+   "episodic_memory": 0.1,
+   "word_access": 0.5,
+   "phrase_building": 0.1,
+   "attention": 0.4,
+   "processing_speed": 0.4
+  },
+  "picture_pair_memory": {
+   "episodic_memory": 0.8,
+   "word_access": 0.05,
+   "phrase_building": 0.0,
+   "attention": 0.4,
+   "processing_speed": 0.2
+  },
+  "spatial_sequence_recall": {
+   "episodic_memory": 0.8,
+   "word_access": 0.0,
+   "phrase_building": 0.0,
+   "attention": 0.5,
+   "processing_speed": 0.2
+  },
+  "delayed_picture_recognition": {
+   "episodic_memory": 0.8,
+   "word_access": 0.05,
+   "phrase_building": 0.0,
+   "attention": 0.2,
+   "processing_speed": 0.1
+  },
+  "route_recall_map": {
+   "episodic_memory": 0.7,
+   "word_access": 0.0,
+   "phrase_building": 0.0,
+   "attention": 0.4,
+   "processing_speed": 0.2
+  },
+  "face_name_choice": {
+   "episodic_memory": 0.8,
+   "word_access": 0.3,
+   "phrase_building": 0.0,
+   "attention": 0.3,
+   "processing_speed": 0.1
+  },
+  "shopping_list_recall_visual": {
+   "episodic_memory": 0.8,
+   "word_access": 0.2,
+   "phrase_building": 0.0,
+   "attention": 0.3,
+   "processing_speed": 0.1
+  },
+  "digit_span_tap": {
+   "episodic_memory": 0.7,
+   "word_access": 0.0,
+   "phrase_building": 0.0,
+   "attention": 0.6,
+   "processing_speed": 0.2
+  },
+  "spot_the_difference": {
+   "episodic_memory": 0.1,
+   "word_access": 0.0,
+   "phrase_building": 0.0,
+   "attention": 0.8,
+   "processing_speed": 0.4
+  },
+  "sustained_tone_detection": {
+   "episodic_memory": 0.0,
+   "word_access": 0.0,
+   "phrase_building": 0.0,
+   "attention": 0.9,
+   "processing_speed": 0.5
+  },
+  "card_sorting": {
+   "episodic_memory": 0.2,
+   "word_access": 0.1,
+   "phrase_building": 0.0,
+   "attention": 0.6,
+   "processing_speed": 0.6
+  },
+  "rhythm_copy": {
+   "episodic_memory": 0.5,
+   "word_access": 0.0,
+   "phrase_building": 0.0,
+   "attention": 0.6,
+   "processing_speed": 0.4
+  },
+  "reaction_tap": {
+   "episodic_memory": 0.0,
+   "word_access": 0.0,
+   "phrase_building": 0.0,
+   "attention": 0.5,
+   "processing_speed": 0.9
+  }
+ }
+}

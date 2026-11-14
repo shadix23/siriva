@@ -1,0 +1,253 @@
+{
+ "text": "there is a woman standing at the kitchen sink and the water is running over because she is not watching it. The boy is on a stool reaching for the cookie jar while his sister waits. A dog sits by the window and the curtains move in the wind.",
+ "language": "en",
+ "duration": 20.546153846153842,
+ "engine": "synthetic",
+ "words": [
+  {
+   "text": "there",
+   "start": 1.0,
+   "end": 1.269
+  },
+  {
+   "text": "is",
+   "start": 1.385,
+   "end": 1.654
+  },
+  {
+   "text": "a",
+   "start": 1.769,
+   "end": 2.038
+  },
+  {
+   "text": "woman",
+   "start": 2.154,
+   "end": 2.423
+  },
+  {
+   "text": "standing",
+   "start": 2.538,
+   "end": 2.808
+  },
+  {
+   "text": "at",
+   "start": 2.923,
+   "end": 3.192
+  },
+  {
+   "text": "the",
+   "start": 3.308,
+   "end": 3.577
+  },
+  {
+   "text": "kitchen",
+   "start": 3.692,
+   "end": 3.962
+  },
+  {
+   "text": "sink",
+   "start": 4.077,
+   "end": 4.346
+  },
+  {
+   "text": "and",
+   "start": 4.462,
+   "end": 4.731
+  },
+  {
+   "text": "the",
+   "start": 4.846,
+   "end": 5.115
+  },
+  {
+   "text": "water",
+   "start": 5.231,
+   "end": 5.5
+  },
+  {
+   "text": "is",
+   "start": 5.615,
+   "end": 5.885
+  },
+  {
+   "text": "running",
+   "start": 6.3,
+   "end": 6.569
+  },
+  {
+   "text": "over",
+   "start": 6.685,
+   "end": 6.954
+  },
+  {
+   "text": "because",
+   "start": 7.069,
+   "end": 7.338
+  },
+  {
+   "text": "she",
+   "start": 7.454,
+   "end": 7.723
+  },
+  {
+   "text": "is",
+   "start": 7.838,
+   "end": 8.108
+  },
+  {
+   "text": "not",
+   "start": 8.223,
+   "end": 8.492
+  },
+  {
+   "text": "watching",
+   "start": 8.608,
+   "end": 8.877
+  },
+  {
+   "text": "it.",
+   "start": 8.992,
+   "end": 9.262
+  },
+  {
+   "text": "The",
+   "start": 9.377,
+   "end": 9.646
+  },
+  {
+   "text": "boy",
+   "start": 9.762,
+   "end": 10.031
+  },
+  {
+   "text": "is",
+   "start": 10.146,
+   "end": 10.415
+  },
+  {
+   "text": "on",
+   "start": 10.531,
+   "end": 10.8
+  },
+  {
+   "text": "a",
+   "start": 10.915,
+   "end": 11.185
+  },
+  {
+   "text": "stool",
+   "start": 11.3,
+   "end": 11.569
+  },
+  {
+   "text": "reaching",
+   "start": 12.085,
+   "end": 12.354
+  },
+  {
+   "text": "for",
+   "start": 12.469,
+   "end": 12.738
+  },
+  {
+   "text": "the",
+   "start": 12.854,
+   "end": 13.123
+  },
+  {
+   "text": "cookie",
+   "start": 13.238,
+   "end": 13.508
+  },
+  {
+   "text": "jar",
+   "start": 13.623,
+   "end": 13.892
+  },
+  {
+   "text": "while",
+   "start": 14.008,
+   "end": 14.277
+  },
+  {
+   "text": "his",
+   "start": 14.392,
+   "end": 14.662
+  },
+  {
+   "text": "sister",
+   "start": 14.777,
+   "end": 15.046
+  },
+  {
+   "text": "waits.",
+   "start": 15.162,
+   "end": 15.431
+  },
+  {
+   "text": "A",
+   "start": 15.546,
+   "end": 15.815
+  },
+  {
+   "text": "dog",
+   "start": 15.931,
+   "end": 16.2
+  },
+  {
+   "text": "sits",
+   "start": 16.315,
+   "end": 16.585
+  },
+  {
+   "text": "by",
+   "start": 16.7,
+   "end": 16.969
+  },
+  {
+   "text": "the",
+   "start": 17.085,
+   "end": 17.354
+  },
+  {
+   "text": "window",
+   "start": 17.469,
+   "end": 17.738
+  },
+  {
+   "text": "and",
+   "start": 17.854,
+   "end": 18.123
+  },
+  {
+   "text": "the",
+   "start": 18.238,
+   "end": 18.508
+  },
+  {
+   "text": "curtains",
+   "start": 18.623,
+   "end": 18.892
+  },
+  {
+   "text": "move",
+   "start": 19.008,
+   "end": 19.277
+  },
+  {
+   "text": "in",
+   "start": 19.392,
+   "end": 19.662
+  },
+  {
+   "text": "the",
+   "start": 19.777,
+   "end": 20.046
+  },
+  {
+   "text": "wind.",
+   "start": 20.162,
+   "end": 20.431
+  }
+ ]
+}

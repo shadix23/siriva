@@ -1,0 +1,2561 @@
+/* Стили экранов жюри (D1-D6) и близкого (/family). Владелец: frontend-demo.
+   Подключается из DemoScreen.tsx и FamilyScreens.tsx. globals.css не меняем, только уточняем внутри своих корневых классов. */
+
+/* ---------- Масштаб под проектор ----------
+   1280x800 и 1920x1080 выглядят одинаково: корневой размер считается от окна. */
+@media (min-width: 900px) {
+  :root.demo-mode {
+    font-size: clamp(14px, min(1.3vw, 2.08vh), 30px);
+  }
+}
+
+.demo-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  font-size: 1.1rem;
+}
+
+/* Шапка в одну строку */
+.demo-root .demo-header {
+  gap: 0.5rem 1rem;
+  padding: 0.45rem 1.25rem;
+}
+.demo-root .demo-header > nav {
+  min-width: 0;
+  max-width: 100%;
+}
+.demo-root .demo-tabs {
+  gap: 0.3rem;
+}
+.demo-root .demo-tabs a {
+  min-height: 2.1rem;
+  padding: 0 0.65em;
+  font-size: 0.8rem;
+  border-width: 1.5px;
+  white-space: nowrap;
+}
+.demo-root .demo-tabs .num {
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-2);
+  font-weight: 600;
+}
+.demo-root .demo-tabs a[aria-current="step"] .num {
+  color: inherit;
+}
+.demo-root .header-tools {
+  gap: 0.6rem;
+}
+.demo-root .header-tools .badge-synth,
+.demo-root .header-tools .server {
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+.demo-root .header-tools .seg-toggle button {
+  min-height: 2.1rem;
+  padding: 0 0.7em;
+  font-size: 0.8rem;
+}
+@media (min-width: 900px) {
+  .demo-root .demo-header,
+  .demo-root .demo-tabs,
+  .demo-root .header-tools {
+    flex-wrap: nowrap;
+  }
+}
+@media (max-width: 899px) {
+  .demo-root .demo-header > nav {
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+  }
+  .demo-root .demo-tabs {
+    flex-wrap: nowrap;
+  }
+}
+
+.demo-root .demo-main {
+  flex: 1;
+  width: 100%;
+  max-width: 110rem;
+  padding: 0.8rem 1.25rem 1rem;
+}
+
+/* Нижняя полоса: переход по шагам и клавиши, одна тонкая строка */
+.demo-root .demo-foot {
+  justify-content: space-between;
+  gap: 0.4rem 1.5rem;
+  padding: 0.4rem 1.25rem;
+}
+.demo-steps-nav {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.demo-steps-nav .btn {
+  min-height: 2.2rem;
+  padding: 0.25rem 0.95rem;
+  font-size: 0.85rem;
+}
+.demo-keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 1.2rem;
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--ink-2);
+}
+@media (max-width: 899px) {
+  .demo-keys {
+    display: none;
+  }
+  .demo-steps-nav {
+    width: 100%;
+  }
+  .demo-steps-nav .btn {
+    flex: 1 1 auto;
+  }
+}
+
+/* Общие заголовки шагов */
+.d-titlebar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.6rem 1.2rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.9rem;
+}
+.d-titlebar h1 {
+  font-size: 1.65rem;
+  line-height: 1.15;
+  margin: 0;
+}
+.d-sub {
+  margin: 0.25rem 0 0;
+  color: var(--ink-2);
+  font-size: 1rem;
+  max-width: 48em;
+}
+.d-kicker {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* ---------- D1 ---------- */
+.d1 {
+  min-height: calc(100vh - 9rem);
+  display: grid;
+  align-content: center;
+  gap: 1.3rem;
+  max-width: 74rem;
+  margin: 0 auto;
+}
+.d1-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2.5rem;
+  align-items: center;
+}
+.d1-claim {
+  margin: 0;
+  font-size: 2.5rem;
+  line-height: 1.22;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+.d1-figure {
+  display: grid;
+  justify-items: center;
+  margin: 0;
+  padding-left: 2.5rem;
+  border-left: 2px solid var(--line);
+}
+.d1-num {
+  font-family: var(--font-display);
+  font-size: 8.5rem;
+  line-height: 0.9;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: -0.03em;
+}
+.d1-unit {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--ink-2);
+}
+.d1-source {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--ink-2);
+}
+.d1-lead {
+  margin: 0.4rem 0 0;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--line);
+  font-size: 1.25rem;
+  color: var(--ink-2);
+  max-width: 42em;
+}
+.d1-lead strong {
+  color: var(--ink);
+}
+.d-links {
+  margin: 1rem 0 0;
+  font-size: 0.85rem;
+  color: var(--ink-2);
+}
+@media (max-width: 899px) {
+  .d1 {
+    min-height: 0;
+    padding: 1rem 0;
+  }
+  .d1-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+  }
+  .d1-claim {
+    font-size: 1.5rem;
+  }
+  .d1-figure {
+    order: -1;
+    justify-items: start;
+    padding: 0;
+    border: 0;
+    grid-auto-flow: column;
+    align-items: baseline;
+    gap: 0.4rem;
+  }
+  .d1-num {
+    font-size: 4rem;
+  }
+  .d1-unit {
+    font-size: 1.4rem;
+  }
+  .d1-lead {
+    font-size: 1.05rem;
+  }
+}
+
+/* ---------- D2: живая запись ---------- */
+.mode-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  padding: 0.3em 0.85em;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.mode-badge.is-live {
+  background: var(--synthetic-soft);
+  color: var(--synthetic);
+}
+.mode-badge.is-backup {
+  background: var(--attention-soft);
+  color: var(--attention);
+}
+.demo-root .demo-live {
+  gap: 1.2rem;
+}
+.backup-card {
+  display: grid;
+  gap: 0.9rem;
+}
+.backup-now {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--ink-2);
+}
+.btn-wide {
+  width: 100%;
+}
+@media (min-width: 900px) {
+  .demo-step-2 .demo-left .stimulus img {
+    max-height: 48vh;
+    width: 100%;
+    object-fit: contain;
+  }
+}
+
+.lv {
+  gap: 0.75rem;
+  padding: 0.9rem 1rem 1rem;
+}
+.lv-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  flex-wrap: wrap;
+}
+.lv-head h2 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+.lv-backup {
+  min-height: 2.2rem;
+  padding: 0.25rem 0.8rem;
+  font-size: 0.82rem;
+}
+.lv-source {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 1rem;
+  font-size: 0.85rem;
+  color: var(--ink-2);
+}
+.lv-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  font-weight: 500;
+}
+.lv-live i {
+  width: 0.65em;
+  height: 0.65em;
+  border-radius: 50%;
+  border: 2px solid var(--ink-3);
+  transition:
+    background-color var(--dur-1) var(--ease),
+    border-color var(--dur-1) var(--ease);
+}
+.lv-live.on {
+  color: var(--rec);
+  font-weight: 600;
+}
+.lv-live.on i {
+  background: var(--rec);
+  border-color: var(--rec);
+}
+.lv-block {
+  display: grid;
+  gap: 0.55rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-1);
+  padding: 0.75rem 0.9rem 0.8rem;
+  min-width: 0;
+}
+.lv-block-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.3rem 1rem;
+  flex-wrap: wrap;
+}
+.lv-block h3 {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.lv-clock {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.9rem;
+  color: var(--ink-2);
+}
+.lv-clock strong {
+  font-size: 1.3rem;
+  color: var(--ink);
+}
+.lv-progress {
+  height: 3px;
+  background: var(--surface-2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.lv-progress span {
+  display: block;
+  height: 100%;
+  background: var(--ink-3);
+  transform-origin: left center;
+  transition: transform 250ms linear;
+}
+.lv-hint {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--ink-2);
+}
+.lv-wait {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  margin: 0;
+  font-weight: 500;
+}
+.lv-spinner {
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  border-top-color: var(--accent);
+  animation: lv-spin 1s linear infinite;
+}
+@keyframes lv-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.lv-units-title {
+  margin: 0;
+  font-size: 0.9rem;
+}
+.lv .transcript {
+  font-size: 0.95rem;
+  padding: 0.6rem 0.75rem;
+}
+.lv .lang-line {
+  margin: 0;
+  font-size: 0.78rem;
+}
+
+/* Лента речи и пауз */
+.tl2 {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+}
+.tl2-labels {
+  position: relative;
+  height: 2.5rem;
+  font-size: 0.75rem;
+}
+.tl2-label {
+  position: absolute;
+  transform: translateX(-50%);
+  padding: 0.18em 0.4em;
+  border-radius: 4px;
+  background: var(--attention-soft);
+  color: var(--attention);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  white-space: nowrap;
+}
+.tl2-label.tier-0 {
+  bottom: 0.1rem;
+}
+.tl2-label.tier-1 {
+  bottom: 1.3rem;
+}
+.tl2-label.tier-1::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: 1px;
+  height: 1.2rem;
+  background: var(--attention-line);
+}
+.tl2-bar {
+  position: relative;
+  height: 2.3rem;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.tl2-seg {
+  position: absolute;
+  top: 24%;
+  bottom: 24%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 250ms linear;
+}
+.tl2-pause {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--attention-soft);
+  box-shadow:
+    inset 1px 0 0 var(--attention-line),
+    inset -1px 0 0 var(--attention-line);
+}
+.tl2-cursor {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--ink);
+  transition: left 250ms linear;
+}
+.tl2-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 1rem;
+  font-size: 0.75rem;
+  color: var(--ink-2);
+}
+.tl2-legend span::before {
+  content: "";
+  display: inline-block;
+  width: 0.9em;
+  height: 0.75em;
+  border-radius: 2px;
+  margin-right: 0.35em;
+  vertical-align: -0.02em;
+}
+.tl2-legend .l-speech::before {
+  background: var(--accent);
+}
+.tl2-legend .l-pause::before {
+  background: var(--bg);
+  border: 1px solid var(--line-strong);
+}
+.tl2-legend .l-long::before {
+  background: var(--attention-soft);
+  border: 1px solid var(--attention-line);
+}
+
+/* Счётчики: подписи одной высоты, цифры моноширинные, ничего не прыгает */
+.lv-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.4rem 0.7rem;
+  margin: 0;
+}
+.lv-stat {
+  min-width: 0;
+  padding-top: 0.35rem;
+  border-top: 2px solid var(--line);
+}
+.lv-stat dt {
+  min-height: 2.5em;
+  font-size: 0.75rem;
+  line-height: 1.25;
+  color: var(--ink-2);
+}
+.lv-stat dd {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  transition: color var(--dur-1) var(--ease);
+}
+.lv-stat.is-muted dd {
+  color: var(--ink-2);
+}
+.lv-stat.is-attention dd {
+  color: var(--attention);
+}
+.lv-stats-6 .lv-stat dd {
+  font-size: 1.2rem;
+}
+@media (max-width: 899px) {
+  .lv-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ---------- D3: профиль ---------- */
+.pv-chart {
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
+}
+.pv-chart .pv-week,
+.pv-chart .legend {
+  justify-content: center;
+}
+.pv-week {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+  margin: 0;
+}
+.pv-week strong {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  color: var(--ink);
+}
+.pv-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: 1.5rem 2.2rem;
+  align-items: start;
+}
+.pv-split .radar {
+  max-width: min(32rem, 50vh);
+}
+.pv-split .week-control {
+  max-width: 30rem;
+}
+.pv-split .week-control .btn {
+  min-height: 2.3rem;
+  padding: 0.3rem 0.9rem;
+  font-size: 0.9rem;
+}
+.pv-side {
+  display: grid;
+  gap: 0.8rem;
+  align-content: start;
+  min-width: 0;
+}
+.pv-side-title {
+  margin: 0;
+  font-size: 1.3rem;
+}
+.pv-split .data-table th,
+.pv-split .data-table td {
+  padding: 0.45rem 0.6rem;
+  font-size: 0.92rem;
+}
+.data-table tr.is-key td {
+  background: var(--accent-soft);
+}
+@media (max-width: 899px) {
+  .pv-split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ---------- D4: обходной путь ---------- */
+.bp {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.bp-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 0.7rem 1.5rem;
+  flex-wrap: wrap;
+}
+.bp-heading h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  line-height: 1.12;
+}
+.bp-heading p {
+  margin: 0.2rem 0 0;
+  font-size: 1.1rem;
+  color: var(--ink-2);
+}
+.bp-controls {
+  display: grid;
+  justify-items: end;
+  gap: 0.35rem;
+}
+.bp-toggle button {
+  min-height: 2.6rem;
+  padding: 0 1.1em;
+  font-size: 0.95rem;
+}
+.bp-cols {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+@media (max-width: 719px) {
+  .bp-cols {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.bp-col {
+  container-type: inline-size;
+  display: grid;
+  gap: 0.55rem;
+  align-content: start;
+  min-width: 0;
+  padding: 0.9rem 1.1rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-2);
+}
+.bp-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(8rem, 11.5rem);
+  gap: 0.6rem 0.8rem;
+  align-items: start;
+}
+.bp-who {
+  min-width: 0;
+}
+.bp-name {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem 0.7rem;
+  flex-wrap: wrap;
+}
+.bp-name h2 {
+  margin: 0;
+  font-size: 1.45rem;
+  line-height: 1.15;
+}
+.bp-name .badge-synth {
+  font-size: 0.75rem;
+}
+.bp-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.45rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.chip {
+  padding: 0.15em 0.6em;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+.chip-same {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+.chip-ok {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.chip-low {
+  background: var(--attention-soft);
+  color: var(--attention);
+}
+.bp-why {
+  margin: 0.65rem 0 0;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--ink);
+  text-wrap: pretty;
+}
+.bp-why em {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--accent);
+}
+.bp-why em.warn {
+  color: var(--attention);
+}
+.radar-thumb {
+  width: 100%;
+  max-width: 11.5rem;
+  justify-self: end;
+}
+
+.bp-prog {
+  display: grid;
+  gap: 0.15rem;
+}
+.bp-prog-head,
+.bp-row,
+.bp-total {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 6.6rem 6.6rem 0.9rem;
+  gap: 0.7rem;
+  align-items: center;
+}
+.bp-prog-head > span {
+  white-space: nowrap;
+}
+.bp-prog-head i {
+  display: inline-block;
+  width: 0.9em;
+  height: 0.5em;
+  margin-right: 0.35em;
+  border-radius: 999px;
+  vertical-align: 0.08em;
+}
+.bp-prog-head {
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+.bp-prog-head h3 {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 0.92rem;
+  color: var(--ink);
+}
+.bp-rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.bp-item {
+  border-bottom: 1px solid var(--line);
+  animation: bp-in 240ms var(--ease) both;
+}
+@keyframes bp-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+.bp-row {
+  min-height: 3rem;
+  margin: 0 -0.45rem;
+  padding: 0.4rem 0.45rem;
+  border-radius: 8px;
+  list-style: none;
+  cursor: pointer;
+  transition: background-color var(--dur-1) var(--ease);
+}
+.bp-row::-webkit-details-marker {
+  display: none;
+}
+.bp-row:hover {
+  background: var(--bg);
+}
+.bp-item.is-heavy .bp-row {
+  background: var(--attention-soft);
+}
+.bp-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.25;
+  min-width: 0;
+}
+.bp-title .channel-tag {
+  margin-left: 0.25em;
+  font-size: 0.72rem;
+  font-weight: 500;
+  vertical-align: 0.12em;
+}
+.bp-meter {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 2.4em;
+  align-items: center;
+  gap: 0.45rem;
+}
+.bp-track {
+  height: 0.6rem;
+  background: var(--surface-2);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.bp-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  transform-origin: left center;
+  transition: transform 320ms var(--ease);
+}
+.bp-meter.is-target .bp-fill {
+  background: var(--accent);
+}
+.bp-meter.is-avoid .bp-fill {
+  background: var(--attention-line);
+}
+.bp-meter.is-neutral .bp-fill {
+  background: var(--line-strong);
+}
+.bp-val {
+  font-size: 1rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.bp-meter.is-target .bp-val {
+  color: var(--accent);
+}
+.bp-meter.is-avoid .bp-val {
+  color: var(--attention);
+}
+.bp-chev {
+  justify-self: center;
+  width: 0.55rem;
+  height: 0.55rem;
+  margin-top: -0.25rem;
+  border-right: 2px solid var(--ink-3);
+  border-bottom: 2px solid var(--ink-3);
+  transform: rotate(45deg);
+  transition: transform var(--dur-1) var(--ease);
+}
+details[open] > .bp-row .bp-chev {
+  margin-top: 0.2rem;
+  transform: rotate(-135deg);
+}
+.bp-more {
+  padding: 0.3rem 0 0.6rem;
+}
+.bp-total {
+  padding-top: 0.45rem;
+  font-weight: 700;
+}
+.bp-total-label {
+  font-size: 0.92rem;
+}
+.bp-total .bp-track {
+  height: 0.75rem;
+}
+.bp-total .bp-val {
+  font-size: 1.15rem;
+}
+.bp-skipped {
+  margin: 0.4rem 0 0;
+  font-size: 0.85rem;
+  color: var(--ink-2);
+}
+.bp-skipped strong {
+  color: var(--ink);
+}
+.bp-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem 1.5rem;
+}
+.bp-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 1.1rem;
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--ink-2);
+}
+.bp-legend i {
+  display: inline-block;
+  width: 1.4em;
+  height: 0.55em;
+  margin-right: 0.4em;
+  border-radius: 999px;
+  vertical-align: 0.05em;
+}
+.sw-target {
+  background: var(--accent);
+}
+.sw-avoid {
+  background: var(--attention-line);
+}
+.src-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  margin: 0;
+  padding: 0.3em 0.9em;
+  border-radius: 999px;
+  background: var(--surface-2);
+  font-size: 0.8rem;
+  color: var(--ink-2);
+}
+.src-note .icon {
+  width: 1.1em;
+  height: 1.1em;
+}
+
+/* Узкая колонка (телефон, планшет): метки под названием упражнения */
+@container (max-width: 30rem) {
+  .bp-head {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .radar-thumb {
+    justify-self: center;
+    max-width: 15rem;
+  }
+  .bp-prog-head {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .bp-prog-head > span {
+    display: none;
+  }
+  .bp-row,
+  .bp-total {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 0.9rem;
+    grid-template-areas:
+      "t t c"
+      "m1 m2 c";
+    gap: 0.3rem 0.8rem;
+  }
+  .bp-row > :nth-child(1),
+  .bp-total > :nth-child(1) {
+    grid-area: t;
+  }
+  .bp-row > :nth-child(2),
+  .bp-total > :nth-child(2) {
+    grid-area: m1;
+  }
+  .bp-row > :nth-child(3),
+  .bp-total > :nth-child(3) {
+    grid-area: m2;
+  }
+  .bp-row > :nth-child(4),
+  .bp-total > :nth-child(4) {
+    grid-area: c;
+  }
+  .bp-rows {
+    min-height: 0;
+  }
+}
+
+/* ---------- D5 и экран близкого ---------- */
+.fv-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  gap: 0 2.2rem;
+  align-items: start;
+}
+.fv-split .block {
+  padding: 0.6rem 0 0.9rem;
+  gap: 0.6rem;
+}
+.fv-split > .block:first-child,
+.fv-split > div > .block:first-child {
+  border-top: 0;
+}
+.fv-split .block > h2 {
+  font-size: 1.3rem;
+}
+.fv-split .multiple svg {
+  height: 2.2rem;
+}
+.fv-split .multiples {
+  gap: 0.35rem;
+}
+.fv-split .block .btn {
+  min-height: 2.3rem;
+  padding: 0.3rem 0.9rem;
+  font-size: 0.9rem;
+}
+.fv-split .lead {
+  font-size: 1.05rem;
+}
+@media (max-width: 899px) {
+  .fv-split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.flag .flag-ev {
+  margin: 0;
+}
+.flag .flag-meaning {
+  margin: 0;
+  padding-top: 0.7rem;
+  border-top: 1px solid rgba(184, 134, 43, 0.45);
+  font-weight: 500;
+}
+.flag-note {
+  display: block;
+  font-size: 0.8em;
+  font-weight: 500;
+}
+.prep {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.9rem 1.1rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-2);
+}
+.prep h3 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+.prep ol {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+  padding-left: 1.3em;
+}
+.prep li::marker {
+  font-weight: 600;
+  color: var(--ink-2);
+}
+.multiple-axis .axis-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- D6: цифры ---------- */
+.nums-wrap {
+  display: grid;
+  gap: 1rem;
+}
+.nums {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+@media (max-width: 899px) {
+  .nums {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.num-card {
+  display: grid;
+  gap: 0.7rem;
+  align-content: start;
+  padding: 1.2rem 1.4rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-2);
+}
+.num-card h2 {
+  margin: 0;
+  font-size: 1.45rem;
+}
+.num-kicker {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.num-figure {
+  display: grid;
+  gap: 0.3rem;
+}
+.num-big {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 4.2rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+.num-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  justify-self: start;
+  margin: 0;
+  padding: 0.25em 0.8em;
+  border-radius: 999px;
+  background: var(--surface-2);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+.num-unit {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--ink-2);
+}
+.num-refs {
+  display: grid;
+  gap: 0.4rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--line);
+}
+.num-refs-title {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.num-refs dl,
+.num-domains {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 2rem;
+  margin: 0;
+}
+.num-refs dd,
+.num-domains dd {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 600;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+}
+.num-refs dt,
+.num-domains dt {
+  font-size: 0.85rem;
+  color: var(--ink-2);
+}
+.num-domains dd {
+  font-size: 1.4rem;
+}
+.num-how {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0.7rem 0 0 1.3em;
+  border-top: 1px solid var(--line);
+  font-size: 0.92rem;
+}
+.num-final {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.6rem 1.6rem;
+  align-items: center;
+  padding: 1rem 1.4rem;
+  background: var(--accent);
+  color: var(--on-accent);
+  border-radius: var(--radius-2);
+}
+.num-final h2 {
+  margin: 0;
+  font-size: 1.35rem;
+  color: var(--on-accent);
+}
+.num-final ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.8rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.98rem;
+}
+.num-final li {
+  position: relative;
+  padding-left: 1.3em;
+}
+.num-final li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.35em;
+  width: 0.55em;
+  height: 0.3em;
+  border-left: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+}
+@media (max-width: 899px) {
+  .num-final {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .num-big {
+    font-size: 3rem;
+  }
+}
+
+/* ---------- Движение: только то, что нужно ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .bp-item,
+  .lv-spinner {
+    animation: none;
+  }
+  .bp-fill,
+  .tl2-seg,
+  .tl2-cursor,
+  .lv-progress span,
+  .lv-stat dd,
+  .bp-chev {
+    transition: none;
+  }
+}
+
+/* ==========================================================================
+   Холодный клинический вариант (DESIGN-MEDTECH.md, раздел 12) для жюри и близкого.
+   Токены переопределяются только внутри своих корневых классов.
+   ========================================================================== */
+.demo-root,
+.clinical {
+  --bg: #ffffff;
+  --surface: #f3f6f8;
+  --surface-2: #e7edf1;
+  --line: #dce3e8;
+  --line-strong: #74828c;
+  --info: #2f5d7c;
+  --deep: #12332e;
+  --on-deep: #e3efea;
+  --font-display: var(--font-ui);
+  background: var(--bg);
+  color: var(--ink);
+}
+:root.demo-mode,
+:root.demo-mode body {
+  background: #ffffff;
+}
+.clinical {
+  min-height: 100vh;
+}
+.demo-root h1,
+.demo-root h2,
+.demo-root h3,
+.clinical h1,
+.clinical h2,
+.clinical h3 {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* Навигация: синий как основной цвет системы */
+.demo-root .demo-tabs a {
+  background: var(--bg);
+  border-color: var(--line);
+}
+.demo-root .demo-tabs a[aria-current="step"] {
+  background: var(--info);
+  border-color: var(--info);
+  color: #ffffff;
+}
+.demo-root .seg-toggle {
+  border-color: var(--line-strong);
+}
+.demo-root .seg-toggle button {
+  background: var(--bg);
+}
+.demo-root .seg-toggle button[aria-pressed="true"] {
+  background: var(--info);
+  color: #ffffff;
+}
+.demo-root .seg-toggle button + button {
+  border-left-color: var(--line-strong);
+}
+.d-kicker {
+  color: var(--info);
+}
+
+/* Плавающая стеклянная панель управления демо (заливка не меньше 80%) */
+.demo-root .demo-foot {
+  position: sticky;
+  bottom: 0.6rem;
+  width: fit-content;
+  max-width: calc(100% - 1.5rem);
+  margin: 0 auto 0.6rem;
+  padding: 0.35rem 0.5rem 0.35rem 0.4rem;
+  border: 1px solid rgba(30, 35, 32, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.86);
+  -webkit-backdrop-filter: blur(12px) saturate(1.1);
+  backdrop-filter: blur(12px) saturate(1.1);
+  box-shadow: 0 6px 24px rgba(18, 51, 46, 0.12);
+}
+.demo-root .demo-foot .btn {
+  border-radius: 999px;
+}
+.demo-root .demo-keys {
+  padding-right: 0.6rem;
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .demo-root .demo-foot {
+    background: var(--bg);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border: 2px solid var(--line-strong);
+  }
+}
+@media (max-width: 899px) {
+  .demo-root .demo-foot {
+    width: auto;
+    border-radius: var(--radius-2);
+  }
+}
+
+/* Bento-карточки */
+.demo-root .bp-col,
+.demo-root .lv,
+.demo-root .num-card,
+.pv-card,
+.pv-key {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-2);
+}
+.demo-root .lv-block,
+.demo-root .bp-col .bp-more,
+.demo-root .tl2-bar {
+  background: var(--bg);
+}
+.demo-root .bp-row:hover {
+  background: var(--bg);
+}
+.demo-root .bp-item.is-heavy .bp-row {
+  background: var(--attention-soft);
+}
+.demo-root .chip-same {
+  background: var(--bg);
+  border: 1px solid var(--line);
+}
+.demo-root .src-note {
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+.demo-root .channel-tag {
+  background: var(--bg);
+}
+
+/* D3: бенто из диаграммы, двух ключевых показателей и таблицы */
+.pv-card {
+  padding: 1rem 1.2rem;
+  min-width: 0;
+}
+.pv-card-table {
+  padding: 0;
+  overflow: hidden;
+}
+.pv-card-table .table-scroll {
+  border: 0;
+  border-radius: 0;
+}
+.pv-card-table .data-table {
+  background: var(--bg);
+}
+.pv-card-table .data-table thead th {
+  background: var(--surface);
+}
+.pv-keys {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+.pv-key {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.75rem 1rem;
+  background: var(--accent-soft);
+  border-color: transparent;
+}
+.pv-key-label {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+.pv-key-nums {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.pv-key-was {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+.pv-key-arrow .icon {
+  width: 1.1em;
+  height: 1.1em;
+  color: var(--ink-2);
+}
+.pv-key-now {
+  font-size: 2.9rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--accent);
+}
+.pv-key-sub {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--ink-2);
+}
+.pv-split .radar {
+  max-width: min(36rem, 54vh);
+}
+.pv-split .pv-side {
+  gap: 0.7rem;
+}
+.pv-split .note {
+  margin: 0;
+  font-size: 0.8rem;
+}
+.pv-split .data-table th,
+.pv-split .data-table td {
+  padding: 0.35rem 0.6rem;
+  font-size: 0.85rem;
+  line-height: 1.3;
+}
+.pv-split .data-table th .small {
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+@media (max-width: 899px) {
+  .pv-keys {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* D6 и D4 крупнее: числа как главный элемент блока */
+.demo-root .num-final {
+  background: var(--deep);
+  color: var(--on-deep);
+}
+.demo-root .num-final h2 {
+  color: #ffffff;
+}
+.demo-root .num-refs dd {
+  font-size: 3.4rem;
+  color: var(--ink);
+}
+
+/* Экран близкого: та же клиническая палитра, одна колонка */
+.clinical .app-header {
+  background: var(--bg);
+  border-bottom-color: var(--line);
+}
+.clinical .flag {
+  border-width: 2px;
+}
+.clinical .calm-box,
+.clinical .prep {
+  background: var(--surface);
+}
+.clinical .data-table {
+  background: var(--bg);
+}
+.clinical .data-table thead th {
+  background: var(--surface);
+}
+.clinical .multiple svg rect {
+  fill: var(--bg);
+}
+
+/* D5: компактнее, чтобы всё было на одном экране проектора */
+.fv-split {
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+}
+.fv-split .flag {
+  padding: 0.9rem 1.1rem;
+  gap: 0.55rem;
+}
+.fv-split .flag-title {
+  font-size: 1.3rem;
+  line-height: 1.3;
+}
+.fv-split .flag p,
+.fv-split .prep li {
+  font-size: 1rem;
+  line-height: 1.45;
+}
+.fv-split .prep {
+  padding: 0.75rem 1.1rem;
+  gap: 0.35rem;
+}
+.fv-split .prep h3 {
+  font-size: 1.05rem;
+}
+.fv-split .prep ol {
+  gap: 0.25rem;
+}
+.demo-step-5 .d-titlebar {
+  margin-bottom: 0.4rem;
+}
+
+/* D1: фирменный объект над числом (декоративный) */
+.d1-object {
+  display: block;
+  width: 9.5rem;
+  height: auto;
+  margin-bottom: 0.4rem;
+}
+@media (max-width: 899px) {
+  .d1-object {
+    display: none;
+  }
+}
+
+/* Ссылка назад на профиле близкого: цель не меньше 44 px */
+.clinical .back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  min-height: 44px;
+  padding: 0 0.2em;
+}
+
+/* Телефон: переключатель на всю ширину, нижняя панель в одну строку */
+@media (max-width: 719px) {
+  .bp-controls {
+    justify-items: stretch;
+    width: 100%;
+  }
+  .bp-toggle {
+    display: flex;
+    flex-wrap: nowrap;
+    width: 100%;
+  }
+  .bp-toggle button {
+    flex: 1 1 50%;
+    min-height: 2.8rem;
+    padding: 0.3rem 0.5em;
+    font-size: 0.85rem;
+    line-height: 1.2;
+  }
+  .src-note {
+    border-radius: var(--radius-1);
+    align-items: flex-start;
+  }
+  .bp-heading h1 {
+    font-size: 1.6rem;
+  }
+  .bp-heading p {
+    font-size: 1rem;
+  }
+}
+@media (max-width: 899px) {
+  .demo-root .demo-foot {
+    margin: 0 0.5rem 0.5rem;
+    max-width: none;
+    padding: 0.4rem;
+  }
+  .demo-steps-nav {
+    flex-wrap: nowrap;
+  }
+  .demo-steps-nav .btn {
+    min-height: 2.6rem;
+    padding: 0.3rem 0.7rem;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+  .demo-steps-nav .btn-primary {
+    flex: 1 1 auto;
+  }
+  .demo-steps-nav .btn-secondary {
+    flex: 0 0 auto;
+  }
+}
+
+/* D2 после остановки: всё на одном экране проектора.
+   Лента остаётся, счётчики реального времени сворачиваются, панель шире, расшифровка в своей прокрутке. */
+@media (min-width: 1100px) {
+  .demo-root .demo-live.has-result {
+    grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.6fr);
+  }
+  .demo-step-2 .demo-live.has-result .demo-left .stimulus img {
+    max-height: 38vh;
+  }
+  .lv {
+    max-height: calc(100vh - 11.8rem);
+    max-height: calc(100dvh - 11.8rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+.lv.is-after .lv-block:first-of-type .lv-stats,
+.lv.is-after .lv-block:first-of-type .lv-hint,
+.lv.is-after .lv-block:first-of-type .tl2-legend,
+.lv.is-after .lv-block:first-of-type .lv-progress,
+.lv.is-after .lv-source {
+  display: none;
+}
+.lv.is-after .lv-block:first-of-type .lv-block-head h3 {
+  font-size: 0.85rem;
+}
+.lv.is-after .lv-block:first-of-type .lv-clock strong {
+  font-size: 1rem;
+}
+.lv.is-after {
+  gap: 0.4rem;
+  padding-top: 0.7rem;
+  padding-bottom: 0.7rem;
+}
+.lv.is-after .lv-block {
+  padding: 0.45rem 0.8rem 0.5rem;
+  gap: 0.35rem;
+}
+.lv.is-after .tl2-labels {
+  height: 2.2rem;
+}
+.lv.is-after .tl2-bar {
+  height: 1.8rem;
+}
+.lv.is-after .transcript {
+  max-width: none;
+  max-height: 5.5rem;
+  overflow-y: auto;
+  line-height: 1.6;
+  font-size: 0.9rem;
+  margin: 0;
+}
+.lv.is-after .after .stack {
+  gap: 0.5rem;
+}
+.lv.is-after .lv-stats-6 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.3rem 0.7rem;
+}
+.lv.is-after .lv-stats-6 .lv-stat dt {
+  min-height: 2.3em;
+  font-size: 0.72rem;
+}
+.lv.is-after .lv-stats-6 .lv-stat dd {
+  font-size: 1.15rem;
+}
+.lv.is-after .units li {
+  font-size: 0.72rem;
+  padding: 0.05em 0.45em;
+}
+.lv.is-after .lv-units-title {
+  font-size: 0.85rem;
+}
+.lv.is-after .lang-line {
+  font-size: 0.72rem;
+}
+
+/* Экран близкого: блок «Как прошла неделя» двумя числами */
+.fv-s-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+.fv-s {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.8rem 1rem;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-1);
+}
+.fv-s-num {
+  margin: 0;
+  font-size: 2.6rem;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.fv-s-num span {
+  font-size: 0.45em;
+  font-weight: 500;
+  color: var(--ink-2);
+}
+.fv-s-label {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--ink-2);
+}
+.fv-regular {
+  margin: 0;
+  color: var(--ink-2);
+}
+.fv-discuss-grid {
+  display: grid;
+  gap: var(--s-4);
+}
+
+/* Компьютер: bento по DESIGN-MEDTECH 11.1 (что обсудить во всю ширину, траектория и неделя рядом) */
+@media (min-width: 900px) {
+  .clinical .family-page {
+    max-width: 74rem;
+  }
+  .fv {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 1.2rem;
+    align-items: start;
+  }
+  .fv > .block {
+    padding: 1.2rem 1.4rem 1.3rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-2);
+  }
+  .fv > .fv-discuss {
+    grid-column: 1 / -1;
+  }
+  .fv .fv-discuss-grid {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    align-items: start;
+  }
+  .fv .prep {
+    background: var(--bg);
+  }
+  .fv > .fv-traj {
+    grid-column: span 8;
+  }
+  .fv > .fv-week {
+    grid-column: span 4;
+  }
+  .fv .fv-s-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .fv .multiple svg rect {
+    fill: var(--bg);
+  }
+}
+
+/* D6: фирменный объект в шапке (декоративный) */
+.d6-object {
+  height: 4.6rem;
+  width: auto;
+  margin: -0.6rem 0 -0.6rem;
+}
+@media (max-width: 899px) {
+  .d6-object {
+    display: none;
+  }
+}
+.device-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45em;
+  margin: 0;
+  padding: 0.5rem 0.8rem;
+  border-radius: var(--radius-1);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--ink-2);
+  font-size: var(--text-sm);
+}
+.device-note .icon {
+  margin-top: 0.2em;
+}
+
+/* D5: неделя компактной строкой, чтобы шаг помещался на экран проектора */
+.fv-split .fv-week {
+  gap: 0.4rem;
+}
+.fv-split .fv-s-grid {
+  gap: 0.5rem;
+}
+.fv-split .fv-s {
+  grid-auto-flow: column;
+  justify-content: start;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.4rem 0.7rem;
+}
+.fv-split .fv-s-num {
+  font-size: 1.6rem;
+}
+.fv-split .fv-s-label {
+  font-size: 0.8rem;
+  line-height: 1.25;
+}
+.fv-split .fv-regular {
+  font-size: 0.85rem;
+}
+
+/* D6: согласованность только по функциям из TRIBE v2, остальные мелкой строкой */
+.demo-root .num-domains {
+  gap: 0.6rem 2.2rem;
+}
+.demo-root .num-domains dd {
+  font-size: 2.6rem;
+  color: var(--ink);
+}
+.num-rest {
+  margin: 0;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--line);
+  font-size: 0.85rem;
+  color: var(--ink-2);
+}
+/* D4: подпись источника нагрузки в две строки, не выше переключателя */
+.bp-controls .src-note {
+  max-width: 36rem;
+}
+
+/* ==========================================================================
+   Шлифовка «как medtech из YC» (es/docs/POLISH-YC.md, пункты 1-9, 11).
+   Только вид: белые блоки с тонкой рамкой, радиусы 6/8, без теней, заголовки 500.
+   ========================================================================== */
+.demo-root,
+.clinical {
+  --radius-1: 6px;
+  --radius-2: 8px;
+  --shadow-1: none;
+  --block: #ffffff;
+  --nested: #f3f6f8;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+}
+
+/* 1. Заголовки: 500 и отрицательный трекинг */
+.demo-root h1,
+.clinical h1 {
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+.demo-root h2,
+.clinical h2 {
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+.demo-root h3,
+.clinical h3 {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+.demo-root .d1-claim {
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+}
+
+/* 2-4. Блоки: белые, рамка 1 px, радиус 8, без теней */
+.demo-root .bp-col,
+.demo-root .lv,
+.demo-root .num-card,
+.demo-root .pv-card,
+.demo-root .pv-key,
+.clinical .pv-card,
+.clinical .fv > .block,
+.clinical .prep,
+.clinical .calm-box,
+.demo-root .prep {
+  background: var(--block);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-2);
+  box-shadow: none;
+}
+/* вложенные значения внутри блока и строка заголовка таблицы: светлая заливка */
+.demo-root .lv-block,
+.demo-root .fv-s,
+.clinical .fv-s,
+.demo-root .bp-more,
+.demo-root .chip-same {
+  background: var(--nested);
+}
+.demo-root .data-table thead th,
+.clinical .data-table thead th {
+  background: var(--nested);
+}
+.demo-root .data-table,
+.clinical .data-table,
+.demo-root .pv-card-table .data-table {
+  background: var(--block);
+}
+.demo-root .tl2-bar,
+.clinical .multiple svg rect {
+  background: var(--block);
+  fill: var(--block);
+}
+.demo-root .flag,
+.clinical .flag {
+  border-width: 1px;
+  border-radius: var(--radius-2);
+}
+.demo-root .table-scroll,
+.clinical .table-scroll {
+  border-radius: var(--radius-2);
+}
+
+/* Нижняя панель демо: рамка, без тени и стекла */
+.demo-root .demo-foot {
+  background: var(--block);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-2);
+  box-shadow: none;
+}
+.demo-root .demo-foot .btn {
+  border-radius: var(--radius-1);
+}
+
+/* 5. Подзаголовки без капса */
+.demo-root .d-kicker,
+.demo-root .num-kicker,
+.demo-root .num-refs-title {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+  font-size: 1rem;
+  color: var(--ink-2);
+}
+
+/* 6. Числа метрик как в таблице: моноширинные цифры, плотный трекинг */
+.demo-root .num-big,
+.demo-root .pv-key-now,
+.demo-root .num-refs dd,
+.demo-root .num-domains dd,
+.demo-root .fv-s-num,
+.clinical .fv-s-num,
+.demo-root .d1-num,
+.demo-root .lv-stat dd {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+}
+.demo-root .pv-key-label,
+.demo-root .lv-stat dt {
+  font-weight: 500;
+  color: var(--ink-2);
+}
+.demo-root .pv-key-was,
+.demo-root .lv-clock,
+.demo-root .tl2-label,
+.demo-root .transcript .p {
+  font-family: var(--mono);
+  letter-spacing: 0;
+}
+.demo-root .pv-key-now {
+  color: var(--info);
+}
+.demo-root .pv-key {
+  border-color: var(--line);
+}
+
+/* 7. Бейджи: 28 px, рамка цветом текста, радиус 6, без заливки (кроме «обсудите») */
+.demo-root .badge-synth,
+.clinical .badge-synth,
+.demo-root .mode-badge,
+.demo-root .num-status,
+.demo-root .chip,
+.demo-root .backup-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 1.7rem;
+  padding: 0 0.6rem;
+  border: 1px solid currentColor;
+  border-radius: var(--radius-1);
+  background: transparent;
+  font-weight: 500;
+  line-height: 1.2;
+}
+.demo-root .num-status {
+  color: var(--ink-2);
+}
+.demo-root .chip-same {
+  color: var(--ink);
+  border-color: var(--line-strong);
+  background: transparent;
+}
+.demo-root .chip-low,
+.demo-root .mode-badge.is-backup,
+.demo-root .backup-label {
+  background: var(--attention-soft);
+  color: var(--attention);
+}
+.demo-root .chip-ok {
+  color: var(--accent);
+}
+.demo-root .channel-tag {
+  border-radius: var(--radius-1);
+  background: transparent;
+}
+.demo-root .src-note {
+  border-radius: var(--radius-1);
+  background: transparent;
+}
+
+/* 8. Один главный CTA синего цвета, вторичная белая с рамкой */
+.demo-root .btn,
+.clinical .btn {
+  border-radius: var(--radius-1);
+  font-weight: 500;
+  box-shadow: none;
+}
+.demo-root .btn-primary,
+.clinical .btn-primary {
+  background: var(--info);
+  border: 1px solid var(--info);
+  color: #ffffff;
+}
+.demo-root .btn-primary:hover,
+.clinical .btn-primary:hover {
+  background: #274e69;
+  border-color: #274e69;
+}
+.demo-root .btn-secondary,
+.clinical .btn-secondary {
+  background: #ffffff;
+  border: 1px solid var(--line-strong);
+  color: var(--ink);
+}
+.demo-root .btn:focus-visible,
+.clinical .btn:focus-visible,
+.demo-root .seg-toggle button:focus-visible,
+.demo-root summary:focus-visible,
+.clinical summary:focus-visible {
+  outline: 2px solid var(--info);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+.demo-root .seg-toggle {
+  border-width: 1px;
+  border-radius: var(--radius-1);
+}
+.demo-root .seg-toggle button + button {
+  border-left-width: 1px;
+}
+.demo-root .demo-tabs a {
+  border-width: 1px;
+  border-radius: var(--radius-1);
+}
+
+/* 9. Сетка: поля шире, контент близкого не шире 1120 px */
+@media (min-width: 900px) {
+  .demo-root .demo-main {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+  .demo-root .demo-header {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+  .clinical .family-page {
+    max-width: calc(1120px + 80px);
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+}
+@media (max-width: 899px) {
+  .clinical .family-page {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+.clinical .fv {
+  gap: 1.5rem;
+}
+
+/* 11. Графики: тонкие линии, сетка #DCE3E8 */
+.demo-root .radar:not(.radar-thumb) polygon,
+.clinical .radar:not(.radar-thumb) polygon,
+.demo-root .radar:not(.radar-thumb) line,
+.clinical .radar:not(.radar-thumb) line {
+  stroke: var(--line);
+}
+.demo-root .radar .shape-now,
+.clinical .radar .shape-now {
+  stroke: var(--info);
+  fill: rgba(47, 93, 124, 0.14);
+}
+.demo-root .sw-now,
+.clinical .sw-now {
+  border-color: var(--info);
+}
+.demo-root .sw-now,
+.clinical .sw-now {
+  background: rgba(47, 93, 124, 0.14);
+}
+
+/* D4: переключатель и подпись источника в одну строку справа от заголовка */
+@media (min-width: 900px) {
+  .bp-top {
+    flex-wrap: nowrap;
+  }
+  .bp-heading {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+  .bp-controls {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .bp-controls .src-note {
+    max-width: 21rem;
+    font-size: 0.75rem;
+    line-height: 1.35;
+    padding: 0.3rem 0.7rem;
+  }
+}
+
+/* Подгонка под 1280x800 после шлифовки */
+.demo-root .nums-wrap {
+  gap: 0.75rem;
+}
+.demo-root .d-links {
+  margin-top: 0.5rem;
+}
+.demo-root .pv-key {
+  gap: 0.1rem;
+  padding: 0.55rem 0.9rem 0.6rem;
+}
+.demo-root .pv-key-now {
+  font-size: 2.5rem;
+}
+.demo-root .pv-key-label {
+  font-size: 0.85rem;
+  line-height: 1.25;
+}
+.demo-root .pv-split .note {
+  line-height: 1.4;
+}
+
+/* ==========================================================================
+   Движение (emil-design-eng, animate, choreograph): спокойно, коротко, только transform и opacity.
+   ========================================================================== */
+.demo-root,
+.clinical {
+  --ease-out-strong: cubic-bezier(0.16, 1, 0.3, 1); /* ease-out expo: мягкая посадка */
+  --ease-in-out-strong: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+@keyframes d-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+@keyframes d-in-x {
+  from {
+    opacity: 0;
+    transform: translateX(var(--dx, 18px));
+  }
+}
+@keyframes d-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Переход между шагами: заголовок приходит по направлению (вперёд справа, назад слева), карточки следом волной */
+.d-step[data-dir="fwd"] {
+  --dx: 18px;
+}
+.d-step[data-dir="back"] {
+  --dx: -18px;
+}
+.d-step .d-titlebar,
+.d-step .bp-top,
+.d-step .d1 > .d-kicker,
+.d-step .d1 > .d1-grid > .d1-claim {
+  animation: d-in-x 640ms var(--ease-out-strong) both;
+}
+.d-step .demo-live > :nth-child(1),
+.d-step .pv-split > :nth-child(1),
+.d-step .bp-cols > :nth-child(1),
+.d-step .fv-split > :nth-child(1),
+.d-step .nums > :nth-child(1),
+.d-step .d1 > .d1-source {
+  animation: d-rise 600ms var(--ease-out-strong) both;
+  animation-delay: 100ms;
+}
+.d-step .demo-live > :nth-child(2),
+.d-step .pv-split > :nth-child(2),
+.d-step .bp-cols > :nth-child(2),
+.d-step .fv-split > :nth-child(2),
+.d-step .nums > :nth-child(2),
+.d-step .d1 > .d1-lead {
+  animation: d-rise 600ms var(--ease-out-strong) both;
+  animation-delay: 210ms;
+}
+.d-step .num-final {
+  animation: d-rise 600ms var(--ease-out-strong) both;
+  animation-delay: 310ms;
+}
+/* декоративное: только проявление */
+.d-step .d1-figure,
+.d-step .d6-object,
+.d-step .d-links,
+.d-step .bp-controls .src-note {
+  animation: d-fade 700ms ease both;
+  animation-delay: 240ms;
+}
+
+/* Экран близкого: заголовок и блоки волной при открытии */
+.clinical .page-head {
+  animation: d-rise 600ms var(--ease-out-strong) both;
+}
+.clinical .fv > :nth-child(1),
+.clinical .stack-lg > :nth-child(1) {
+  animation: d-rise 600ms var(--ease-out-strong) both;
+  animation-delay: 100ms;
+}
+.clinical .fv > :nth-child(2),
+.clinical .stack-lg > :nth-child(2) {
+  animation: d-rise 600ms var(--ease-out-strong) both;
+  animation-delay: 210ms;
+}
+.clinical .fv > :nth-child(3),
+.clinical .stack-lg > :nth-child(3) {
+  animation: d-rise 600ms var(--ease-out-strong) both;
+  animation-delay: 310ms;
+}
+
+/* D4: полоски нагрузки меняют длину плавно, новые растут от нуля */
+.demo-root .bp-fill {
+  transform: scaleX(var(--v, 0));
+  transition: transform 640ms var(--ease-out-strong);
+}
+@starting-style {
+  .demo-root .bp-fill {
+    transform: scaleX(0);
+  }
+}
+.demo-root .bp-item {
+  animation: none;
+}
+
+/* D3: лепесток морфится между неделями */
+.demo-root .radar .shape-now,
+.clinical .radar .shape-now {
+  transition: d 420ms var(--ease-out-strong);
+}
+
+/* D5 и экран близкого: линия траектории прорисовывается слева направо (маска уходит по transform) */
+.multiple-plot {
+  position: relative;
+  display: block;
+  min-width: 0;
+}
+.demo-root .multiple svg rect,
+.clinical .multiple svg rect {
+  fill: var(--block, #ffffff);
+}
+.draw-mask {
+  position: absolute;
+  inset: 2px 2px 2px 2px;
+  background: var(--block, #ffffff);
+  transform-origin: right center;
+  transform: scaleX(0);
+  animation: draw-reveal 1200ms var(--ease-out-strong) both;
+  animation-delay: calc(300ms + var(--i, 0) * 90ms);
+  pointer-events: none;
+}
+@keyframes draw-reveal {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+/* Нажатие и наведение: короткий отклик */
+.demo-root .btn,
+.clinical .btn,
+.demo-root .demo-tabs a,
+.demo-root .seg-toggle button {
+  transition:
+    transform 160ms var(--ease-out-strong),
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+}
+.demo-root .btn:active,
+.clinical .btn:active,
+.demo-root .demo-tabs a:active,
+.demo-root .seg-toggle button:active {
+  transform: scale(0.97);
+}
+.demo-root .bp-row {
+  transition:
+    background-color 150ms ease,
+    transform 160ms var(--ease-out-strong);
+}
+.demo-root .bp-row:active {
+  transform: scale(0.995);
+}
+@media (hover: hover) and (pointer: fine) {
+  .demo-root .demo-tabs a:hover {
+    border-color: var(--line-strong);
+  }
+  .demo-root .btn-secondary:hover,
+  .clinical .btn-secondary:hover {
+    background: var(--nested, #f3f6f8);
+  }
+}
+
+/* Стекло (проверочный вариант, включается ?glass=1): шапка и нижняя панель полупрозрачные над мягким фоном */
+.demo-root.is-glass {
+  background:
+    radial-gradient(1100px 520px at 8% -8%, rgba(47, 93, 124, 0.08), transparent 62%),
+    radial-gradient(900px 480px at 100% 108%, rgba(28, 90, 81, 0.07), transparent 60%),
+    #ffffff;
+  background-attachment: fixed;
+}
+.demo-root.is-glass .demo-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(255, 255, 255, 0.74);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  backdrop-filter: blur(18px) saturate(1.2);
+  border-bottom: 1px solid rgba(220, 227, 232, 0.8);
+}
+.demo-root.is-glass .demo-foot {
+  background: rgba(255, 255, 255, 0.74);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  backdrop-filter: blur(18px) saturate(1.2);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 0 1px rgba(18, 51, 46, 0.08);
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .demo-root.is-glass {
+    background: #ffffff;
+  }
+  .demo-root.is-glass .demo-header,
+  .demo-root.is-glass .demo-foot {
+    background: #ffffff;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border-color: var(--line);
+  }
+}
+
+/* Карточка исследовательской модели на D2 */
+.rc-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.2rem 1rem;
+  align-items: center;
+  padding: 0.45rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-1);
+  background: var(--block, #ffffff);
+}
+.rc-head {
+  min-width: 0;
+}
+.rc-title {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.rc-label {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--ink-2);
+}
+.rc-score {
+  display: grid;
+  justify-items: end;
+  margin: 0;
+}
+.rc-score > span:first-child {
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+}
+.rc-score > span:last-child {
+  font-size: 0.72rem;
+  color: var(--ink-2);
+}
+.rc-note {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--ink-2);
+}
+.num-model {
+  border-top: 0;
+  padding-top: 0;
+}
+
+/* Без движения: всё появляется сразу, кроме мгновенных смен */
+@media (prefers-reduced-motion: reduce) {
+  .d-step *,
+  .clinical .page-head,
+  .clinical .fv > *,
+  .clinical .stack-lg > * {
+    animation: none !important;
+  }
+  .draw-mask {
+    display: none;
+  }
+  .demo-root .bp-fill,
+  .demo-root .radar .shape-now,
+  .clinical .radar .shape-now,
+  .demo-root .btn,
+  .clinical .btn,
+  .demo-root .bp-row {
+    transition: none;
+  }
+  .demo-root .btn:active,
+  .clinical .btn:active,
+  .demo-root .bp-row:active,
+  .demo-root .demo-tabs a:active,
+  .demo-root .seg-toggle button:active {
+    transform: none;
+  }
+}
+
+/* Переключатели языка в шапке демо и на экране близкого */
+.lang-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.lang-cap {
+  font-size: 0.72rem;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+.ui-lang-toggle {
+  justify-self: end;
+}
+.ui-lang-toggle button {
+  min-height: 2.2rem;
+  padding: 0 0.8em;
+  font-size: 0.85rem;
+}
+.clinical .page-head {
+  position: relative;
+}
+@media (min-width: 900px) {
+  .clinical .page-head .ui-lang-toggle {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+}
+@media (min-width: 900px) {
+  .demo-root .header-tools {
+    gap: 0.5rem;
+  }
+  .demo-root .header-tools .seg-toggle button {
+    padding: 0 0.55em;
+  }
+}
+@media (min-width: 900px) {
+  .demo-root .demo-header {
+    gap: 0.5rem 0.8rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+  .demo-root .demo-tabs a {
+    padding: 0 0.5em;
+  }
+  .demo-root .header-tools .badge-synth {
+    font-size: 0.72rem;
+    padding: 0 0.45rem;
+  }
+}
+.hdr-short {
+  display: none;
+}
+@media (min-width: 900px) {
+  .demo-root .header-tools .seg-toggle {
+    flex-wrap: nowrap;
+  }
+  .demo-root .lang-group,
+  .demo-root .header-tools .server {
+    flex-shrink: 0;
+  }
+}
+@media (min-width: 900px) and (max-width: 1500px) {
+  .hdr-full {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .hdr-short {
+    display: inline;
+  }
+}
+
+/* Шрифты IBM Plex: подхватываются, когда --font-sans/--font-mono появятся в globals.css */
+.demo-root,
+.clinical {
+  --font-ui: var(--font-sans, "Golos Text", "PT Sans", "Segoe UI", Roboto, Arial, sans-serif);
+  --font-display: var(--font-sans, "Golos Text", "PT Sans", "Segoe UI", Roboto, Arial, sans-serif);
+  --mono: var(--font-mono, "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace);
+  font-family: var(--font-ui);
+}
+/* D6: подключённая модель и мелкие ориентиры */
+.demo-root .num-status.is-on {
+  color: var(--ok);
+}
+.demo-root .num-refs-small dd {
+  font-size: 1.6rem;
+  color: var(--ink-2);
+}

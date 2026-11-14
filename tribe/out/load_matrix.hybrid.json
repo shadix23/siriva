@@ -1,0 +1,351 @@
+{
+ "source": "гибрид: TRIBE v2 + оценка по типу задания",
+ "label_ru": "Нагрузка на речь и внимание: TRIBE v2; на память и скорость: оценка по типу задания",
+ "model_version": "facebook/tribev2 best.ckpt (f894e78), cortex fsaverage5 only; run on Mac M5 16 GB",
+ "atlas": "Schaefer-2018 400 parcels / Yeo 7 networks (volumetric, vol_to_surf) + Destrieux surface atlas, fsaverage5",
+ "domains": [
+  "episodic_memory",
+  "word_access",
+  "phrase_building",
+  "attention",
+  "processing_speed"
+ ],
+ "domain_notes": {
+  "word_access": "TRIBE v2 predicted load, validated against known groups",
+  "phrase_building": "TRIBE v2 predicted load, validated against known groups",
+  "attention": "TRIBE v2 predicted load, validated against known groups",
+  "episodic_memory": "task-type estimate (TRIBE v2 is not validated for this domain)",
+  "processing_speed": "task-type estimate (TRIBE v2 is not validated for this domain)"
+ },
+ "metadata": {
+  "kind": "hybrid",
+  "domain_sources": {
+   "episodic_memory": "task_type_estimate",
+   "word_access": "tribe_v2",
+   "phrase_building": "tribe_v2",
+   "attention": "tribe_v2",
+   "processing_speed": "task_type_estimate"
+  },
+  "tribe_matrix": {
+   "file": "tribe/out/load_matrix.tribe_v2.en.audio-text.json",
+   "source": "TRIBE v2 predicted load",
+   "label_ru": "Предсказанная нагрузка TRIBE v2 (полный прогон на Mac, английские стимулы, модальности: audio, text). Не измерение мозга.",
+   "modalities_computed": [
+    "audio",
+    "text"
+   ],
+   "stimulus_language": "English (macOS say, voice Samantha), the training language of the model; stimuli 27-54 s",
+   "method": "mean predicted response over domain vertices, first 5 s dropped, z across the stimuli of each modality, clip [-2,2], (z+2)/4; modalities of one exercise averaged. Modality sets differ between exercises (see modalities_per_exercise)",
+   "license": "TRIBE v2 CC BY-NC 4.0, non-commercial prototype; Meta FAIR, d'Ascoli et al. 2026 arXiv 2605.04326",
+   "validation": "tribe/mac/work/v2_val_audio_text.md"
+  },
+  "scale": "quantile",
+  "scale_note": "TRIBE order kept, magnitudes matched by rank to the task-type scale of the same domain",
+  "tribe_raw_loads": {
+   "story_retell": {
+    "word_access": 0.6299,
+    "phrase_building": 0.6272,
+    "attention": 0.2304
+   },
+   "picture_description": {
+    "word_access": 0.7283,
+    "phrase_building": 0.7314,
+    "attention": 0.4724
+   },
+   "naming_fluency": {
+    "word_access": 0.8033,
+    "phrase_building": 0.796,
+    "attention": 0.5388
+   },
+   "word_list_recall_spoken": {
+    "word_access": 0.7383,
+    "phrase_building": 0.7381,
+    "attention": 0.4854
+   },
+   "naming_from_definition": {
+    "word_access": 0.7032,
+    "phrase_building": 0.7116,
+    "attention": 0.6181
+   },
+   "picture_naming": {
+    "word_access": 0.7823,
+    "phrase_building": 0.7902,
+    "attention": 0.6281
+   },
+   "sentence_completion_spoken": {
+    "word_access": 0.5251,
+    "phrase_building": 0.5323,
+    "attention": 0.3625
+   },
+   "describe_daily_routine": {
+    "word_access": 0.5422,
+    "phrase_building": 0.5229,
+    "attention": 0.1883
+   },
+   "read_aloud_short_text": {
+    "word_access": 0.4149,
+    "phrase_building": 0.4146,
+    "attention": 0.054
+   },
+   "sentence_building_cards": {
+    "word_access": 0.329,
+    "phrase_building": 0.3288,
+    "attention": 0.8474
+   },
+   "word_picture_matching": {
+    "word_access": 0.7795,
+    "phrase_building": 0.7757,
+    "attention": 0.0875
+   },
+   "sound_to_picture": {
+    "word_access": 0.3196,
+    "phrase_building": 0.321,
+    "attention": 0.6124
+   },
+   "odd_one_out": {
+    "word_access": 0.3075,
+    "phrase_building": 0.309,
+    "attention": 0.5056
+   },
+   "picture_pair_memory": {
+    "word_access": 0.3445,
+    "phrase_building": 0.3435,
+    "attention": 0.4057
+   },
+   "spatial_sequence_recall": {
+    "word_access": 0.3173,
+    "phrase_building": 0.3196,
+    "attention": 0.6192
+   },
+   "delayed_picture_recognition": {
+    "word_access": 0.3311,
+    "phrase_building": 0.3356,
+    "attention": 0.8061
+   },
+   "route_recall_map": {
+    "word_access": 0.2595,
+    "phrase_building": 0.2617,
+    "attention": 0.8455
+   },
+   "face_name_choice": {
+    "word_access": 0.3427,
+    "phrase_building": 0.346,
+    "attention": 0.6331
+   },
+   "shopping_list_recall_visual": {
+    "word_access": 0.3065,
+    "phrase_building": 0.309,
+    "attention": 0.7262
+   },
+   "digit_span_tap": {
+    "word_access": 0.244,
+    "phrase_building": 0.24,
+    "attention": 0.5031
+   },
+   "spot_the_difference": {
+    "word_access": 0.2816,
+    "phrase_building": 0.2842,
+    "attention": 0.6995
+   },
+   "sustained_tone_detection": {
+    "word_access": 0.2838,
+    "phrase_building": 0.2766,
+    "attention": 0.6464
+   },
+   "card_sorting": {
+    "word_access": 0.2853,
+    "phrase_building": 0.2896,
+    "attention": 0.7296
+   },
+   "rhythm_copy": {
+    "word_access": 0.2419,
+    "phrase_building": 0.2359,
+    "attention": 0.3924
+   },
+   "reaction_tap": {
+    "word_access": 0.2944,
+    "phrase_building": 0.2949,
+    "attention": 0.7843
+   }
+  },
+  "task_type_estimate_file": "es/backend/es_core/data/load_matrix.placeholder.json",
+  "built_by": "es/backend/scripts/build_hybrid_matrix.py"
+ },
+ "loads": {
+  "story_retell": {
+   "episodic_memory": 0.9,
+   "word_access": 0.6,
+   "phrase_building": 0.3,
+   "attention": 0.3,
+   "processing_speed": 0.1
+  },
+  "picture_description": {
+   "episodic_memory": 0.2,
+   "word_access": 0.6,
+   "phrase_building": 0.6,
+   "attention": 0.3,
+   "processing_speed": 0.3
+  },
+  "naming_fluency": {
+   "episodic_memory": 0.2,
+   "word_access": 0.9,
+   "phrase_building": 0.8,
+   "attention": 0.4,
+   "processing_speed": 0.6
+  },
+  "word_list_recall_spoken": {
+   "episodic_memory": 0.8,
+   "word_access": 0.7,
+   "phrase_building": 0.8,
+   "attention": 0.3,
+   "processing_speed": 0.2
+  },
+  "naming_from_definition": {
+   "episodic_memory": 0.3,
+   "word_access": 0.6,
+   "phrase_building": 0.5,
+   "attention": 0.4,
+   "processing_speed": 0.3
+  },
+  "picture_naming": {
+   "episodic_memory": 0.2,
+   "word_access": 0.9,
+   "phrase_building": 0.8,
+   "attention": 0.4,
+   "processing_speed": 0.4
+  },
+  "sentence_completion_spoken": {
+   "episodic_memory": 0.2,
+   "word_access": 0.5,
+   "phrase_building": 0.1,
+   "attention": 0.3,
+   "processing_speed": 0.3
+  },
+  "describe_daily_routine": {
+   "episodic_memory": 0.5,
+   "word_access": 0.5,
+   "phrase_building": 0.1,
+   "attention": 0.3,
+   "processing_speed": 0.2
+  },
+  "read_aloud_short_text": {
+   "episodic_memory": 0.1,
+   "word_access": 0.5,
+   "phrase_building": 0.1,
+   "attention": 0.2,
+   "processing_speed": 0.5
+  },
+  "sentence_building_cards": {
+   "episodic_memory": 0.2,
+   "word_access": 0.3,
+   "phrase_building": 0.0,
+   "attention": 0.9,
+   "processing_speed": 0.2
+  },
+  "word_picture_matching": {
+   "episodic_memory": 0.2,
+   "word_access": 0.9,
+   "phrase_building": 0.8,
+   "attention": 0.3,
+   "processing_speed": 0.5
+  },
+  "sound_to_picture": {
+   "episodic_memory": 0.2,
+   "word_access": 0.2,
+   "phrase_building": 0.0,
+   "attention": 0.4,
+   "processing_speed": 0.5
+  },
+  "odd_one_out": {
+   "episodic_memory": 0.1,
+   "word_access": 0.05,
+   "phrase_building": 0.0,
+   "attention": 0.4,
+   "processing_speed": 0.4
+  },
+  "picture_pair_memory": {
+   "episodic_memory": 0.8,
+   "word_access": 0.4,
+   "phrase_building": 0.1,
+   "attention": 0.3,
+   "processing_speed": 0.2
+  },
+  "spatial_sequence_recall": {
+   "episodic_memory": 0.8,
+   "word_access": 0.1,
+   "phrase_building": 0.0,
+   "attention": 0.4,
+   "processing_speed": 0.2
+  },
+  "delayed_picture_recognition": {
+   "episodic_memory": 0.8,
+   "word_access": 0.3,
+   "phrase_building": 0.0,
+   "attention": 0.6,
+   "processing_speed": 0.1
+  },
+  "route_recall_map": {
+   "episodic_memory": 0.7,
+   "word_access": 0.0,
+   "phrase_building": 0.0,
+   "attention": 0.8,
+   "processing_speed": 0.2
+  },
+  "face_name_choice": {
+   "episodic_memory": 0.8,
+   "word_access": 0.4,
+   "phrase_building": 0.1,
+   "attention": 0.4,
+   "processing_speed": 0.1
+  },
+  "shopping_list_recall_visual": {
+   "episodic_memory": 0.8,
+   "word_access": 0.05,
+   "phrase_building": 0.0,
+   "attention": 0.5,
+   "processing_speed": 0.1
+  },
+  "digit_span_tap": {
+   "episodic_memory": 0.7,
+   "word_access": 0.0,
+   "phrase_building": 0.0,
+   "attention": 0.4,
+   "processing_speed": 0.2
+  },
+  "spot_the_difference": {
+   "episodic_memory": 0.1,
+   "word_access": 0.0,
+   "phrase_building": 0.0,
+   "attention": 0.5,
+   "processing_speed": 0.4
+  },
+  "sustained_tone_detection": {
+   "episodic_memory": 0.0,
+   "word_access": 0.0,
+   "phrase_building": 0.0,
+   "attention": 0.5,
+   "processing_speed": 0.5
+  },
+  "card_sorting": {
+   "episodic_memory": 0.2,
+   "word_access": 0.0,
+   "phrase_building": 0.0,
+   "attention": 0.6,
+   "processing_speed": 0.6
+  },
+  "rhythm_copy": {
+   "episodic_memory": 0.5,
+   "word_access": 0.0,
+   "phrase_building": 0.0,
+   "attention": 0.3,
+   "processing_speed": 0.4
+  },
+  "reaction_tap": {
+   "episodic_memory": 0.0,
+   "word_access": 0.0,
+   "phrase_building": 0.0,
+   "attention": 0.6,
+   "processing_speed": 0.9
+  }
+ }
+}

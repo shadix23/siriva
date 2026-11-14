@@ -1,0 +1,904 @@
+<!doctype html>
+<html lang="ru" data-size="a2plus">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Es: прототип</title>
+<meta name="description" content="Статичный прототип Es: экран «Сегодня» и упражнение «Описание картинки» со всеми состояниями записи.">
+<style>
+:root {
+  --bg:#F6F3EC; --surface:#FFFDF8; --surface-2:#ECE7DC; --line:#D8D0C2; --line-strong:#857D6E;
+  --ink:#1E2320; --ink-2:#454C47; --ink-3:#5E655F;
+  --accent:#1C5A51; --accent-hover:#164A43; --accent-soft:#DCEAE5; --on-accent:#FFFFFF;
+  --rec:#9A3820; --rec-soft:#F6E2DA;
+  --attention:#5F410A; --attention-soft:#F5E6C6; --attention-line:#B8862B;
+  --ok:#2C6636; --danger:#7A2616; --danger-soft:#F8E1DA;
+  --synthetic:#45376A; --synthetic-soft:#ECE6F4;
+  --focus-ring:#1E2320; --focus-halo:#F2C230;
+  --font-ui:"Golos Text","PT Sans","Segoe UI",Roboto,Arial,sans-serif;
+  --font-display:"Literata","PT Serif",Georgia,serif;
+  --text-sm:.875rem; --text-base:1rem; --text-lg:1.2rem; --text-h3:1.3rem; --text-h2:1.6rem; --text-h1:2rem;
+  --leading-body:1.55; --leading-head:1.2; --measure:34em;
+  --s-1:.2rem; --s-2:.4rem; --s-3:.6rem; --s-4:.8rem; --s-5:1.2rem; --s-6:1.6rem; --s-7:2.4rem; --s-8:3.2rem;
+  --tap-min:2.4rem; --tap-main:2.8rem;
+  --radius-1:10px; --radius-2:16px;
+  --shadow-1:0 1px 2px rgba(30,35,32,.06),0 4px 14px rgba(30,35,32,.05);
+  --dur-1:150ms; --ease:cubic-bezier(.2,.7,.2,1);
+}
+html { font-size:125%; background:var(--bg); }
+html[data-size="a"] { font-size:112.5%; }
+html[data-size="a2plus"] { font-size:125%; }
+html[data-size="a3"] { font-size:150%; }
+@media (prefers-contrast: more) {
+  :root { --ink-2:#2E3430; --ink-3:#3F4641; --line:#9C9384; --line-strong:#5F584C; }
+}
+*,*::before,*::after { box-sizing:border-box; }
+body {
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:var(--font-ui); font-size:var(--text-base); line-height:var(--leading-body);
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+::selection { background:var(--accent-soft); color:var(--ink); }
+h1,h2,h3 { font-family:var(--font-display); font-weight:600; line-height:var(--leading-head); margin:0; text-wrap:balance; letter-spacing:-.01em; }
+h1 { font-size:var(--text-h1); }
+h2 { font-size:var(--text-h2); }
+h3 { font-size:var(--text-h3); }
+p { margin:0; max-width:var(--measure); }
+a { color:var(--accent); text-underline-offset:.2em; text-decoration-thickness:1px; }
+a:hover { text-decoration-thickness:2px; }
+:focus-visible { outline:3px solid var(--focus-ring); outline-offset:2px; box-shadow:0 0 0 7px var(--focus-halo); border-radius:4px; }
+h1:focus,h2:focus { outline:none; }
+h1[tabindex="-1"]:focus-visible,h2[tabindex="-1"]:focus-visible { outline:none; box-shadow:none; }
+.sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+.icon { width:1.1em; height:1.1em; flex:none; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; vertical-align:-.18em; }
+.muted { color:var(--ink-2); }
+.small { font-size:var(--text-sm); }
+.num { font-variant-numeric:tabular-nums; }
+
+/* Прототипная панель: не часть продукта */
+.proto {
+  border-bottom:2px dashed var(--line-strong); background:#EFEBE2; color:var(--ink-2);
+  font-size:13px; padding:6px 16px; display:flex; flex-wrap:wrap; gap:.5rem 1.2rem; align-items:center;
+}
+.proto strong { color:var(--ink); font-weight:600; }
+.proto label { display:inline-flex; flex-wrap:wrap; align-items:center; gap:4px 6px; max-width:100%; }
+.proto select { max-width:100%; }
+.proto select,.proto button { font:inherit; font-size:13px; padding:3px 8px; border:1px solid var(--line-strong); border-radius:6px; background:var(--surface); color:var(--ink); min-height:32px; }
+.proto input[type=checkbox] { width:18px; height:18px; accent-color:var(--accent); }
+
+/* Шапка */
+.app-header {
+  display:flex; flex-wrap:wrap; align-items:center; gap:var(--s-3) var(--s-5);
+  padding:var(--s-4) 16px; border-bottom:1px solid var(--line); background:var(--bg);
+}
+.wordmark { font-family:var(--font-display); font-weight:600; font-size:var(--text-h3); color:var(--ink); text-decoration:none; letter-spacing:-.02em; padding:0 .2rem; }
+.wordmark span { color:var(--accent); }
+.header-tools { margin-left:auto; display:flex; align-items:center; gap:var(--s-4); }
+.badge-synth {
+  display:inline-flex; align-items:center; gap:.45em; padding:.25em .7em; border-radius:999px;
+  background:var(--synthetic-soft); color:var(--synthetic); font-size:var(--text-sm); font-weight:500; line-height:1.3;
+}
+.size-switch { display:inline-flex; border:2px solid var(--line-strong); border-radius:var(--radius-1); overflow:hidden; }
+.size-switch button {
+  font:inherit; font-weight:600; background:var(--surface); color:var(--ink); border:0; min-width:var(--tap-min); min-height:var(--tap-min);
+  padding:0 .5rem; cursor:pointer; line-height:1;
+}
+.size-switch button + button { border-left:2px solid var(--line-strong); }
+.size-switch button[aria-checked="true"] { background:var(--ink); color:var(--surface); }
+.size-switch button:nth-child(1) { font-size:.8rem; }
+.size-switch button:nth-child(2) { font-size:.95rem; }
+.size-switch button:nth-child(3) { font-size:1.1rem; }
+.header-link { display:inline-flex; align-items:center; gap:.4em; min-height:var(--tap-min); padding:0 .3rem; color:var(--ink); }
+@media (max-width:640px) {
+  .badge-synth { order:3; width:100%; justify-content:flex-start; border-radius:var(--radius-1); }
+  .header-link .label { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); }
+}
+
+/* Кнопки */
+.btn {
+  display:inline-flex; align-items:center; justify-content:center; gap:.55em;
+  min-height:var(--tap-min); padding:.5rem 1.2rem; border-radius:var(--radius-1);
+  font:inherit; font-weight:600; font-size:var(--text-base); line-height:1.25; text-decoration:none; cursor:pointer;
+  border:2px solid transparent; transition:background-color var(--dur-1) var(--ease), border-color var(--dur-1) var(--ease);
+}
+.btn-primary { background:var(--accent); color:var(--on-accent); min-height:var(--tap-main); font-size:var(--text-lg); padding:.6rem 1.6rem; }
+.btn-primary:hover { background:var(--accent-hover); }
+.btn-primary:active { background:#103A34; }
+.btn-secondary { background:var(--surface); color:var(--ink); border-color:var(--line-strong); }
+.btn-secondary:hover { border-color:var(--ink); }
+.btn-tertiary { background:none; color:var(--accent); text-decoration:underline; text-underline-offset:.2em; padding-left:.3rem; padding-right:.3rem; font-weight:500; }
+.btn-block { width:100%; }
+.btn[disabled] { opacity:.5; cursor:not-allowed; }
+
+/* Сегодня */
+.page { max-width:46rem; margin:0 auto; padding:var(--s-7) 16px var(--s-8); }
+.today-head { display:grid; gap:var(--s-3); margin-bottom:var(--s-6); }
+.lead { font-size:var(--text-lg); color:var(--ink-2); }
+.notice {
+  display:flex; gap:var(--s-4); align-items:flex-start; padding:var(--s-4) var(--s-5); border-radius:var(--radius-1);
+  background:var(--surface); border:1px solid var(--line); margin-bottom:var(--s-5);
+}
+.notice .icon { margin-top:.2em; width:1.3em; height:1.3em; }
+.notice-body { display:grid; gap:var(--s-3); }
+.notice-attention { background:var(--attention-soft); border-color:#E2CB98; color:var(--attention); }
+.notice-error { background:var(--danger-soft); border-color:#EBC3B7; color:var(--danger); }
+.notice-error p,.notice-attention p { color:inherit; }
+.notice-actions { display:flex; flex-wrap:wrap; gap:var(--s-3); }
+
+.program { list-style:none; margin:var(--s-7) 0 0; padding:0; border-top:1px solid var(--line); }
+.program-title { font-family:var(--font-ui); font-size:var(--text-base); font-weight:600; color:var(--ink-2); margin-bottom:var(--s-3); }
+.program li { border-bottom:1px solid var(--line); }
+.item {
+  display:grid; grid-template-columns:2.2rem 1fr auto; gap:var(--s-2) var(--s-4); align-items:center;
+  padding:var(--s-5) var(--s-2); color:var(--ink); text-decoration:none; min-height:4rem;
+}
+a.item:hover { background:var(--surface); }
+.item-num {
+  width:2.2rem; height:2.2rem; border-radius:50%; display:grid; place-items:center; font-weight:600; font-variant-numeric:tabular-nums;
+  border:2px solid var(--line-strong); color:var(--ink-2); font-size:var(--text-sm);
+}
+.item-main { display:grid; gap:.15rem; }
+.item-name { font-weight:600; font-size:var(--text-lg); line-height:1.3; }
+.item-what { color:var(--ink-2); }
+.item-status { display:inline-flex; align-items:center; gap:.4em; font-weight:500; font-size:var(--text-sm); white-space:nowrap; }
+.st-done { color:var(--ok); }
+.st-done .item-num { border-color:var(--ok); color:var(--ok); }
+.st-next .item-num { background:var(--accent); border-color:var(--accent); color:var(--on-accent); }
+.st-next .item-status { color:var(--accent); }
+.st-wait { color:var(--ink-2); }
+.st-wait .item-name { color:var(--ink-2); }
+.st-pending .item-status { color:var(--attention); }
+@media (max-width:520px) {
+  .item { grid-template-columns:2.2rem 1fr; }
+  .item-status { grid-column:2; }
+}
+.week { margin-top:var(--s-7); padding-top:var(--s-5); display:grid; gap:var(--s-4); }
+.why summary { cursor:pointer; color:var(--accent); text-decoration:underline; text-underline-offset:.2em; min-height:var(--tap-min); display:inline-flex; align-items:center; list-style:none; }
+.why summary::-webkit-details-marker { display:none; }
+.why summary::after { content:""; display:inline-block; width:.5em; height:.5em; border-right:2px solid currentColor; border-bottom:2px solid currentColor; transform:rotate(45deg); margin-left:.6em; margin-top:-.25em; }
+.why[open] summary::after { transform:rotate(-135deg); margin-top:.2em; }
+.why p { margin-top:var(--s-3); color:var(--ink-2); }
+
+.skeleton-row { height:4rem; border-bottom:1px solid var(--line); display:grid; grid-template-columns:2.2rem 1fr; gap:var(--s-4); align-items:center; padding:0 var(--s-2); }
+.skeleton-row span { display:block; height:.9rem; border-radius:6px; background:var(--surface-2); }
+.skeleton-row span:first-child { width:2.2rem; height:2.2rem; border-radius:50%; }
+.skeleton-row span:last-child { width:60%; }
+
+/* Упражнение */
+.ex-top {
+  display:flex; align-items:center; gap:var(--s-4); flex-wrap:wrap;
+  padding:var(--s-3) 16px; border-bottom:1px solid var(--line);
+}
+.back { display:inline-flex; align-items:center; gap:.4em; min-height:var(--tap-min); padding:0 .3rem; color:var(--ink); font-weight:500; }
+.ex-step { color:var(--ink-2); margin-left:auto; font-variant-numeric:tabular-nums; }
+.ex-wrap { max-width:90rem; margin:0 auto; padding:var(--s-5) 16px var(--s-8); display:grid; gap:var(--s-6); grid-template-columns:minmax(0,1fr); }
+@media (min-width:960px) {
+  .ex-wrap { grid-template-columns:minmax(0,1.45fr) minmax(0,1fr); align-items:start; padding-top:var(--s-6); }
+  body.demo .ex-wrap { grid-template-columns:minmax(0,1.25fr) minmax(0,.9fr) minmax(0,1.05fr); }
+}
+.stimulus { margin:0; position:relative; }
+.stimulus .frame { background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-2); overflow:hidden; box-shadow:var(--shadow-1); }
+.stimulus .frame svg { display:block; width:100%; height:auto; }
+@media (max-width:959px) { .stimulus .frame svg { max-height:45vh; } }
+.stimulus figcaption { margin-top:var(--s-3); font-size:var(--text-sm); color:var(--ink-3); }
+.zoom { position:absolute; right:.6rem; top:.6rem; }
+.zoom .btn { min-height:var(--tap-min); padding:.3rem .8rem; background:rgba(255,253,248,.94); font-size:var(--text-sm); }
+.stimulus.full { position:fixed; inset:0; z-index:40; background:var(--bg); padding:16px; display:grid; place-items:center; }
+.stimulus.full .frame { max-width:min(100%, 150vh); width:100%; }
+.stimulus.full .frame svg { max-height:calc(100vh - 7rem); }
+.stimulus.full figcaption { display:none; }
+
+.panel { display:grid; gap:var(--s-5); align-content:start; }
+.stage { display:grid; gap:var(--s-5); }
+.stage-body { display:grid; gap:var(--s-4); }
+.actions { display:grid; gap:var(--s-3); }
+@media (max-width:959px) {
+  .actions.sticky {
+    position:fixed; left:0; right:0; bottom:0; z-index:5; background:var(--surface-2); margin:0; padding:var(--s-4) 16px calc(var(--s-4) + env(safe-area-inset-bottom));
+    border-top:1px solid var(--line); box-shadow:0 -4px 14px rgba(30,35,32,.06);
+  }
+  .ex-wrap { padding-bottom:16rem; }
+  .actions.sticky .btn-tertiary { min-height:2rem; }
+}
+.rec-label { display:inline-flex; align-items:center; gap:.55em; font-weight:600; color:var(--rec); background:var(--rec-soft); padding:.3em .8em; border-radius:999px; justify-self:start; }
+.rec-dot { width:.75em; height:.75em; border-radius:50%; background:var(--rec); display:inline-block; }
+.rec-mini { display:none; align-items:center; gap:.5em; margin:0; font-weight:600; color:var(--rec); font-size:var(--text-sm); }
+@media (max-width:959px) { .rec-mini { display:flex; } }
+.ok-label { display:inline-flex; align-items:center; gap:.5em; font-weight:600; color:var(--ok); }
+.ok-label .icon { width:1.4em; height:1.4em; }
+
+.timer { display:grid; gap:var(--s-2); }
+.timer-track { height:.75rem; border-radius:999px; background:var(--surface-2); border:1px solid var(--line); overflow:hidden; }
+.timer-fill { height:100%; width:0; background:var(--accent); border-radius:999px; }
+.timer-row { display:flex; justify-content:space-between; gap:var(--s-4); align-items:baseline; }
+.timer-secs { display:none; font-variant-numeric:tabular-nums; color:var(--ink-2); }
+body.demo .timer-secs { display:inline; }
+
+.mic { display:flex; align-items:center; gap:var(--s-4); color:var(--ink-2); }
+.mic-bars { display:inline-flex; gap:4px; align-items:flex-end; height:1.2rem; }
+.mic-bars i { display:block; width:.45rem; border-radius:2px; background:var(--line); }
+.mic-bars i:nth-child(1){height:30%} .mic-bars i:nth-child(2){height:48%} .mic-bars i:nth-child(3){height:66%} .mic-bars i:nth-child(4){height:84%} .mic-bars i:nth-child(5){height:100%}
+.mic-bars i.on { background:var(--accent); }
+@media (prefers-reduced-motion: reduce) { .mic-bars { display:none; } }
+
+.hint-box { background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-1); padding:var(--s-4) var(--s-5); font-size:var(--text-lg); }
+.hint-row { display:flex; flex-wrap:wrap; align-items:center; gap:var(--s-3) var(--s-4); }
+.hint-offer { color:var(--ink-2); font-size:var(--text-sm); }
+
+.choice { display:grid; gap:var(--s-3); }
+.choice label {
+  display:flex; align-items:center; gap:var(--s-4); min-height:var(--tap-main); padding:.5rem var(--s-5);
+  border:2px solid var(--line-strong); border-radius:var(--radius-1); background:var(--surface); cursor:pointer; font-weight:600; font-size:var(--text-lg);
+}
+.choice input { width:1.3rem; height:1.3rem; accent-color:var(--accent); margin:0; }
+.choice label:has(input:checked) { border-color:var(--accent); background:var(--accent-soft); }
+.choice label:has(input:focus-visible) { outline:3px solid var(--focus-ring); outline-offset:2px; box-shadow:0 0 0 7px var(--focus-halo); }
+.choice input:focus-visible { outline:none; box-shadow:none; }
+
+.progress { height:.75rem; border-radius:999px; background:var(--surface-2); overflow:hidden; border:1px solid var(--line); }
+.progress span { display:block; height:100%; width:0; background:var(--accent); transition:width 1.1s linear; }
+@media (prefers-reduced-motion: reduce) { .progress span { transition:none; } }
+
+.addr { width:100%; max-width:22rem; height:auto; }
+
+/* Панель жюри */
+.jury { display:none; background:var(--surface-2); border:1px solid var(--line); border-radius:var(--radius-2); padding:var(--s-5); gap:var(--s-5); align-content:start; }
+body.demo .jury { display:grid; }
+.jury h2 { font-size:var(--text-h3); }
+.jury-head { display:flex; flex-wrap:wrap; gap:var(--s-3); align-items:center; justify-content:space-between; }
+.server { display:inline-flex; align-items:center; gap:.45em; font-size:var(--text-sm); color:var(--ok); font-weight:500; }
+.server i { width:.6em; height:.6em; border-radius:50%; background:var(--ok); display:inline-block; }
+.backup-label { display:none; font-size:var(--text-sm); font-weight:600; color:var(--attention); background:var(--attention-soft); padding:.2em .6em; border-radius:6px; }
+body.backup .backup-label { display:inline-block; }
+.tl-wrap { display:grid; gap:var(--s-2); }
+.timeline { position:relative; height:2.6rem; background:var(--surface); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+.timeline .seg { position:absolute; top:.45rem; bottom:.45rem; background:var(--accent); border-radius:3px; }
+.timeline .plabel { position:absolute; top:50%; transform:translate(-50%,-50%); font-size:.6rem; font-weight:600; color:var(--attention); background:var(--surface); padding:0 2px; font-variant-numeric:tabular-nums; }
+.tl-legend { display:flex; gap:var(--s-4); font-size:var(--text-sm); color:var(--ink-2); }
+.tl-legend span::before { content:""; display:inline-block; width:.8em; height:.8em; border-radius:2px; margin-right:.35em; vertical-align:-.05em; }
+.tl-legend .l-speech::before { background:var(--accent); }
+.tl-legend .l-pause::before { background:var(--surface); border:1px solid var(--line-strong); }
+.stats { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--s-3); margin:0; }
+.stats div { background:var(--surface); border-radius:var(--radius-1); padding:var(--s-3) var(--s-4); border:1px solid var(--line); }
+.stats dt { font-size:var(--text-sm); color:var(--ink-2); line-height:1.3; }
+.stats dd { margin:0; font-size:var(--text-h3); font-weight:600; font-variant-numeric:tabular-nums; line-height:1.3; }
+.after { display:grid; gap:var(--s-3); }
+.after h3 { font-family:var(--font-ui); font-size:var(--text-base); font-weight:600; }
+.transcript { background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-1); padding:var(--s-4); line-height:1.7; }
+.transcript .p { font-size:var(--text-sm); font-weight:600; color:var(--attention); background:var(--attention-soft); border-radius:4px; padding:0 .25em; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.transcript .pr { text-decoration:underline dotted var(--ink-3); text-underline-offset:.25em; text-decoration-thickness:2px; }
+.units { display:flex; flex-wrap:wrap; gap:.35rem; list-style:none; padding:0; margin:0; }
+.units li { font-size:var(--text-sm); padding:.1em .55em; border-radius:6px; border:1px solid var(--line-strong); }
+.units li.found { background:var(--accent-soft); border-color:var(--accent); color:var(--accent); font-weight:500; }
+.units li.missed { color:var(--ink-2); border-style:dashed; }
+.lang-line { font-size:var(--text-sm); color:var(--ink-2); }
+.hidden { display:none !important; }
+
+dialog { border:0; border-radius:var(--radius-2); padding:var(--s-6); max-width:min(32rem, calc(100vw - 32px)); background:var(--surface); color:var(--ink); box-shadow:0 10px 40px rgba(30,35,32,.25); }
+dialog::backdrop { background:rgba(30,35,32,.45); }
+dialog .actions { margin-top:var(--s-5); }
+
+footer.proto-foot { max-width:46rem; margin:0 auto; padding:0 16px var(--s-7); font-size:.8rem; color:var(--ink-3); }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="m8 12.5 2.7 2.7L16.5 9.5"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18a4.5 4.5 0 0 1-.6-9A6 6 0 0 1 18 9.5a4 4 0 0 1-.5 8.5"/><path d="M12 12v8M9 15l3-3 3 3"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+  <symbol id="i-mic-off" viewBox="0 0 24 24"><path d="M3 3l18 18M9 9v2a3 3 0 0 0 5.1 2.1M15 9.3V6a3 3 0 0 0-5.7-1.3"/><path d="M5 11a7 7 0 0 0 11.6 5.3M19 11a7 7 0 0 1-.6 2.8M12 18v3"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M9.3 9a2.8 2.8 0 0 1 5.4 1c0 1.9-2.7 2.6-2.7 4"/><path d="M12 17.5h.01"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6M12 7.5h.01"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4.5M12 17.5h.01"/></symbol>
+  <symbol id="i-expand" viewBox="0 0 24 24"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4A2 2 0 0 0 19 18l-5-9V3"/><path d="M7.5 15h9"/></symbol>
+</svg>
+
+<div class="proto" role="region" aria-label="Панель прототипа">
+  <strong>Прототип, не часть продукта.</strong>
+  <label>Экран
+    <select id="p-screen">
+      <option value="today">Сегодня</option>
+      <option value="exercise">Упражнение: описание картинки</option>
+    </select>
+  </label>
+  <label id="p-today-wrap">Состояние «Сегодня»
+    <select id="p-today">
+      <option value="normal">Обычное</option>
+      <option value="loading">Загрузка</option>
+      <option value="error">Ошибка загрузки</option>
+      <option value="pending">Запись ждёт отправки</option>
+      <option value="done">Всё сделано</option>
+    </select>
+  </label>
+  <label id="p-ex-wrap" class="hidden">Состояние упражнения
+    <select id="p-ex">
+      <option value="intro">E0 Что будем делать</option>
+      <option value="lang">E1 Язык речи</option>
+      <option value="ready">E3 Готовность</option>
+      <option value="recording">E4 Идёт запись</option>
+      <option value="silence">E4 Тишина в начале</option>
+      <option value="denied">Нет доступа к микрофону</option>
+      <option value="interrupted">Прерывание</option>
+      <option value="uploadFailed">Ошибка отправки</option>
+      <option value="short">Короткая запись</option>
+      <option value="silent">Запись без голоса</option>
+      <option value="saved">E6 Сохранено</option>
+    </select>
+  </label>
+  <label><input type="checkbox" id="p-demo"> Демо-режим (панель жюри)</label>
+  <label><input type="checkbox" id="p-fast"> Время x4</label>
+</div>
+
+<header class="app-header">
+  <a class="wordmark" href="#today" aria-label="Es, на главную">Es</a>
+  <span class="badge-synth"><svg class="icon"><use href="#i-flask"/></svg><span id="synth-text">Синтетический пациент. Данные не реальные</span></span>
+  <div class="header-tools">
+    <div class="size-switch" role="radiogroup" aria-label="Размер текста">
+      <button type="button" role="radio" aria-checked="false" data-size="a" aria-label="Обычный текст">A</button>
+      <button type="button" role="radio" aria-checked="true" data-size="a2plus" aria-label="Крупный текст">A+</button>
+      <button type="button" role="radio" aria-checked="false" data-size="a3" aria-label="Очень крупный текст">A++</button>
+    </div>
+    <a class="header-link" href="#settings"><svg class="icon"><use href="#i-gear"/></svg><span class="label">Настройки</span></a>
+  </div>
+</header>
+
+<div id="announcer" class="sr-only" role="status" aria-live="polite"></div>
+
+<!-- ЭКРАН: СЕГОДНЯ -->
+<main id="screen-today" class="page">
+  <div class="today-head">
+    <h1 id="today-h" tabindex="-1">Добрый день, Анна Петровна</h1>
+    <p class="lead" id="today-lead">Сегодня три упражнения, около 12 минут</p>
+  </div>
+
+  <div id="today-notice"></div>
+
+  <div id="today-main">
+    <a class="btn btn-primary btn-block" id="start-btn" href="#exercise">Продолжить занятие <svg class="icon"><use href="#i-arrow"/></svg></a>
+
+    <h2 class="sr-only">Программа на сегодня</h2>
+    <ol class="program" id="program">
+      <li class="st-done">
+        <a class="item" href="#exercise" aria-label="1. Пересказ рассказа. Сделано">
+          <span class="item-num"><svg class="icon"><use href="#i-check"/></svg></span>
+          <span class="item-main"><span class="item-name">Пересказ рассказа</span><span class="item-what">Послушать рассказ и пересказать</span></span>
+          <span class="item-status"><svg class="icon"><use href="#i-check"/></svg>Сделано</span>
+        </a>
+      </li>
+      <li class="st-next" id="row-picture">
+        <a class="item" href="#exercise">
+          <span class="item-num">2</span>
+          <span class="item-main"><span class="item-name">Описание картинки</span><span class="item-what">Рассказать, что видите на картинке. 1-1,5 минуты</span></span>
+          <span class="item-status"><svg class="icon"><use href="#i-arrow"/></svg><span class="st-text">Следующее</span></span>
+        </a>
+      </li>
+      <li class="st-wait">
+        <a class="item" href="#exercise">
+          <span class="item-num">3</span>
+          <span class="item-main"><span class="item-name">Назовите животных</span><span class="item-what">Назвать как можно больше животных. 1 минута</span></span>
+          <span class="item-status">Позже</span>
+        </a>
+      </li>
+      <li class="st-wait">
+        <div class="item" aria-disabled="true">
+          <span class="item-num">4</span>
+          <span class="item-main"><span class="item-name">Пересказ, вторая часть</span><span class="item-what">Откроется в 14:35. Пока можно сделать другие упражнения</span></span>
+          <span class="item-status"><svg class="icon"><use href="#i-clock"/></svg>В 14:35</span>
+        </div>
+      </li>
+    </ol>
+
+    <div class="week">
+      <p>На этой неделе вы занимались 4 дня из 7.</p>
+      <details class="why">
+        <summary>Почему такие упражнения?</summary>
+        <p>Упражнения подобраны под вас: они тренируют память через то, что у вас получается легко. Подбор меняется каждый день.</p>
+      </details>
+    </div>
+  </div>
+</main>
+
+<!-- ЭКРАН: УПРАЖНЕНИЕ -->
+<div id="screen-exercise" class="hidden">
+  <div class="ex-top">
+    <a class="back" href="#today" id="back-link"><svg class="icon"><use href="#i-back"/></svg>К программе</a>
+    <span class="ex-step">Упражнение 2 из 3</span>
+  </div>
+  <main class="ex-wrap">
+    <figure class="stimulus" id="stimulus">
+      <div class="frame">
+        <svg viewBox="0 0 800 560" role="img" aria-label="Иллюстрация для упражнения: двор у дома" stroke="#1E2320" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+          <rect width="800" height="560" fill="#E3EAE6" stroke="none"/>
+          <path d="M0 405H800V560H0Z" fill="#D9D1BC" stroke="none"/>
+          <!-- дом -->
+          <path d="M-12 140 96 62 204 140" fill="#B9776A"/>
+          <rect x="-4" y="138" width="196" height="268" fill="#E8DCC5"/>
+          <rect x="28" y="175" width="86" height="76" fill="#F5F1E6"/>
+          <path d="M71 175v76M28 213h86" stroke-width="2.5"/>
+          <circle cx="52" cy="200" r="10" fill="#E2B99B" stroke-width="2.5"/>
+          <path d="M43 213c2-6 16-6 18 0" fill="#7F8FA6" stroke-width="2.5"/>
+          <rect x="124" y="300" width="52" height="106" fill="#9B7A5C"/>
+          <circle cx="166" cy="355" r="3" fill="#1E2320" stroke="none"/>
+          <!-- туча и дождь -->
+          <g fill="#C9D3D0">
+            <ellipse cx="640" cy="82" rx="58" ry="30"/>
+            <ellipse cx="690" cy="96" rx="42" ry="24"/>
+            <ellipse cx="596" cy="98" rx="38" ry="22"/>
+          </g>
+          <path d="M600 132l-8 18M630 136l-8 18M660 134l-8 18M690 130l-8 18M616 164l-6 13M676 162l-6 13" stroke="#5E7F8A" stroke-width="3"/>
+          <!-- верёвка с бельём -->
+          <path d="M262 150V406M722 150V406" stroke="#7A5C43" stroke-width="7"/>
+          <path d="M262 160Q492 206 722 160" fill="none" stroke-width="2.5"/>
+          <path d="M300 174l18 2 4 8h28l4-6 18-1 6 22-14 4v46h-58v-48l-12-4z" fill="#9DB7AE"/>
+          <rect x="398" y="184" width="54" height="74" rx="3" fill="#D8A48F"/>
+          <path d="M406 200h38M406 212h38" stroke-width="2" stroke="#A86F5C"/>
+          <path d="M486 188h14v34l12 8c4 3 2 10-4 10h-20z" fill="#E8C66A"/>
+          <rect x="540" y="184" width="8" height="14" fill="#7A5C43" stroke-width="2"/>
+          <path d="M600 178h50l14 70h-78z" fill="#C9B4D6"/>
+          <rect x="320" y="170" width="6" height="12" fill="#7A5C43" stroke-width="1.5"/>
+          <rect x="424" y="180" width="6" height="12" fill="#7A5C43" stroke-width="1.5"/>
+          <rect x="492" y="182" width="6" height="12" fill="#7A5C43" stroke-width="1.5"/>
+          <rect x="622" y="172" width="6" height="12" fill="#7A5C43" stroke-width="1.5"/>
+          <!-- женщина вешает бельё -->
+          <path d="M447 262 476 214" stroke-width="6" stroke="#E2B99B"/>
+          <path d="M447 262 476 214" fill="none" stroke-width="0"/>
+          <path d="M413 258l-22 46" stroke-width="6" stroke="#E2B99B"/>
+          <path d="M408 252h46l18 96h-82z" fill="#7F9C8F"/>
+          <circle cx="431" cy="232" r="19" fill="#E2B99B"/>
+          <path d="M412 228c2-16 34-20 39-2-8-5-24-7-39 2z" fill="#8A8F96"/>
+          <path d="M414 348v50M448 348v50" stroke-width="5"/>
+          <!-- корзина -->
+          <path d="M470 372h70l-8 34h-54z" fill="#C9A46B"/>
+          <path d="M478 384h56M482 395h48" stroke-width="2" stroke="#8E6B4E"/>
+          <path d="M478 372c6-8 18-6 22 0M508 372c6-9 20-7 24 0" fill="#F5F1E6" stroke-width="2.5"/>
+          <!-- мальчик бежит -->
+          <path d="M594 352l-16 22M594 352l22 14" stroke-width="5"/>
+          <path d="M588 392l-20 26M600 392l18 24" stroke-width="6"/>
+          <path d="M584 346h22l-2 50h-20z" fill="#D8A48F"/>
+          <circle cx="596" cy="330" r="15" fill="#E2B99B"/>
+          <path d="M582 326c4-12 24-12 28 0-9-3-19-3-28 0z" fill="#6B5444"/>
+          <!-- собака с носком -->
+          <path d="M680 404l-6 22M700 404l4 22M726 400l-2 24M742 398l6 22" stroke-width="5"/>
+          <ellipse cx="712" cy="392" rx="40" ry="17" fill="#B98B5E"/>
+          <path d="M672 386c-12-6-18-16-16-26" fill="none" stroke-width="4"/>
+          <circle cx="756" cy="372" r="15" fill="#B98B5E"/>
+          <path d="M748 362c-6 6-6 16 0 20" fill="#8E6B4E" stroke-width="2.5"/>
+          <circle cx="760" cy="368" r="2.5" fill="#1E2320" stroke="none"/>
+          <path d="M770 380l12 4v14c0 4 6 6 8 2" fill="#E8C66A" stroke-width="2.5"/>
+          <!-- скамейка и кот -->
+          <path d="M214 466v34M366 466v34" stroke="#6B4E36" stroke-width="6"/>
+          <rect x="200" y="452" width="180" height="16" rx="3" fill="#8E6B4E"/>
+          <ellipse cx="300" cy="438" rx="34" ry="15" fill="#5E655F"/>
+          <circle cx="270" cy="432" r="12" fill="#5E655F"/>
+          <path d="M261 424l2-12 8 8M272 420l6-10 4 12" fill="#5E655F" stroke-width="2.5"/>
+          <path d="M332 444c14 2 18 12 8 16" fill="none" stroke-width="4"/>
+          <path d="M264 432h6" stroke-width="2"/>
+          <!-- лужа -->
+          <ellipse cx="540" cy="480" rx="62" ry="12" fill="#BFD0CF" stroke-width="2.5"/>
+        </svg>
+      </div>
+      <div class="zoom"><button class="btn btn-secondary" type="button" id="zoom-btn"><svg class="icon"><use href="#i-expand"/></svg><span>Открыть крупно</span></button></div>
+      <figcaption>В прототипе заглушка. Финальная иллюстрация рисуется отдельно и не повторяет «Cookie Theft».</figcaption>
+    </figure>
+
+    <section class="panel" id="panel" aria-labelledby="stage-h"></section>
+
+    <aside class="jury" id="jury" aria-label="Панель жюри">
+      <div class="jury-head">
+        <h2>Что слышит система</h2>
+        <span class="server"><i></i>Локальный сервер: работает</span>
+      </div>
+      <div class="jury-head">
+        <span class="backup-label">Заранее записанный пример</span>
+        <button class="btn btn-secondary" type="button" id="backup-btn">Резервная запись</button>
+      </div>
+      <div class="tl-wrap">
+        <p class="small muted">В реальном времени, считает браузер</p>
+        <div class="timeline" id="timeline" aria-hidden="true"></div>
+        <div class="tl-legend"><span class="l-speech">речь</span><span class="l-pause">пауза</span></div>
+      </div>
+      <dl class="stats">
+        <div><dt>Время до первого слова</dt><dd id="m-first">-</dd></div>
+        <div><dt>Паузы длиннее 1 с</dt><dd id="m-pauses">0</dd></div>
+        <div><dt>Доля пауз</dt><dd id="m-ratio">-</dd></div>
+        <div><dt>Текущая пауза</dt><dd id="m-current">-</dd></div>
+      </dl>
+      <div class="after" id="after">
+        <h3>После распознавания</h3>
+        <p class="muted small" id="after-wait">Появится через 5-15 секунд после остановки записи.</p>
+        <div id="after-body" class="hidden">
+          <div class="transcript" lang="ru">я вижу <span class="p">1,8 с</span> женщину, <span class="pr">она</span> вешает <span class="p">2,4 с</span> бельё на верёвку. <span class="pr">Там</span> мальчик бежит за <span class="p">1,2 с</span> собакой, у <span class="pr">неё</span> в зубах носок. На скамейке кот спит. <span class="p">3,1 с</span> Наверное, сейчас пойдёт дождь.</div>
+          <dl class="stats" style="margin-top:.6rem">
+            <div><dt>Слов в минуту</dt><dd>92</dd></div>
+            <div><dt>Доля местоимений</dt><dd>18 %</dd></div>
+            <div><dt>Пауза перед содержательным словом</dt><dd>0,9 с</dd></div>
+            <div><dt>Разнообразие слов</dt><dd>0,81</dd></div>
+          </dl>
+          <p class="small muted" style="margin-top:.6rem">Смысловые единицы картинки: 9 из 14 (если backend добавит поле)</p>
+          <ul class="units" aria-label="Смысловые единицы картинки">
+            <li class="found">женщина</li><li class="found">бельё</li><li class="found">верёвка</li><li class="found">мальчик</li><li class="found">собака</li><li class="found">носок</li><li class="found">кот</li><li class="found">скамейка</li><li class="found">дождь</li>
+            <li class="missed">дом</li><li class="missed">окно</li><li class="missed">дедушка</li><li class="missed">корзина</li><li class="missed">лужа</li>
+          </ul>
+        </div>
+        <p class="lang-line">Речь: русский. Классификатор ADReSS работает только для английской речи, для русской показаны показатели речи.</p>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<dialog id="stop-dialog" aria-labelledby="stop-h">
+  <h2 id="stop-h">Остановить упражнение?</h2>
+  <p style="margin-top:.6rem">Эта запись не сохранится.</p>
+  <div class="actions">
+    <button class="btn btn-primary" type="button" id="stop-continue" autofocus>Продолжить упражнение</button>
+    <button class="btn btn-secondary" type="button" id="stop-leave">Остановить и выйти</button>
+  </div>
+</dialog>
+
+<footer class="proto-foot">Прототип Es для frontend: токены, раскладка и тексты по es/docs/UX-SPEC.md. Запись имитируется, микрофон не используется.</footer>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (s) { return document.querySelector(s); };
+  var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var store = {
+    get: function (k) { try { return window.localStorage.getItem(k); } catch (e) { return null; } },
+    set: function (k, v) { try { window.localStorage.setItem(k, v); } catch (e) {} }
+  };
+  function announce(text) { var a = $("#announcer"); a.textContent = ""; setTimeout(function () { a.textContent = text; }, 60); }
+  function icon(id) { return '<svg class="icon" aria-hidden="true"><use href="#' + id + '"/></svg>'; }
+
+  /* Размер текста */
+  var sizeBtns = document.querySelectorAll(".size-switch button");
+  function setSize(size) {
+    document.documentElement.setAttribute("data-size", size);
+    sizeBtns.forEach(function (b) { b.setAttribute("aria-checked", b.dataset.size === size ? "true" : "false"); b.tabIndex = b.dataset.size === size ? 0 : -1; });
+    store.set("es-size", size);
+  }
+  sizeBtns.forEach(function (b, i) {
+    b.addEventListener("click", function () { setSize(b.dataset.size); });
+    b.addEventListener("keydown", function (e) {
+      var d = e.key === "ArrowRight" || e.key === "ArrowDown" ? 1 : e.key === "ArrowLeft" || e.key === "ArrowUp" ? -1 : 0;
+      if (!d) return; e.preventDefault();
+      var n = sizeBtns[(i + d + sizeBtns.length) % sizeBtns.length]; setSize(n.dataset.size); n.focus();
+    });
+  });
+  setSize(store.get("es-size") || "a2plus");
+
+  /* Маршруты */
+  var screens = { today: $("#screen-today"), exercise: $("#screen-exercise") };
+  function route() { show((location.hash || "#today").slice(1)); }
+  function navigate(name) {
+    show(name);
+    try { history.replaceState(null, "", "#" + name); } catch (e) {}
+  }
+  document.addEventListener("click", function (e) {
+    if (e.defaultPrevented) return;
+    var a = e.target.closest('a[href^="#"]'); if (!a) return;
+    e.preventDefault(); navigate(a.getAttribute("href").slice(1));
+  });
+  function show(h) {
+    if (h === "settings") { h = "today"; announce("Настройки в прототипе не показаны"); }
+    if (!screens[h]) h = "today";
+    Object.keys(screens).forEach(function (k) { screens[k].classList.toggle("hidden", k !== h); });
+    $("#p-screen").value = h;
+    $("#p-today-wrap").classList.toggle("hidden", h !== "today");
+    $("#p-ex-wrap").classList.toggle("hidden", h !== "exercise");
+    if (h === "exercise") { if (!rec.stage || rec.stage === "left") go("intro"); }
+    else { stopTimers(); rec.stage = "left"; }
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener("hashchange", route);
+  $("#p-screen").addEventListener("change", function (e) { navigate(e.target.value); });
+
+  /* Сегодня: состояния */
+  function setToday(state) {
+    var notice = $("#today-notice"), main = $("#today-main"), lead = $("#today-lead"), prog = $("#program");
+    notice.innerHTML = ""; main.classList.remove("hidden"); lead.textContent = "Сегодня три упражнения, около 12 минут";
+    var row = $("#row-picture");
+    row.className = "st-next"; row.querySelector(".st-text").textContent = "Следующее";
+    if (state === "loading") {
+      lead.textContent = "Готовим программу на сегодня";
+      main.classList.add("hidden");
+      notice.innerHTML = '<div aria-hidden="true">' + new Array(4).join('<div class="skeleton-row"><span></span><span></span></div>') + '</div>';
+    } else if (state === "error") {
+      main.classList.add("hidden");
+      notice.innerHTML = '<div class="notice notice-error" role="alert">' + icon("i-alert") + '<div class="notice-body"><p><strong>Не получилось загрузить программу.</strong></p><p>Проверьте, что программа Es запущена на этом компьютере.</p><div class="notice-actions"><button class="btn btn-secondary" type="button" data-today="normal">Попробовать ещё раз</button></div></div></div>';
+    } else if (state === "pending") {
+      row.className = "st-pending"; row.querySelector(".st-text").textContent = "Ждёт отправки";
+      row.querySelector(".item-status svg use").setAttribute("href", "#i-cloud");
+      notice.innerHTML = '<div class="notice notice-attention" role="status">' + icon("i-cloud") + '<div class="notice-body"><p>Одна запись ещё не отправлена. Она сохранена на этом устройстве.</p><div class="notice-actions"><button class="btn btn-secondary" type="button" data-today="normal">Отправить сейчас</button></div></div></div>';
+    } else if (state === "done") {
+      lead.textContent = "";
+      main.classList.add("hidden");
+      notice.innerHTML = '<div class="notice" role="status">' + icon("i-check-circle") + '<div class="notice-body"><p><strong>На сегодня всё. Спасибо!</strong></p><p class="muted">Следующие упражнения завтра.</p></div></div>';
+    }
+    if (state !== "pending") row.querySelector(".item-status svg use").setAttribute("href", "#i-arrow");
+    $("#p-today").value = state;
+  }
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest("[data-today]"); if (t) { setToday(t.dataset.today); $("#today-h").focus(); }
+  });
+  $("#p-today").addEventListener("change", function (e) { setToday(e.target.value); });
+
+  /* Демо-режим и скорость */
+  var demo = false, speed = 1;
+  $("#p-demo").addEventListener("change", function (e) {
+    demo = e.target.checked; document.body.classList.toggle("demo", demo);
+    $("#synth-text").textContent = demo ? "Демо: синтетический пациент, запись живая" : "Синтетический пациент. Данные не реальные";
+  });
+  $("#p-fast").addEventListener("change", function (e) { speed = e.target.checked ? 4 : 1; });
+
+  /* Увеличение картинки */
+  var stim = $("#stimulus"), zoomBtn = $("#zoom-btn");
+  zoomBtn.addEventListener("click", function () {
+    var full = stim.classList.toggle("full");
+    zoomBtn.innerHTML = full ? icon("i-close") + "<span>Закрыть</span>" : icon("i-expand") + "<span>Открыть крупно</span>";
+    zoomBtn.focus();
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && stim.classList.contains("full")) { zoomBtn.click(); }
+  });
+
+  /* Имитация записи */
+  var MAX = 90000, HINTS = ["Что делают люди на картинке?", "Что происходит слева?", "Что может случиться дальше?"];
+  var rec = { stage: null, t: 0, speechMs: 0, first: null, pauses: 0, pauseStart: null, silentMode: false, hintIdx: -1, timer: null, segs: [], backup: false, lastSpeech: false, langEn: false };
+  // заранее заданный рисунок речи и пауз (мс): [начало, конец] отрезков речи
+  var PATTERN = (function () {
+    var out = [], t = 1420, seed = 7;
+    function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+    while (t < MAX) {
+      var sp = 1600 + rnd() * 3600; out.push([t, Math.min(MAX, t + sp)]); t += sp;
+      var r = rnd(); t += r < .55 ? 250 + rnd() * 700 : r < .85 ? 1100 + rnd() * 1300 : 2100 + rnd() * 1400;
+    }
+    return out;
+  })();
+  function speakingAt(ms) {
+    if (rec.silentMode) return false;
+    for (var i = 0; i < PATTERN.length; i++) { if (ms >= PATTERN[i][0] && ms < PATTERN[i][1]) return true; if (PATTERN[i][0] > ms) break; }
+    return false;
+  }
+  function stopTimers() { if (rec.timer) { clearInterval(rec.timer); rec.timer = null; } }
+  function fmt(ms) { var s = Math.floor(ms / 1000); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+  function secs(ms) { return (ms / 1000).toFixed(1).replace(".", ",") + " с"; }
+
+  function resetJury() {
+    $("#timeline").innerHTML = ""; $("#m-first").textContent = "-"; $("#m-pauses").textContent = "0";
+    $("#m-ratio").textContent = "-"; $("#m-current").textContent = "-";
+    $("#after-wait").textContent = "Появится через 5-15 секунд после остановки записи.";
+    $("#after-wait").classList.remove("hidden"); $("#after-body").classList.add("hidden");
+  }
+
+  var panel = $("#panel");
+  var T = {
+    intro: function () {
+      return '<div class="stage"><h2 id="stage-h" tabindex="-1">Опишите картинку</h2><div class="stage-body"><p class="lead">Расскажите своими словами всё, что видите: кто там и что происходит.</p><p class="muted">Это займёт около полутора минут. Подсказка будет рядом.</p></div><div class="actions sticky"><button class="btn btn-primary btn-block" data-go="lang">Понятно, дальше</button></div></div>';
+    },
+    lang: function () {
+      return '<div class="stage"><h2 id="stage-h" tabindex="-1">На каком языке будете говорить?</h2><fieldset class="choice" style="border:0;padding:0;margin:0"><legend class="sr-only">Язык речи</legend><label><input type="radio" name="lang" value="ru" ' + (rec.langEn ? "" : "checked") + '> Русский</label><label lang="en"><input type="radio" name="lang" value="en" ' + (rec.langEn ? "checked" : "") + '> English</label></fieldset><p class="muted">Язык можно выбирать перед каждым упражнением.</p><div class="actions sticky"><button class="btn btn-primary btn-block" data-go="ready">Дальше</button></div></div>';
+    },
+    ready: function () {
+      return '<div class="stage"><h2 id="stage-h" tabindex="-1">Когда будете готовы, начните запись</h2><div class="stage-body"><p>Рассказывайте всё, что видите на картинке. Говорите как обычно, спешить не нужно.</p><p class="ok-label" style="font-weight:500">' + icon("i-mic") + 'Микрофон проверен</p></div><div class="actions sticky"><button class="btn btn-primary btn-block" data-go="recording">' + icon("i-mic") + 'Начать запись</button></div></div>';
+    },
+    recording: function () {
+      return '<div class="stage"><p class="rec-label"><span class="rec-dot" aria-hidden="true"></span>Идёт запись</p><h2 id="stage-h" tabindex="-1">Расскажите, что видите на картинке</h2><div id="silence-slot"></div><div class="timer"><div class="timer-track" aria-hidden="true"><div class="timer-fill" id="t-fill"></div></div><div class="timer-row"><span id="t-phrase">Говорите как обычно</span><span class="timer-secs" id="t-secs">0:00 из 1:30</span></div></div><p class="mic"><span class="mic-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span id="mic-text">Микрофон слышит вас</span></p><div class="hint-row"><button class="btn btn-secondary" type="button" id="hint-btn">' + icon("i-help") + 'Подсказка</button><span class="hint-offer hidden" id="hint-offer">Можно взять подсказку</span></div><div class="hint-box hidden" id="hint-box" role="status"></div><div class="actions sticky"><p class="rec-mini" aria-hidden="true"><span class="rec-dot"></span>Идёт запись</p><button class="btn btn-primary btn-block" id="finish-btn">Закончить запись</button></div></div>';
+    },
+    saving: function () {
+      return '<div class="stage"><h2 id="stage-h" tabindex="-1">Сохраняем запись</h2><div class="progress" aria-hidden="true"><span id="up-bar"></span></div><p class="muted">Это несколько секунд.</p></div>';
+    },
+    saved: function () {
+      return '<div class="stage"><p class="ok-label">' + icon("i-check-circle") + 'Сохранено</p><h2 id="stage-h" tabindex="-1">Спасибо. Упражнение сохранено.</h2><p>Следующее упражнение: «Назовите животных». Около минуты.</p><div class="actions sticky"><button class="btn btn-primary btn-block" data-go="intro">Следующее упражнение ' + icon("i-arrow") + '</button><a class="btn btn-secondary btn-block" href="#today">Вернуться к программе</a></div></div>';
+    },
+    short: function () {
+      return '<div class="stage"><h2 id="stage-h" tabindex="-1">Запись получилась короткой</h2><p>Можно оставить так или записать ещё раз. Оба варианта подходят.</p><div class="actions sticky"><button class="btn btn-primary btn-block" data-go="saving">Оставить так</button><button class="btn btn-secondary btn-block" data-go="ready">Записать ещё раз</button></div></div>';
+    },
+    silent: function () {
+      return '<div class="stage"><h2 id="stage-h" tabindex="-1">Запись получилась без голоса</h2><p>Возможно, микрофон выключен или находится далеко.</p><div class="actions sticky"><button class="btn btn-primary btn-block" data-go="ready">Проверить микрофон</button><button class="btn btn-secondary btn-block" data-go="recording">Попробовать ещё раз</button><a class="btn btn-tertiary" href="#today">Пропустить на сегодня</a></div></div>';
+    },
+    denied: function () {
+      return '<div class="stage"><p class="ok-label" style="color:var(--ink-2)">' + icon("i-mic-off") + 'Микрофон недоступен</p><h2 id="stage-h" tabindex="-1">Нужен доступ к микрофону</h2><div class="stage-body"><p>Браузер не разрешил микрофон. Нажмите на значок замка слева от адреса сайта, выберите «Микрофон: разрешить» и нажмите «Попробовать ещё раз».</p>' +
+        '<svg class="addr" viewBox="0 0 360 64" role="img" aria-label="Адресная строка браузера, значок замка слева"><rect x="1.5" y="10" width="357" height="44" rx="22" fill="#FFFDF8" stroke="#857D6E" stroke-width="2"/><circle cx="34" cy="32" r="17" fill="#F2C230"/><rect x="27" y="30" width="14" height="11" rx="2" fill="none" stroke="#1E2320" stroke-width="2.2"/><path d="M30 30v-4a4 4 0 0 1 8 0v4" fill="none" stroke="#1E2320" stroke-width="2.2"/><rect x="64" y="27" width="160" height="10" rx="5" fill="#D8D0C2"/></svg>' +
+        '<p class="muted">Можно попросить близкого помочь с настройкой.</p></div><div class="actions sticky"><button class="btn btn-primary btn-block" data-go="ready">Попробовать ещё раз</button><a class="btn btn-secondary btn-block" href="#today">Вернуться к программе</a></div></div>';
+    },
+    interrupted: function () {
+      var kept = Math.round(rec.speechMs / 1000);
+      var canKeep = rec.speechMs >= 20000;
+      return '<div class="stage"><h2 id="stage-h" tabindex="-1">Упражнение прервалось</h2><div class="stage-body"><p>Ничего страшного, можно начать его заново.</p>' + (canKeep ? '<p class="muted">Вы успели рассказать около ' + kept + ' секунд.</p>' : "") + '</div><div class="actions sticky"><button class="btn btn-primary btn-block" data-go="ready">Начать заново</button>' + (canKeep ? '<button class="btn btn-secondary btn-block" data-go="saving">Сохранить то, что успели</button>' : "") + '<a class="btn btn-tertiary" href="#today">Вернуться к программе</a></div></div>';
+    },
+    uploadFailed: function () {
+      return '<div class="stage" role="alert"><p class="ok-label" style="color:var(--attention)">' + icon("i-cloud") + 'Ждёт отправки</p><h2 id="stage-h" tabindex="-1">Запись пока не отправилась</h2><div class="stage-body"><p>Запись сохранена на этом устройстве, но пока не отправилась.</p><p class="muted">Проверьте, что программа Es запущена. Запись никуда не пропадёт.</p></div><div class="actions sticky"><button class="btn btn-primary btn-block" data-go="saving">Отправить ещё раз</button><a class="btn btn-secondary btn-block" href="#today" data-pending="1">Отправить позже</a></div></div>';
+    }
+  };
+
+  var failNextUpload = false;
+  function go(stage, opts) {
+    opts = opts || {};
+    stopTimers();
+    if (stage === "silence") { rec.silentMode = true; stage = "recording"; } else if (stage === "recording" && !opts.keepMode) { rec.silentMode = false; }
+    rec.stage = stage;
+    panel.innerHTML = T[stage]();
+    $("#p-ex").value = rec.silentMode && stage === "recording" ? "silence" : stage;
+    var h = $("#stage-h");
+    if (stage === "recording") { startRecording(opts.preset); $("#finish-btn").focus(); announce("Идёт запись"); }
+    else if (h && !opts.noFocus) { h.focus(); }
+    if (stage === "saving") {
+      requestAnimationFrame(function () { requestAnimationFrame(function () { var b = $("#up-bar"); if (b) b.style.width = "100%"; }); });
+      setTimeout(function () {
+        if (rec.stage !== "saving") return;
+        if (failNextUpload) { failNextUpload = false; go("uploadFailed"); announce("Запись пока не отправилась"); }
+        else { go("saved"); announce("Спасибо. Упражнение сохранено"); showAfter(); }
+      }, reduceMotion ? 600 : 1300);
+    }
+    if (stage === "uploadFailed") { $("#p-ex").value = "uploadFailed"; }
+  }
+
+  function startRecording(preset) {
+    rec.t = 0; rec.speechMs = 0; rec.first = null; rec.pauses = 0; rec.pauseStart = null; rec.hintIdx = -1; rec.lastSpeech = false;
+    resetJury();
+    if (preset) { // перемотка к середине записи для прототипа
+      for (var ms = 0; ms < preset; ms += 250) tick(250, true);
+    }
+    rec.timer = setInterval(function () { tick(250 * speed); }, 250);
+    tick(0);
+  }
+
+  function tick(dt, silent) {
+    rec.t += dt;
+    var t = Math.min(rec.t, MAX);
+    var speaking = speakingAt(t);
+    if (speaking) {
+      rec.speechMs += dt;
+      if (rec.first === null) rec.first = t;
+      if (rec.pauseStart !== null) {
+        var plen = t - rec.pauseStart;
+        if (plen >= 1000 && rec.first !== null && rec.pauseStart > rec.first) rec.pauses++;
+        if (plen >= 2000 && rec.pauseStart > (rec.first || 0)) addPauseLabel(rec.pauseStart, t);
+        rec.pauseStart = null;
+      }
+      if (!rec.lastSpeech) rec.segs.push([t, t]);
+      rec.segs[rec.segs.length - 1][1] = t;
+    } else if (rec.pauseStart === null) { rec.pauseStart = t; }
+    rec.lastSpeech = speaking;
+    if (silent) return;
+    render(t, speaking);
+    if (rec.t >= MAX) { stopTimers(); finish("timeout"); }
+  }
+
+  function addPauseLabel(a, b) {
+    var tl = $("#timeline"); if (!tl) return;
+    var el = document.createElement("span"); el.className = "plabel";
+    el.style.left = ((a + b) / 2 / MAX * 100) + "%"; el.textContent = secs(b - a); tl.appendChild(el);
+  }
+
+  function render(t, speaking) {
+    var fill = $("#t-fill"); if (!fill) return;
+    fill.style.width = (t / MAX * 100) + "%";
+    var phrase = t < 60000 ? "Говорите как обычно" : t < 80000 ? "Можно говорить ещё немного" : "Осталось совсем немного";
+    $("#t-phrase").textContent = phrase;
+    $("#t-secs").textContent = fmt(t) + " из 1:30";
+    // уровень микрофона
+    var bars = document.querySelectorAll(".mic-bars i"), lvl = speaking ? 2 + Math.floor(Math.random() * 3.2) : (Math.random() < .3 ? 1 : 0);
+    bars.forEach(function (b, i) { b.classList.toggle("on", i < lvl); });
+    $("#mic-text").textContent = speaking ? "Микрофон слышит вас" : (reduceMotion ? "Сейчас тихо" : "Микрофон включён");
+    // тишина в начале
+    var slot = $("#silence-slot");
+    if (rec.first === null && t >= 10000 && slot && !slot.innerHTML) {
+      slot.innerHTML = '<div class="notice notice-attention" role="status">' + icon("i-info") + '<div class="notice-body"><p>Пока вас не слышно. Говорите как обычно, громче не нужно.</p><p class="small">Если вы говорите, а полоса не двигается, проверьте микрофон.</p></div></div>';
+    }
+    if (rec.first !== null && slot && slot.innerHTML) slot.innerHTML = "";
+    // предложение подсказки после 7 секунд тишины
+    var curPause = rec.pauseStart !== null ? t - rec.pauseStart : 0;
+    var offer = $("#hint-offer"); if (offer) offer.classList.toggle("hidden", curPause < 7000);
+    // объявления времени для диктора
+    var left = MAX - t;
+    if (Math.abs(left - 30000) < 250 * speed / 2 + 1) announce("Можно говорить ещё около 30 секунд");
+    if (Math.abs(left - 10000) < 250 * speed / 2 + 1) announce("Осталось совсем немного");
+    // панель жюри
+    if (demo) renderJury(t, curPause);
+  }
+
+  function renderJury(t, curPause) {
+    var tl = $("#timeline");
+    tl.querySelectorAll(".seg").forEach(function (n) { n.remove(); });
+    rec.segs.forEach(function (s) {
+      var el = document.createElement("span"); el.className = "seg";
+      el.style.left = (s[0] / MAX * 100) + "%"; el.style.width = Math.max(.3, (s[1] - s[0]) / MAX * 100) + "%";
+      tl.insertBefore(el, tl.firstChild);
+    });
+    $("#m-first").textContent = rec.first === null ? "-" : secs(rec.first);
+    $("#m-pauses").textContent = String(rec.pauses);
+    var spoken = rec.first === null ? 0 : t - rec.first;
+    $("#m-ratio").textContent = spoken > 0 ? Math.round((1 - Math.min(1, rec.speechMs / Math.max(1, t - rec.first + 250))) * 100) + " %" : "-";
+    $("#m-current").textContent = curPause >= 300 && rec.first !== null ? secs(curPause) : "-";
+  }
+
+  function showAfter() {
+    if (!demo) return;
+    $("#after-wait").textContent = "Распознаём речь";
+    setTimeout(function () { $("#after-wait").classList.add("hidden"); $("#after-body").classList.remove("hidden"); }, reduceMotion ? 300 : 2200);
+  }
+
+  function finish(reason) {
+    stopTimers();
+    rec.segs = rec.segs || [];
+    if (rec.speechMs < 3000) { go("silent"); announce("Запись получилась без голоса"); return; }
+    if (rec.speechMs < 20000 && reason !== "timeout") { go("short"); return; }
+    go("saving");
+    if (reason === "timeout") announce("Спасибо, этого достаточно");
+  }
+
+  /* Клики внутри панели */
+  panel.addEventListener("click", function (e) {
+    var g = e.target.closest("[data-go]");
+    if (g) {
+      e.preventDefault();
+      if (rec.stage === "lang") { var c = panel.querySelector("input[name=lang]:checked"); rec.langEn = c && c.value === "en"; }
+      if (g.dataset.go === "recording") rec.segs = [];
+      if (g.dataset.go === "ready" || g.dataset.go === "recording") { document.body.classList.remove("backup"); }
+      go(g.dataset.go);
+      return;
+    }
+    if (e.target.closest("#finish-btn")) { finish("user"); return; }
+    if (e.target.closest("#hint-btn")) {
+      rec.hintIdx = (rec.hintIdx + 1) % HINTS.length;
+      var box = $("#hint-box"); box.classList.remove("hidden"); box.textContent = HINTS[rec.hintIdx];
+      $("#hint-offer").classList.add("hidden");
+      return;
+    }
+    var p = e.target.closest("[data-pending]");
+    if (p) { setTimeout(function () { setToday("pending"); }, 0); }
+  });
+
+  /* Состояния из панели прототипа */
+  $("#p-ex").addEventListener("change", function (e) {
+    var v = e.target.value;
+    document.body.classList.remove("backup");
+    rec.segs = [];
+    if (v === "recording") { go("recording", { preset: 47000 }); return; }
+    if (v === "interrupted") { rec.speechMs = 41000; }
+    if (v === "saved") { go("saved"); showAfterInstant(); return; }
+    go(v);
+  });
+  function showAfterInstant() { if (demo) { $("#after-wait").classList.add("hidden"); $("#after-body").classList.remove("hidden"); } }
+
+  $("#backup-btn").addEventListener("click", function () {
+    if (screens.exercise.classList.contains("hidden")) navigate("exercise");
+    document.body.classList.add("backup"); rec.segs = []; go("recording");
+  });
+
+  /* Выход во время записи: защитный диалог */
+  var dlg = $("#stop-dialog");
+  $("#back-link").addEventListener("click", function (e) {
+    if (rec.stage === "recording") {
+      e.preventDefault();
+      if (typeof dlg.showModal === "function") dlg.showModal(); else if (confirm("Остановить упражнение? Эта запись не сохранится.")) navigate("today");
+    }
+  });
+  $("#stop-continue").addEventListener("click", function () { dlg.close(); });
+  $("#stop-leave").addEventListener("click", function () { dlg.close(); stopTimers(); rec.stage = "left"; navigate("today"); });
+  dlg.addEventListener("close", function () { if (rec.stage === "recording") { var f = $("#finish-btn"); if (f) f.focus(); } });
+
+  /* Настоящее прерывание: вкладка скрыта дольше 5 секунд во время записи */
+  var hiddenAt = null;
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) { hiddenAt = Date.now(); return; }
+    if (hiddenAt && rec.stage === "recording" && Date.now() - hiddenAt > 5000) { go("interrupted"); announce("Упражнение прервалось"); }
+    hiddenAt = null;
+  });
+
+  route();
+  setToday("normal");
+})();
+</script>
+</body>
+</html>

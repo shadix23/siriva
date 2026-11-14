@@ -1,0 +1,294 @@
+{
+ "source": "TRIBE v2 predicted load",
+ "label_ru": "Предсказанная нагрузка TRIBE v2 (полный прогон на Mac, английские стимулы, модальности: audio). Не измерение мозга.",
+ "model_version": "facebook/tribev2 best.ckpt (f894e78), cortex fsaverage5 only; run on Mac M5 16 GB",
+ "atlas": "Schaefer-2018 400 parcels / Yeo 7 networks (volumetric, vol_to_surf) + Destrieux surface atlas, fsaverage5",
+ "domains": [
+  "episodic_memory",
+  "word_access",
+  "phrase_building",
+  "attention",
+  "processing_speed"
+ ],
+ "domain_notes": {
+  "episodic_memory": "low reliability: Yeo Default network + parahippocampal/precuneus/posterior cingulate cortex; no hippocampus (public checkpoint outputs cortex only); passive perception, not memory success",
+  "word_access": "left IFG (triangular, orbital) + left lateral/superior temporal, middle temporal, temporal pole (Destrieux); perception, not production",
+  "phrase_building": "left IFG (opercular, triangular) + left superior/middle temporal + angular (Destrieux); overlaps with word_access",
+  "attention": "Yeo Dorsal Attention + Ventral Attention + Frontoparietal control networks, both hemispheres",
+  "processing_speed": "proxy of stimulus tempo (words/s of the spoken instruction or content, tone events/s, rank-scaled), not a brain-based value"
+ },
+ "metadata": {
+  "modalities_computed": [
+   "audio"
+  ],
+  "modalities_not_computed": [
+   "text",
+   "video"
+  ],
+  "modalities_per_exercise": {
+   "story_retell": [
+    "audio"
+   ],
+   "picture_description": [
+    "audio"
+   ],
+   "naming_fluency": [
+    "audio"
+   ],
+   "word_list_recall_spoken": [
+    "audio"
+   ],
+   "naming_from_definition": [
+    "audio"
+   ],
+   "picture_naming": [
+    "audio"
+   ],
+   "sentence_completion_spoken": [
+    "audio"
+   ],
+   "describe_daily_routine": [
+    "audio"
+   ],
+   "read_aloud_short_text": [
+    "audio"
+   ],
+   "sentence_building_cards": [
+    "audio"
+   ],
+   "word_picture_matching": [
+    "audio"
+   ],
+   "sound_to_picture": [
+    "audio"
+   ],
+   "odd_one_out": [
+    "audio"
+   ],
+   "picture_pair_memory": [
+    "audio"
+   ],
+   "spatial_sequence_recall": [
+    "audio"
+   ],
+   "delayed_picture_recognition": [
+    "audio"
+   ],
+   "route_recall_map": [
+    "audio"
+   ],
+   "face_name_choice": [
+    "audio"
+   ],
+   "shopping_list_recall_visual": [
+    "audio"
+   ],
+   "digit_span_tap": [
+    "audio"
+   ],
+   "spot_the_difference": [
+    "audio"
+   ],
+   "sustained_tone_detection": [
+    "audio"
+   ],
+   "card_sorting": [
+    "audio"
+   ],
+   "rhythm_copy": [
+    "audio"
+   ],
+   "reaction_tap": [
+    "audio"
+   ]
+  },
+  "exercises_per_modality": {
+   "audio": 25
+  },
+  "stimulus_language": "English (macOS say, voice Samantha), the training language of the model; stimuli 27-54 s",
+  "stimuli": "speech tasks: examiner voice with the real task content (story lantern-keeper-en in full); picture tasks: the real pictures from es/web/public/pictures; visual and motor tasks: render of the real task course (PIL state machines, not final UI art) plus a short English instruction; word timings by faster-whisper small (real ASR)",
+  "text_modality_scope": "only the 10 exercises whose content is words (9 speech tasks and word_picture_matching)",
+  "video_modality_scope": "only the exercises with a screen course (visual, spatial, motor and picture tasks)",
+  "model_weights_source": "facebook/tribev2 (Hugging Face); extractors Wav2Vec-BERT 2.0 (facebook/w2v-bert-2.0), Llama-3.2-3B (unsloth/Llama-3.2-3B mirror), V-JEPA 2 ViT-g (facebook/vjepa2-vitg-fpc64-256)",
+  "method": "mean predicted response over domain vertices, first 5 s dropped, z across the stimuli of each modality, clip [-2,2], (z+2)/4; modalities of one exercise averaged. Modality sets differ between exercises (see modalities_per_exercise)",
+  "built_with": null,
+  "license": "TRIBE v2 CC BY-NC 4.0, non-commercial prototype; Meta FAIR, d'Ascoli et al. 2026 arXiv 2605.04326"
+ },
+ "loads": {
+  "story_retell": {
+   "episodic_memory": 0.7218,
+   "word_access": 0.8096,
+   "phrase_building": 0.802,
+   "attention": 0.0969,
+   "processing_speed": 0.8333
+  },
+  "picture_description": {
+   "episodic_memory": 1.0,
+   "word_access": 0.8868,
+   "phrase_building": 0.8941,
+   "attention": 0.4906,
+   "processing_speed": 0.4167
+  },
+  "naming_fluency": {
+   "episodic_memory": 0.7473,
+   "word_access": 0.7767,
+   "phrase_building": 0.7716,
+   "attention": 0.355,
+   "processing_speed": 0.2083
+  },
+  "word_list_recall_spoken": {
+   "episodic_memory": 0.6461,
+   "word_access": 0.705,
+   "phrase_building": 0.6992,
+   "attention": 0.1277,
+   "processing_speed": 0.125
+  },
+  "naming_from_definition": {
+   "episodic_memory": 1.0,
+   "word_access": 0.8909,
+   "phrase_building": 0.8968,
+   "attention": 0.6826,
+   "processing_speed": 0.3333
+  },
+  "picture_naming": {
+   "episodic_memory": 0.9007,
+   "word_access": 0.8399,
+   "phrase_building": 0.8474,
+   "attention": 0.4738,
+   "processing_speed": 0.25
+  },
+  "sentence_completion_spoken": {
+   "episodic_memory": 0.7445,
+   "word_access": 0.7762,
+   "phrase_building": 0.7774,
+   "attention": 0.2038,
+   "processing_speed": 0.2917
+  },
+  "describe_daily_routine": {
+   "episodic_memory": 0.6256,
+   "word_access": 0.7169,
+   "phrase_building": 0.7137,
+   "attention": 0.1539,
+   "processing_speed": 0.4583
+  },
+  "read_aloud_short_text": {
+   "episodic_memory": 0.706,
+   "word_access": 0.8297,
+   "phrase_building": 0.8269,
+   "attention": 0.0713,
+   "processing_speed": 0.375
+  },
+  "sentence_building_cards": {
+   "episodic_memory": 0.38,
+   "word_access": 0.329,
+   "phrase_building": 0.3288,
+   "attention": 0.8474,
+   "processing_speed": 0.75
+  },
+  "word_picture_matching": {
+   "episodic_memory": 0.6603,
+   "word_access": 0.7795,
+   "phrase_building": 0.7757,
+   "attention": 0.0875,
+   "processing_speed": 0.1667
+  },
+  "sound_to_picture": {
+   "episodic_memory": 0.3889,
+   "word_access": 0.3196,
+   "phrase_building": 0.321,
+   "attention": 0.6124,
+   "processing_speed": 0.0
+  },
+  "odd_one_out": {
+   "episodic_memory": 0.2743,
+   "word_access": 0.3075,
+   "phrase_building": 0.309,
+   "attention": 0.5056,
+   "processing_speed": 0.7917
+  },
+  "picture_pair_memory": {
+   "episodic_memory": 0.3403,
+   "word_access": 0.3445,
+   "phrase_building": 0.3435,
+   "attention": 0.4057,
+   "processing_speed": 0.5833
+  },
+  "spatial_sequence_recall": {
+   "episodic_memory": 0.341,
+   "word_access": 0.3173,
+   "phrase_building": 0.3196,
+   "attention": 0.6192,
+   "processing_speed": 0.6667
+  },
+  "delayed_picture_recognition": {
+   "episodic_memory": 0.4156,
+   "word_access": 0.3311,
+   "phrase_building": 0.3356,
+   "attention": 0.8061,
+   "processing_speed": 0.9583
+  },
+  "route_recall_map": {
+   "episodic_memory": 0.3025,
+   "word_access": 0.2595,
+   "phrase_building": 0.2617,
+   "attention": 0.8455,
+   "processing_speed": 1.0
+  },
+  "face_name_choice": {
+   "episodic_memory": 0.3845,
+   "word_access": 0.3427,
+   "phrase_building": 0.346,
+   "attention": 0.6331,
+   "processing_speed": 0.9167
+  },
+  "shopping_list_recall_visual": {
+   "episodic_memory": 0.3485,
+   "word_access": 0.3065,
+   "phrase_building": 0.309,
+   "attention": 0.7262,
+   "processing_speed": 0.875
+  },
+  "digit_span_tap": {
+   "episodic_memory": 0.1824,
+   "word_access": 0.244,
+   "phrase_building": 0.24,
+   "attention": 0.5031,
+   "processing_speed": 0.625
+  },
+  "spot_the_difference": {
+   "episodic_memory": 0.3299,
+   "word_access": 0.2816,
+   "phrase_building": 0.2842,
+   "attention": 0.6995,
+   "processing_speed": 0.5
+  },
+  "sustained_tone_detection": {
+   "episodic_memory": 0.1847,
+   "word_access": 0.2838,
+   "phrase_building": 0.2766,
+   "attention": 0.6464,
+   "processing_speed": 0.0833
+  },
+  "card_sorting": {
+   "episodic_memory": 0.3456,
+   "word_access": 0.2853,
+   "phrase_building": 0.2896,
+   "attention": 0.7296,
+   "processing_speed": 0.7083
+  },
+  "rhythm_copy": {
+   "episodic_memory": 0.1603,
+   "word_access": 0.2419,
+   "phrase_building": 0.2359,
+   "attention": 0.3924,
+   "processing_speed": 0.0417
+  },
+  "reaction_tap": {
+   "episodic_memory": 0.346,
+   "word_access": 0.2944,
+   "phrase_building": 0.2949,
+   "attention": 0.7843,
+   "processing_speed": 0.5417
+  }
+ }
+}

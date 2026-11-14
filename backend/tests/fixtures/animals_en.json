@@ -1,0 +1,108 @@
+{
+ "text": "dog cat horse cow pig sheep lion tiger elephant giraffe zebra monkey bear wolf fox cat rabbit mouse bird fish",
+ "language": "en",
+ "duration": 58.14285714285712,
+ "engine": "synthetic",
+ "words": [
+  {
+   "text": "dog",
+   "start": 1.0,
+   "end": 3.0
+  },
+  {
+   "text": "cat",
+   "start": 3.857,
+   "end": 5.857
+  },
+  {
+   "text": "horse",
+   "start": 6.714,
+   "end": 8.714
+  },
+  {
+   "text": "cow",
+   "start": 9.571,
+   "end": 11.571
+  },
+  {
+   "text": "pig",
+   "start": 12.429,
+   "end": 14.429
+  },
+  {
+   "text": "sheep",
+   "start": 15.286,
+   "end": 17.286
+  },
+  {
+   "text": "lion",
+   "start": 18.143,
+   "end": 20.143
+  },
+  {
+   "text": "tiger",
+   "start": 21.0,
+   "end": 23.0
+  },
+  {
+   "text": "elephant",
+   "start": 23.857,
+   "end": 25.857
+  },
+  {
+   "text": "giraffe",
+   "start": 26.714,
+   "end": 28.714
+  },
+  {
+   "text": "zebra",
+   "start": 29.571,
+   "end": 31.571
+  },
+  {
+   "text": "monkey",
+   "start": 32.429,
+   "end": 34.429
+  },
+  {
+   "text": "bear",
+   "start": 35.286,
+   "end": 37.286
+  },
+  {
+   "text": "wolf",
+   "start": 38.143,
+   "end": 40.143
+  },
+  {
+   "text": "fox",
+   "start": 41.0,
+   "end": 43.0
+  },
+  {
+   "text": "cat",
+   "start": 43.857,
+   "end": 45.857
+  },
+  {
+   "text": "rabbit",
+   "start": 46.714,
+   "end": 48.714
+  },
+  {
+   "text": "mouse",
+   "start": 49.571,
+   "end": 51.571
+  },
+  {
+   "text": "bird",
+   "start": 52.429,
+   "end": 54.429
+  },
+  {
+   "text": "fish",
+   "start": 55.286,
+   "end": 57.286
+  }
+ ]
+}

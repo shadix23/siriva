@@ -1,0 +1,15 @@
+.venv/
+cache/
+features/
+stimuli/**/*.mp4
+stimuli/**/*.wav
+stimuli/**/*.mp3
+stimuli/**/*.png
+*.npy
+*.npz
+*.pt
+*.safetensors
+.venv-mac/
+mac/work/
+weights/
+mac/bin/

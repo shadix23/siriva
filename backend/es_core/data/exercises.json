@@ -1,0 +1,229 @@
+{
+ "exercises": [
+  {
+   "id": "story_retell",
+   "kind": "story_retell",
+   "channel": "speech",
+   "duration_min": 4,
+   "measures": true,
+   "speech_output": true,
+   "title_ru": "Пересказ рассказа"
+  },
+  {
+   "id": "picture_description",
+   "kind": "picture_description",
+   "channel": "speech",
+   "duration_min": 2,
+   "measures": true,
+   "speech_output": true,
+   "title_ru": "Описание картинки"
+  },
+  {
+   "id": "naming_fluency",
+   "kind": "naming_fluency",
+   "channel": "speech",
+   "duration_min": 1,
+   "measures": true,
+   "speech_output": true,
+   "title_ru": "Называние животных за минуту"
+  },
+  {
+   "id": "word_list_recall_spoken",
+   "kind": "recall",
+   "channel": "speech",
+   "duration_min": 3,
+   "measures": false,
+   "speech_output": true,
+   "title_ru": "Вспомнить список слов вслух"
+  },
+  {
+   "id": "naming_from_definition",
+   "kind": "naming",
+   "channel": "speech",
+   "duration_min": 3,
+   "measures": false,
+   "speech_output": true,
+   "title_ru": "Назвать предмет по описанию"
+  },
+  {
+   "id": "picture_naming",
+   "kind": "naming",
+   "channel": "speech",
+   "duration_min": 3,
+   "measures": false,
+   "speech_output": true,
+   "title_ru": "Назвать предмет на картинке"
+  },
+  {
+   "id": "sentence_completion_spoken",
+   "kind": "phrase",
+   "channel": "speech",
+   "duration_min": 3,
+   "measures": false,
+   "speech_output": true,
+   "title_ru": "Закончить фразу вслух"
+  },
+  {
+   "id": "describe_daily_routine",
+   "kind": "phrase",
+   "channel": "speech",
+   "duration_min": 3,
+   "measures": false,
+   "speech_output": true,
+   "title_ru": "Рассказать про привычный день"
+  },
+  {
+   "id": "read_aloud_short_text",
+   "kind": "phrase",
+   "channel": "speech",
+   "duration_min": 2,
+   "measures": false,
+   "speech_output": true,
+   "title_ru": "Прочитать короткий текст вслух"
+  },
+  {
+   "id": "sentence_building_cards",
+   "kind": "phrase",
+   "channel": "reading",
+   "duration_min": 3,
+   "measures": false,
+   "speech_output": false,
+   "title_ru": "Собрать фразу из карточек"
+  },
+  {
+   "id": "word_picture_matching",
+   "kind": "naming",
+   "channel": "auditory_visual",
+   "duration_min": 2,
+   "measures": false,
+   "speech_output": false,
+   "title_ru": "Услышать слово и выбрать картинку"
+  },
+  {
+   "id": "sound_to_picture",
+   "kind": "naming",
+   "channel": "auditory_visual",
+   "duration_min": 2,
+   "measures": false,
+   "speech_output": false,
+   "title_ru": "Услышать звук и выбрать картинку"
+  },
+  {
+   "id": "odd_one_out",
+   "kind": "semantic",
+   "channel": "visual",
+   "duration_min": 2,
+   "measures": false,
+   "speech_output": false,
+   "title_ru": "Найти лишнее"
+  },
+  {
+   "id": "picture_pair_memory",
+   "kind": "memory_visual",
+   "channel": "visual",
+   "duration_min": 3,
+   "measures": false,
+   "speech_output": false,
+   "title_ru": "Найти пары картинок"
+  },
+  {
+   "id": "spatial_sequence_recall",
+   "kind": "memory_spatial",
+   "channel": "spatial",
+   "duration_min": 3,
+   "measures": false,
+   "speech_output": false,
+   "title_ru": "Повторить последовательность на поле"
+  },
+  {
+   "id": "delayed_picture_recognition",
+   "kind": "memory_visual",
+   "channel": "visual",
+   "duration_min": 3,
+   "measures": false,
+   "speech_output": false,
+   "title_ru": "Узнать картинки, показанные раньше"
+  },
+  {
+   "id": "route_recall_map",
+   "kind": "memory_spatial",
+   "channel": "spatial",
+   "duration_min": 3,
+   "measures": false,
+   "speech_output": false,
+   "title_ru": "Вспомнить маршрут на карте"
+  },
+  {
+   "id": "face_name_choice",
+   "kind": "memory_visual",
+   "channel": "visual",
+   "duration_min": 3,
+   "measures": false,
+   "speech_output": false,
+   "title_ru": "Сопоставить лицо и имя (выбор из вариантов)"
+  },
+  {
+   "id": "shopping_list_recall_visual",
+   "kind": "memory_visual",
+   "channel": "visual",
+   "duration_min": 3,
+   "measures": false,
+   "speech_output": false,
+   "title_ru": "Вспомнить покупки по картинкам"
+  },
+  {
+   "id": "digit_span_tap",
+   "kind": "memory_spatial",
+   "channel": "visual",
+   "duration_min": 2,
+   "measures": false,
+   "speech_output": false,
+   "title_ru": "Повторить ряд цифр нажатиями"
+  },
+  {
+   "id": "spot_the_difference",
+   "kind": "attention",
+   "channel": "visual",
+   "duration_min": 3,
+   "measures": false,
+   "speech_output": false,
+   "title_ru": "Найти отличия"
+  },
+  {
+   "id": "sustained_tone_detection",
+   "kind": "attention",
+   "channel": "auditory",
+   "duration_min": 3,
+   "measures": false,
+   "speech_output": false,
+   "title_ru": "Заметить редкий сигнал"
+  },
+  {
+   "id": "card_sorting",
+   "kind": "attention",
+   "channel": "visual",
+   "duration_min": 3,
+   "measures": false,
+   "speech_output": false,
+   "title_ru": "Разложить карточки по правилу"
+  },
+  {
+   "id": "rhythm_copy",
+   "kind": "attention",
+   "channel": "auditory_motor",
+   "duration_min": 2,
+   "measures": false,
+   "speech_output": false,
+   "title_ru": "Повторить ритм"
+  },
+  {
+   "id": "reaction_tap",
+   "kind": "speed",
+   "channel": "motor",
+   "duration_min": 2,
+   "measures": false,
+   "speech_output": false,
+   "title_ru": "Быстро нажать на цель"
+  }
+ ]
+}

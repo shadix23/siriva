@@ -1,0 +1,31 @@
+{
+  "source": "es/backend/es_core/synthetic.py, seed 7, anchor 2026-11-14",
+  "first": {
+    "episodic_memory": 87.8,
+    "word_access": 75.6,
+    "phrase_building": 77.1,
+    "attention": 84.5,
+    "processing_speed": 82.1
+  },
+  "last": {
+    "episodic_memory": 86.5,
+    "word_access": 45.8,
+    "phrase_building": 76.0,
+    "attention": 80.0,
+    "processing_speed": 81.7
+  },
+  "weekly_fluency": [
+    18.0,
+    18.0,
+    17.0,
+    16.0,
+    16.0,
+    15.0,
+    15.0,
+    15.0,
+    14.0,
+    14.0,
+    13.0,
+    13.0
+  ]
+}

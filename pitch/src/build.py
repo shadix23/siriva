@@ -57,7 +57,8 @@ def find_screen(key):
     """Cropped copy in es/pitch/assets/screens (sources are only read)."""
     if key == "site":
         import glob as _g
-        files = sorted(_g.glob(os.path.join(SITE_DIR, "*.png")) + _g.glob(os.path.join(SITE_DIR, "*.jpg")))
+        pinned = os.path.join(SITE_DIR, "landing-1440-fold.png")  # first screen of the landing
+        files = [pinned] if os.path.exists(pinned) else sorted(_g.glob(os.path.join(SITE_DIR, "landing-*.png")))
         if not files:
             return find_screen("d2")
         src, y0 = files[0], 0
@@ -412,10 +413,27 @@ def slides():
     S.append(dict(id="09", sec="Результаты", els=els, foot=[
         "[1] Модель xlm-roberta (vjsyong) на Hugging Face; её точность нами не проверялась.   [2] d'Ascoli S. et al., arXiv 2605.04326."]))
 
+    # Doctor review ------------------------------------------------------
+    els = [title("Отзыв врача"),
+           card(MX, 196, 1000, 540, fill="teal_soft"),
+           T(MX + 36, 206, 120, 130, "«", size=110, bold=True, color="teal", lh=1.0),
+           T(MX + 40, 320, 920, 290,
+             "Подтверждаю работоспособность представленной версии платформы… Высоко оцениваю научно-практический потенциал Siriva… "
+             "рекомендую его поддержку на конкурсном этапе **с последующей пилотной апробацией при участии медицинских специалистов.**»",
+             size=30, bold=False, color="ink", lh=1.38, hl="teal"),
+           R(MX + 40, 636, 880, 1, fill="line_strong"),
+           T(MX + 40, 652, 920, 70, "Шәділ Мөлдір, врач городской поликлиники № 2 г. Тараз, 14.11.2026",
+             size=24, bold=True, color="ink", lh=1.3),
+           card(MX + 1024, 196, 384, 540, fill="white"),
+           IMG(MX + 1046, 212, 340, 468, os.path.join(PITCH, "assets", "validation", "doctor-review-thumb.jpg")),
+           T(MX + 1046, 690, 340, 34, "Скан с подписью и печатью", size=23, color="ink3", align="center", lh=1.2)]
+    els += banner(756, "«Клиническая эффективность платформы подлежит отдельной оценке» (из отзыва). **Один отзыв о прототипе, не клиническое исследование.**", h=90)
+    S.append(dict(id="xx", sec="Результаты", els=els))
+
     # 10 Next steps -----------------------------------------------------
     els = [title("Дальнейшие шаги"),
            lead("Казахский и русский: **открытых наборов речи с когнитивными нарушениями мы не нашли [1].**", h=90, size=32)]
-    road = [("Пилот", "20-30 человек с клиникой или центром для пожилых"),
+    road = [("Пилот", "апробация при участии врачей; первый отзыв врача получен"),
             ("Проверка", "сравнение с нейропсихологическим обследованием"),
             ("Языки", "казахский и русский в речевом слое"),
             ("Стимулы", "генерация упражнений под профиль нагрузки")]

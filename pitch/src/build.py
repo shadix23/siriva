@@ -26,7 +26,7 @@ AGREEMENT_DETAIL = "Подбор слов 0,88, фразы 0,68, внимани�
 TRIBE_DONE = True    # hybrid: speech and attention load from TRIBE v2, memory and speed from task-type estimate
 BRAND = "Siriva"
 TEAM = []  # names removed from the slides at the user's request
-EVENT = "Хакатон, ноябрь 2026"
+EVENT = ""
 
 # Screens are 1280x800 viewport shots (re-shot by frontend at 19:35): use them whole.
 SCREEN_CROP = {"d2": ("d2-live.png", 0), "d3": ("d3-profile.png", 0),
@@ -216,11 +216,10 @@ def slides():
     els = [R(0, 0, W, H, fill="deep"),
            R(1180, -160, 520, 520, fill="teal", radius=260),
            SHOT(860, 170, 820, 512, "site"),
-           T(MX, 96, 900, 30, "Хакатон, ноябрь 2026", size=23, bold=True, color="on_deep2", lh=1.0),
-           T(MX, 150, 760, 240, BRAND, size=200, bold=True, color="white", lh=1.0),
-           T(MX, 392, 720, 156, "Веб-платформа когнитивной реабилитации: **упражнения, которые измеряют.**",
+           T(MX, 190, 760, 240, BRAND, size=200, bold=True, color="white", lh=1.0),
+           T(MX, 432, 720, 156, "Веб-платформа когнитивной реабилитации: **упражнения, которые измеряют.**",
              size=36, bold=True, color="white", lh=1.22, hl="on_deep2"),
-           T(MX, 556, 700, 124, "Короткие ежедневные упражнения по речи; профиль из пяти функций и подбор следующих заданий по предсказанной нагрузке.",
+           T(MX, 596, 700, 124, "Короткие ежедневные упражнения по речи; профиль из пяти функций и подбор следующих заданий по предсказанной нагрузке.",
              size=24, color="on_deep2", lh=1.4),
            ]
     S.append(dict(sec=None, dark=True, els=els))
@@ -359,7 +358,7 @@ def slides():
                 T(x + 24, 596, cw - 48, 40, h1, size=27, bold=True, lh=1.15),
                 T(x + 24, 642, cw - 48, 110, body, size=23, color="ink2", lh=1.3)]
     S.append(dict(sec="Дальнейшие шаги", els=els, foot=[
-        "Один отзыв о прототипе, не клиническое исследование.   [1] Поиск 14.11.2026; «не нашли» не означает, что их нет."]))
+        "Один отзыв врача, не клиническое исследование.   [1] Поиск 14.11.2026; «не нашли» не означает, что их нет."]))
 
     # 08 Final: thesis, ask, repository QR (deep) ------------------------
     REPO = "github.com/shadix23/siriva"

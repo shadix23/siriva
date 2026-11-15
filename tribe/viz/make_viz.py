@@ -1,4 +1,6 @@
-"""Build cortex PNGs and 3D data from TRIBE v2 audio/text predictions. Run: .venv-mac/bin/python viz/make_viz.py"""
+"""Build cortex PNGs and 3D data from TRIBE v2 audio/text predictions. Run: .venv-mac/bin/python viz/make_viz.py
+The PNG figures are now drawn on the ico7 brain by viz/render_maps_ico7.py: run it after this script,
+otherwise the old fsaverage5 pictures written here stay in viz/."""
 import json
 from pathlib import Path
 import numpy as np, matplotlib

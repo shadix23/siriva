@@ -1,0 +1,235 @@
+<!doctype html>
+<!--
+  Offscreen renderer of cortex views for the TRIBE v2 figures (driven by render_views.mjs, called from render_maps_ico7.py).
+  Same model, light and value transfer as the site player es/web/src/components/site/BrainPlayer.tsx:
+  fsaverage ico7 (pial blended toward inflated), tone from sulc + curv, baked ambient occlusion,
+  fs5 values smoothed twice, moved to fs6 (edge midpoints), smoothed once more, colour per pixel in the shader.
+  Geometry helpers below mirror BrainPlayer.tsx (edgeTable / subdivide / grow); keep them in sync.
+-->
+<html>
+<head>
+<meta charset="utf-8" />
+<title>cortex render</title>
+<style>html,body{margin:0;background:transparent}</style>
+<script type="importmap">{ "imports": { "three": "/three.module.js" } }</script>
+</head>
+<body>
+<script type="module">
+import * as THREE from "three";
+
+const SMOOTH = 0.5, TEX_W = 1024;
+const hex = (h) => [((h >> 16) & 255) / 255, ((h >> 8) & 255) / 255, (h & 255) / 255];
+const lin = (c) => c.map((v) => Math.pow(v, 2.2));
+const v3 = (c) => new THREE.Vector3(c[0], c[1], c[2]);
+
+const getJson = (u) => fetch(u).then((r) => (r.ok ? r.json() : Promise.reject(u)));
+const getBuf = (u) => fetch(u).then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(u)));
+function view(buf, c) {
+  if (c.type === "int8") return new Int8Array(buf, c.offset, c.length);
+  if (c.type === "int16") return new Int16Array(buf, c.offset, c.length);
+  if (c.type === "uint16") return new Uint16Array(buf, c.offset, c.length);
+  if (c.type === "float32") return new Float32Array(buf, c.offset, c.length);
+  return new Uint8Array(buf, c.offset, c.length);
+}
+function edgeTable(faces) {
+  const F = faces.length / 3;
+  let cap = 1;
+  while (cap < F * 3) cap <<= 1;
+  const mask = cap - 1;
+  const kA = new Int32Array(cap).fill(-1), kB = new Int32Array(cap), id = new Int32Array(cap);
+  const eA = new Uint32Array(F * 3), eB = new Uint32Array(F * 3), fe = new Uint32Array(F * 3);
+  let ne = 0;
+  for (let f = 0; f < F; f++)
+    for (let k = 0; k < 3; k++) {
+      let a = faces[f * 3 + k], b = faces[f * 3 + (k === 2 ? 0 : k + 1)];
+      if (a > b) [a, b] = [b, a];
+      let h = (Math.imul(a, 0x9e3779b1) ^ Math.imul(b, 0x85ebca6b)) & mask;
+      while (kA[h] !== -1 && (kA[h] !== a || kB[h] !== b)) h = (h + 1) & mask;
+      if (kA[h] === -1) { kA[h] = a; kB[h] = b; id[h] = ne; eA[ne] = a; eB[ne] = b; ne++; }
+      fe[f * 3 + k] = id[h];
+    }
+  return { eA: eA.slice(0, ne), eB: eB.slice(0, ne), fe };
+}
+function subdivide(faces, nv, e) {
+  const F = faces.length / 3, out = new Uint32Array(F * 12);
+  for (let f = 0, o = 0; f < F; f++, o += 12) {
+    const a = faces[f * 3], b = faces[f * 3 + 1], c = faces[f * 3 + 2];
+    const ab = nv + e.fe[f * 3], bc = nv + e.fe[f * 3 + 1], ca = nv + e.fe[f * 3 + 2];
+    out.set([a, ab, ca, ab, b, bc, ca, bc, c, ab, bc, ca], o);
+  }
+  return out;
+}
+function grow(q, hemi, from, e, d) {
+  for (let k = 0; k < e.eA.length; k++) {
+    const a = e.eA[k] * 3, b = e.eB[k] * 3, o = (from + k) * 3, dk = k * 3;
+    for (let j = 0; j < 3; j++) q[o + j] = ((q[a + j] + q[b + j]) >> 1) + d[dk + j];
+    hemi[from + k] = hemi[e.eA[k]];
+  }
+}
+
+// ---- cortex (ico7) in the client vertex order
+const meta = await getJson("/cortex/meta.json");
+const [b6, b7] = await Promise.all([getBuf("/cortex/fs6.bin"), getBuf("/cortex/ico7.bin")]);
+const c6 = meta.fs6.chunks, c7 = meta.ico7.chunks;
+const n5 = meta.counts.fs5, h5 = meta.fs5_per_hemi;
+const faces5 = view(b6, c6.faces5);
+const e5 = edgeTable(faces5);
+const faces6 = subdivide(faces5, n5, e5);
+const n6 = n5 + e5.eA.length;
+const e6 = edgeTable(faces6);
+const faces7 = subdivide(faces6, n6, e6);
+const n7 = n6 + e6.eA.length;
+const q = new Int32Array(n7 * 3), hemi = new Uint8Array(n7);
+q.set(view(b6, c6.q5));
+hemi.fill(1, h5, n5);
+grow(q, hemi, n5, e5, view(b6, c6.d6));
+grow(q, hemi, n6, e6, view(b7, c7.d7));
+const step = meta.step_mm, ctr = meta.center;
+const pos = new Float32Array(n7 * 3);
+for (let i = 0; i < n7 * 3; i++) pos[i] = q[i] * step + ctr[i % 3];
+const idx = new Float32Array(n7 * 2);
+for (let v = 0; v < n6; v++) idx[v * 2] = idx[v * 2 + 1] = v;
+for (let k = 0; k < e6.eA.length; k++) { idx[(n6 + k) * 2] = e6.eA[k]; idx[(n6 + k) * 2 + 1] = e6.eB[k]; }
+
+const geo = new THREE.BufferGeometry();
+geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+geo.setIndex(new THREE.BufferAttribute(faces7, 1));
+geo.setAttribute("aTone", new THREE.BufferAttribute(view(b7, c7.tone), 1, true));
+geo.setAttribute("aAo", new THREE.BufferAttribute(view(b7, c7.ao), 1, true));
+geo.setAttribute("aIdx", new THREE.BufferAttribute(idx, 2));
+geo.computeVertexNormals();
+// faces stay in fs5 order through subdivision: first half = left hemisphere
+const halfIdx = faces7.length / 2;
+const bbox = (h) => {
+  const lo = [Infinity, Infinity, Infinity], hi = [-Infinity, -Infinity, -Infinity];
+  for (let v = 0; v < n7; v++) if (hemi[v] === h) for (let j = 0; j < 3; j++) { lo[j] = Math.min(lo[j], pos[v * 3 + j]); hi[j] = Math.max(hi[j], pos[v * 3 + j]); }
+  return { lo, hi };
+};
+const boxes = [bbox(0), bbox(1)];
+
+// ---- fs5 values -> fs6 texture (the site's transfer: 2 passes on fs5, midpoint, 1 pass on fs6)
+const deg5 = new Float32Array(n5), deg6 = new Float32Array(n6);
+for (let e = 0; e < e5.eA.length; e++) { deg5[e5.eA[e]]++; deg5[e5.eB[e]]++; }
+for (let e = 0; e < e6.eA.length; e++) { deg6[e6.eA[e]]++; deg6[e6.eB[e]]++; }
+function toFs6(src5) {
+  let v5 = Float32Array.from(src5);
+  const sum5 = new Float32Array(n5);
+  for (let pass = 0; pass < 2; pass++) {
+    sum5.fill(0);
+    for (let e = 0; e < e5.eA.length; e++) { const x = e5.eA[e], y = e5.eB[e]; sum5[x] += v5[y]; sum5[y] += v5[x]; }
+    const nx = new Float32Array(n5);
+    for (let v = 0; v < n5; v++) nx[v] = v5[v] * (1 - SMOOTH) + (sum5[v] / deg5[v]) * SMOOTH;
+    v5 = nx;
+  }
+  const v6 = new Float32Array(n6);
+  v6.set(v5);
+  for (let k = 0; k < e5.eA.length; k++) v6[n5 + k] = (v5[e5.eA[k]] + v5[e5.eB[k]]) * 0.5;
+  const sum6 = new Float32Array(n6);
+  for (let e = 0; e < e6.eA.length; e++) { const x = e6.eA[e], y = e6.eB[e]; sum6[x] += v6[y]; sum6[y] += v6[x]; }
+  const texH = Math.ceil(n6 / TEX_W), data = new Float32Array(TEX_W * texH);
+  for (let v = 0; v < n6; v++) data[v] = v6[v] * (1 - SMOOTH) + (sum6[v] / deg6[v]) * SMOOTH;
+  const t = new THREE.DataTexture(data, TEX_W, texH, THREE.RedFormat, THREE.FloatType);
+  t.minFilter = t.magFilter = THREE.NearestFilter;
+  t.needsUpdate = true;
+  return t;
+}
+
+// ---- material: the site shader, palette switchable
+const uniforms = {
+  uVal: { value: null }, uMask: { value: null }, uUseMask: { value: 0 }, uLineW: { value: 1.6 },
+  uDiv: { value: 1 }, uClip: { value: 2 },
+  // same stops as the legend in render_maps_ico7.py
+  uP0: { value: v3(lin(hex(0xa9d3ca))) }, uP1: { value: v3(lin(hex(0x3a9b8b))) }, uP2: { value: v3(lin(hex(0x1c5a51))) },
+  uN0: { value: v3(lin(hex(0xecc2ad))) }, uN1: { value: v3(lin(hex(0xd27c60))) }, uN2: { value: v3(lin(hex(0x9a3820))) },
+  uInk: { value: v3(lin(hex(0x1e2320))) },
+  uSulcus: { value: v3(lin(hex(0x7f8a92))) }, uGyrus: { value: v3(lin(hex(0xe2e7ea))) },
+};
+const mat = new THREE.MeshStandardMaterial({ roughness: 0.5, metalness: 0 });
+mat.onBeforeCompile = (sh) => {
+  Object.assign(sh.uniforms, uniforms);
+  sh.vertexShader = sh.vertexShader
+    .replace("#include <common>", `#include <common>
+      attribute vec2 aIdx; attribute float aTone; attribute float aAo;
+      uniform highp sampler2D uVal; uniform highp sampler2D uMask;
+      varying float vVal; varying float vMask; varying float vTone; varying float vAo;
+      float bpF(highp sampler2D s, float i) { int k = int(i + 0.5); return texelFetch(s, ivec2(k & ${TEX_W - 1}, k >> ${Math.log2(TEX_W)}), 0).r; }`)
+    .replace("#include <begin_vertex>", `#include <begin_vertex>
+      vVal = 0.5 * (bpF(uVal, aIdx.x) + bpF(uVal, aIdx.y));
+      vMask = 0.5 * (bpF(uMask, aIdx.x) + bpF(uMask, aIdx.y));
+      vTone = aTone; vAo = aAo;`);
+  sh.fragmentShader = sh.fragmentShader
+    .replace("#include <common>", `#include <common>
+      uniform float uClip, uUseMask, uLineW;
+      uniform vec3 uP0, uP1, uP2, uN0, uN1, uN2, uInk, uSulcus, uGyrus;
+      varying float vVal; varying float vMask; varying float vTone; varying float vAo;`)
+    .replace("#include <color_fragment>", `
+      // diverging z: zero shows the grey cortex, positive greens, negative terracotta
+      float t = clamp(vVal / uClip, -1.0, 1.0);
+      float a = abs(t);
+      vec3 c = t >= 0.0 ? (a < 0.5 ? mix(uP0, uP1, a / 0.5) : mix(uP1, uP2, (a - 0.5) / 0.5))
+                        : (a < 0.5 ? mix(uN0, uN1, a / 0.5) : mix(uN1, uN2, (a - 0.5) / 0.5));
+      float al = 0.88 * smoothstep(0.05, 0.4, a);
+      vec3 base = mix(uSulcus, uGyrus, smoothstep(0.0, 1.0, vTone));
+      vec3 col = mix(base * vAo, c * mix(1.0, vAo, 0.5), al);
+      if (uUseMask > 0.5) {
+        float d = abs(vMask - 0.5), w = fwidth(vMask) * uLineW;
+        col = mix(col, uInk, 0.95 * (1.0 - smoothstep(w * 0.5, w, d)));
+      }
+      diffuseColor.rgb = col;`)
+    .replace("#include <opaque_fragment>", `
+      float rimF = 1.0 - clamp(dot(normalize(normal), normalize(vViewPosition)), 0.0, 1.0);
+      outgoingLight += vec3(0.80, 0.90, 0.92) * pow(rimF, 3.0) * 0.3;
+      #include <opaque_fragment>`);
+};
+const mesh = new THREE.Mesh(geo, mat);
+const scene = new THREE.Scene();
+scene.add(mesh);
+scene.add(new THREE.HemisphereLight(0xffffff, 0xaab8bf, 1.05));
+const camera = new THREE.PerspectiveCamera(10, 1, 1, 8000); // narrow: close to an orthographic view, lateral and medial keep one scale
+camera.up.set(0, 0, 1);
+const key = new THREE.DirectionalLight(0xffffff, 1.6);
+key.position.set(0.5, 1, 1);
+camera.add(key);
+const fill = new THREE.DirectionalLight(0xe8f1f2, 0.4);
+fill.position.set(-1, -0.4, 0.6);
+camera.add(fill);
+scene.add(camera);
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1);
+renderer.setClearColor(0x000000, 0);
+document.body.appendChild(renderer.domElement);
+
+const zeros = new Float32Array(n5);
+const textures = new Map();
+const tex = (name, arr) => {
+  if (!textures.has(name)) textures.set(name, toFs6(arr));
+  return textures.get(name);
+};
+// global size: the same scale for every view, so hemispheres keep their real proportions
+const spanY = Math.max(...boxes.map((b) => b.hi[1] - b.lo[1]));
+const spanZ = Math.max(...boxes.map((b) => b.hi[2] - b.lo[2]));
+
+/** Render one view. values: fs5 array (z), mask: fs5 0/1 array or null. Returns a PNG data URL. */
+window.renderView = async ({ name, values, maskName, mask, h, side, w, hgt, lineW = 1.6, pad = 1.06 }) => {
+  uniforms.uVal.value = tex(name, values);
+  uniforms.uUseMask.value = mask ? 1 : 0;
+  uniforms.uMask.value = mask ? tex(maskName, mask) : tex("__zero", zeros);
+  uniforms.uLineW.value = lineW;
+  geo.setDrawRange(h === 0 ? 0 : halfIdx, halfIdx);
+  const b = boxes[h];
+  const c = [(b.lo[0] + b.hi[0]) / 2, (b.lo[1] + b.hi[1]) / 2, (b.lo[2] + b.hi[2]) / 2];
+  // side: -1 camera on the left (x < 0), +1 on the right
+  renderer.setSize(w, hgt, false);
+  camera.aspect = w / hgt;
+  const tn = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+  const dist = Math.max(((spanY / 2) * pad) / (tn * camera.aspect), ((spanZ / 2) * pad) / tn) + (b.hi[0] - b.lo[0]) / 2;
+  camera.position.set(c[0] + side * dist, c[1], c[2]);
+  camera.lookAt(c[0], c[1], c[2]);
+  camera.updateProjectionMatrix();
+  renderer.render(scene, camera);
+  return renderer.domElement.toDataURL("image/png");
+};
+window.ready = true;
+</script>
+</body>
+</html>

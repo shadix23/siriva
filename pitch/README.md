@@ -1,6 +1,6 @@
 # Siriva (рабочее название Es): питч для жюри
 
-- `Siriva-pitch.pptx`: редактируемая презентация, 8 слайдов, композиция по деку JAZ (слайд 04: карты коры из es/tribe/viz, копии в assets/tribe; прошлая версия на 13 слайдов: scratchpad build-13.py), заметки докладчика берутся из `SPEECH.md`. Шрифт в PPTX: Arial.
+- `Siriva-pitch.pptx`: редактируемая презентация, 9 слайдов, композиция по деку JAZ (слайд 04: мозг TRIBE v2 и карты коры, копии в assets/tribe; слайд 07: рынок и бизнес-модель по es/docs/MARKET.md; прошлая версия на 13 слайдов: scratchpad build-13.py), заметки докладчика берутся из `SPEECH.md`. Шрифт в PPTX: Arial.
 - `Siriva-pitch.pdf`: версия для показа, Golos Text, клинический стиль (es/docs/DESIGN-MEDTECH.md, разделы 11-12).
 - `SPEECH.md`: речь на 4 минуты с таймингом. `QA.md`: неудобные вопросы.
 - `preview/slide-NN.png`: превью каждого слайда.

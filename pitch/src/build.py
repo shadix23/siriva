@@ -342,6 +342,61 @@ def slides():
         "[1] Luz S. et al., Interspeech 2020.   [2] Front. Comput. Sci. 2021.   [3] Yuan J. et al., Interspeech 2020.",
         "[4] Модель xlm-roberta (vjsyong) на Hugging Face; её точность нами не проверялась."]))
 
+    # Market and business model -----------------------------------------
+    els = [title("Рынок и бизнес-модель"),
+           # Kazakhstan
+           card(MX, 196, 400, 280, fill="teal_soft"),
+           T(MX + 26, 214, 348, 30, "Казахстан", size=23, bold=True, color="teal", lh=1.0),
+           T(MX + 26, 252, 348, 90, "2,8 млн", size=80, bold=True, color="teal", lh=1.0),
+           T(MX + 26, 350, 348, 34, "людей 60+, это 13,9% [1]", size=24, bold=True, lh=1.2),
+           T(MX + 26, 394, 348, 70, "к 2050 каждый пятый-шестой", size=23, color="ink2", lh=1.3),
+           # TAM / SAM / SOM
+           card(MX + 424, 196, 584, 280, fill="white"),
+           T(MX + 448, 214, 536, 30, "Рынок Казахстана в год, оценка [2]", size=23, bold=True, color="navy", lh=1.0)]
+    fun = [("TAM", 1.00, "330-470 тыс. человек", "19,8-28,1 млрд тг"),
+           ("SAM", 0.62, "165-235 тыс. человек", "9,9-14,1 млрд тг"),
+           ("SOM", 0.32, "1 650-4 700 семей", "99-281 млн тг")]
+    fx, bmaxw = MX + 448, 210
+    for j, (lab, k, ppl, money) in enumerate(fun):
+        yy = 254 + j * 72
+        bw = int(bmaxw * k)
+        els += [R(fx, yy, bw, 60, fill=["navy", "teal", "teal_soft"][j], radius=10),
+                T(fx, yy + 16, bw, 30, lab, size=24, bold=True, color="white" if j < 2 else "teal", align="center", lh=1.0),
+                T(fx + bmaxw + 18, yy - 2, 536 - bmaxw - 18, 66, f"{ppl}\n{money}", size=23, bold=True, color="ink", lh=1.2, gap=0)]
+    els += [card(MX + 1032, 196, 376, 280),
+            T(MX + 1056, 214, 328, 30, "Мир", size=23, bold=True, color="navy", lh=1.0),
+            T(MX + 1056, 252, 328, 90, "57 млн", size=80, bold=True, color="navy", lh=1.0),
+            T(MX + 1056, 350, 328, 34, "людей с деменцией [3]", size=24, bold=True, lh=1.2),
+            T(MX + 1056, 394, 328, 70, "$6 млрд к 2034: цифровая реабилитация, оценка [4]", size=23, color="ink2", lh=1.3)]
+    # who pays
+    els += [card(MX, 500, 680, 266),
+            T(MX + 26, 516, 628, 30, "Кто платит (цены: гипотеза)", size=23, bold=True, color="navy", lh=1.0)]
+    pays = [("Семья", "2 990 тг/мес, с экраном близкого 4 990"),
+            ("Клиника", "15 000 тг за курс 12 недель или 9 900 тг/мес"),
+            ("Далее", "через клинику-партнёра по ОСМС, без гарантий [5]")]
+    for j, (h1, body) in enumerate(pays):
+        yy = 560 + j * 66
+        els += circle(MX + 26, yy, j + 1, d=40, fill="teal" if j < 2 else "line_strong") + [
+                T(MX + 82, yy + 6, 130, 30, h1, size=24, bold=True, lh=1.0),
+                T(MX + 212, yy + 2, 450, 64, body, size=23, color="ink", lh=1.2)]
+    # price comparison
+    cx, cw = MX + 704, 704
+    els += [card(cx, 500, cw, 266),
+            T(cx + 26, 516, cw - 52, 30, "Цена в месяц, тг [6]", size=23, bold=True, color="navy", lh=1.0)]
+    prices = [("Siriva, семья", 4990, "4 990", "teal"), ("Викиум", 4815, "~4 815", "line_strong"),
+              ("Constant Therapy", 13420, "~13 420", "line_strong"), ("NeuroNation MED", 80300, "~80 300", "line_strong")]
+    bx0, bmax = cx + 250, 300
+    for j, (lab, v, txt, col) in enumerate(prices):
+        yy = 558 + j * 40
+        els += [T(cx + 26, yy + 2, 220, 30, lab, size=23, bold=(j == 0), color="ink", lh=1.0),
+                R(bx0, yy + 6, max(8, int(bmax * v / 80300)), 22, fill=col, radius=6),
+                T(bx0 + max(8, int(bmax * v / 80300)) + 12, yy + 2, 140, 30, txt, size=23, bold=(j == 0), color="teal" if j == 0 else "ink2", lh=1.0)]
+    els += [T(cx + 26, 722, cw - 52, 34, "Рост: пилот с клиникой → клиники Казахстана → СНГ", size=23, bold=True, color="teal", lh=1.0)]
+    S.append(dict(sec="Рынок", els=els, foot=[
+        "[1] ЕНПФ, 2025.  [2] Гипотеза: 60+ × 10-15% MCI + лёгкая деменция; 59 880 тг/год; SAM 50%, SOM 1-2%.",
+        "[3] ВОЗ.  [4] Stratistics MRC, оценка.  [5] Приказ ҚР ДСМ-12; оплату приложения по ОСМС не нашли.",
+        "[6] Курс НБРК 11.11.2026; NeuroNation MED по возмещению в Германии. Речь: русский, казахский далее."]))
+
     # 07 Doctor review + next steps --------------------------------------
     els = [title("Отзыв врача и дальнейшие шаги"),
            card(MX, 192, 1100, 300, fill="teal_soft"),

@@ -12,6 +12,7 @@
 ## Файлы
 - `speech_story_retell_{ru,en}.png`, `visual_spatial_sequence_{ru,en}.png`, `diff_speech_minus_visual_{ru,en}.png` (1600x1480, белый фон, 200 dpi).
 - Данные для 3D: `es/web/public/brain/mesh.json` и `loads.json` (значение 0..255 = (z+2)/4*255, 128 = 0, общая шкала).
+- Кора для проигрывателя на сайте: `es/web/public/brain/cortex/` (`meta.json`, `fs6.bin` 0.7 МБ, `ico7.bin` 1.4 МБ). fsaverage ico7 (pial, раздутая на 35 %), два вложенных уровня: клиент сам делит треугольники fs5 -> fs6 -> ico7, из файлов берёт поправки позиций, тон извилин (sulc + curv) и запечённое затенение впадин. Активность TRIBE остаётся на fs5. Пересборка: `.venv-mac/bin/python viz/export_mesh_fs6.py`.
 - Пересборка: `cd es/tribe && .venv-mac/bin/python viz/make_viz.py`
 
 ## Оговорки

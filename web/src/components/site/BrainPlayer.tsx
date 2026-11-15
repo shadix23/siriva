@@ -3,20 +3,39 @@
 /* eslint-disable @next/next/no-img-element */
 /*
  * Проигрыватель предсказанной активности коры по секундам (TRIBE v2).
- * Данные: /brain/mesh.json {positions, indices, hemi_split}
+ * Данные: /brain/cortex/meta.json, fs6.bin, ico7.bin  кора fsaverage в двух уровнях детализации
+ *           (см. es/tribe/viz/export_mesh_fs6.py). Клиент сам делит треугольники fs5 -> fs6 -> ico7
+ *           (сетки fsaverage вложенные: новая вершина в середине ребра), из файлов берёт только поправки
+ *           позиций, тон извилин и запечённое затенение впадин (AO).
  *         /brain/timeseries/index.json {anchors, exercises: [{id, title_ru, title_en, frames, fps, start_s, zones}]}
- *         /brain/timeseries/<id>.bin  uint8, кадр за кадром по 20484 вершины, (z + 2) / 4 * 255, 128 = средний отклик
+ *         /brain/timeseries/<id>.bin  uint8, кадр за кадром по 20484 вершины fs5, (z + 2) / 4 * 255, 128 = средний отклик
+ * Кадр fs5 слегка сглаживается, переносится на fs6 и ещё раз сглаживается; цвет считает шейдер по текстуре
+ * значений fs6 (ico7 берёт середину ребра), поэтому края зон плавные на любой сетке.
+ * Сначала показываем fs6 (быстрый первый кадр), на десктопе потом подменяем на ico7 (327 тыс. вершин).
  * Three.js и данные грузятся только при приближении к блоку.
- * Без WebGL, при prefers-reduced-motion или ошибке загрузки: статичная картинка.
+ * Без WebGL2, при prefers-reduced-motion или ошибке загрузки: статичная картинка.
  */
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { Lang } from "./i18n";
 
-type Mesh = { positions: number[]; indices: number[]; hemi_split?: number };
+type ZoneKey = "language" | "auditory";
 type Zones = { language: number[]; auditory: number[]; visual?: number[] };
 type Ex = { id: string; title_ru: string; title_en: string; frames: number; fps: number; start_s: number; zones: Zones };
 type Index = { vertices: number; anchors: Record<string, number>; exercises: Ex[] };
-type ZoneKey = "language" | "auditory";
+type Chunk = { offset: number; length: number; type: string };
+type Meta = {
+  step_mm: number;
+  center: number[];
+  fs5_per_hemi: number;
+  counts: { fs5: number; fs6: number; ico7: number };
+  anchors?: Partial<Record<ZoneKey, number>>;
+  fs6: { file: string; chunks: Record<"faces5" | "q5" | "d6" | "tone" | "ao", Chunk> };
+  ico7: { file: string; chunks: Record<"d7" | "tone" | "ao", Chunk> };
+};
+type Edges = { eA: Uint32Array; eB: Uint32Array; fe: Uint32Array };
+/** Один уровень детализации в порядке вершин клиента: 0..20483 fs5, дальше новые вершины по уровням. */
+type Lod = { nv: number; q: Int32Array; hemi: Uint8Array; faces: Uint32Array | Uint16Array; tone: Uint8Array; ao: Uint8Array };
+type Cortex = { meta: Meta; n5: number; e5: Edges; e6: Edges; fs6: Lod };
 const ZONES: ZoneKey[] = ["language", "auditory"];
 
 export type BrainPlayerText = {
@@ -37,43 +56,140 @@ export type BrainPlayerText = {
 };
 
 const BASE = "/brain/timeseries";
+const CORTEX = "/brain/cortex";
 const MORPH_MS = 600;
-const COLOR_STEP_MS = 33; // цвета пересчитываем не чаще 30 раз в секунду
-const GAIN = 1.7; // контраст показа: полная шкала цвета при |z| около 1.2, обрезка как у данных
+const COLOR_STEP_MS = 33; // значения пересчитываем не чаще 30 раз в секунду
+const GAIN = 1.5; // контраст показа: полная шкала цвета при z около 1.3, обрезка как у данных
+const SMOOTH = 0.5; // доля среднего по соседям за проход: два прохода на fs5 и один на fs6
+const TEX_W = 1024; // ширина текстуры значений fs6
 
-// Палитра Siriva: ниже среднего светлее, средний серый, выше: синий, потом зелёный
-const PAPER = [0xf1 / 255, 0xf4 / 255, 0xf6 / 255];
-const GREY = [0xd3 / 255, 0xdb / 255, 0xe1 / 255];
-const BLUE = [0x2f / 255, 0x5d / 255, 0x7c / 255];
-const GREEN = [0x1c / 255, 0x5a / 255, 0x51 / 255];
-
-function buildLut(): Float32Array {
-  const lut = new Float32Array(256 * 3);
-  const c = [0, 0, 0];
-  const mix = (a: number[], b: number[], t: number) => {
-    for (let k = 0; k < 3; k++) c[k] = a[k] + (b[k] - a[k]) * t;
-  };
-  for (let i = 0; i < 256; i++) {
-    const v = Math.min(1, Math.max(0, 0.5 + (i / 255 - 0.5) * GAIN));
-    if (v < 0.5) mix(PAPER, GREY, v / 0.5);
-    else {
-      const t = (v - 0.5) / 0.5;
-      if (t < 0.55) mix(GREY, BLUE, t / 0.55);
-      else mix(BLUE, GREEN, (t - 0.55) / 0.45);
-    }
-    // вершинные цвета three.js линейные
-    for (let k = 0; k < 3; k++) lut[i * 3 + k] = Math.pow(c[k], 2.2);
-  }
-  return lut;
-}
+const hex = (h: number) => [((h >> 16) & 255) / 255, ((h >> 8) & 255) / 255, (h & 255) / 255];
+const lin = (c: number[]) => c.map((v) => Math.pow(v, 2.2)); // цвета в шейдере линейные
+// подложка: борозды темнее, извилины светлее
+const SULCUS = lin(hex(0x7f8a92));
+const GYRUS = lin(hex(0xe2e7ea));
+// активность выше среднего: бирюзовый Siriva, тёплый янтарь, коралл; ниже среднего прозрачно.
+// Переход бирюза -> янтарь короткий и в линейном свете, чтобы не было болотного оттенка посередине
+const RAMP = [lin(hex(0x1c8a7a)), lin(hex(0x2a9a88)), lin(hex(0xe3a64a)), lin(hex(0xdc6a4f))];
+const STOPS = [0.46, 0.62, 1];
 
 function webglOk() {
   try {
-    const c = document.createElement("canvas");
-    return !!(c.getContext("webgl2") || c.getContext("webgl"));
+    // three.js r170 работает только с WebGL2
+    return !!document.createElement("canvas").getContext("webgl2");
   } catch {
     return false;
   }
+}
+
+/** ico7 только там, где есть запас: широкий экран, нет экономии трафика, памяти от 4 ГБ. */
+function wantIco7(): boolean {
+  const nav = navigator as Navigator & { deviceMemory?: number; connection?: { saveData?: boolean } };
+  if (nav.connection?.saveData) return false;
+  if (window.matchMedia("(max-width: 559px)").matches) return false;
+  return (nav.deviceMemory ?? 8) >= 4;
+}
+
+const getJson = <T,>(url: string) => fetch(url).then((r) => (r.ok ? (r.json() as Promise<T>) : Promise.reject(r.status)));
+const getBuf = (url: string) => fetch(url).then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(r.status)));
+
+function view(buf: ArrayBuffer, c: Chunk) {
+  if (c.type === "int8") return new Int8Array(buf, c.offset, c.length);
+  if (c.type === "int16") return new Int16Array(buf, c.offset, c.length);
+  if (c.type === "uint16") return new Uint16Array(buf, c.offset, c.length);
+  return new Uint8Array(buf, c.offset, c.length);
+}
+
+/**
+ * Рёбра в порядке первой встречи: грани по очереди, у грани (a,b,c) рёбра ab, bc, ca, ключ (min, max).
+ * Правило общее с export_mesh_fs6.py: от него зависит нумерация новых вершин.
+ */
+function edgeTable(faces: ArrayLike<number>): Edges {
+  const F = faces.length / 3;
+  let cap = 1;
+  while (cap < F * 3) cap <<= 1;
+  const mask = cap - 1;
+  const kA = new Int32Array(cap).fill(-1), kB = new Int32Array(cap), id = new Int32Array(cap);
+  const eA = new Uint32Array(F * 3), eB = new Uint32Array(F * 3), fe = new Uint32Array(F * 3);
+  let ne = 0;
+  for (let f = 0; f < F; f++)
+    for (let k = 0; k < 3; k++) {
+      let a = faces[f * 3 + k], b = faces[f * 3 + (k === 2 ? 0 : k + 1)];
+      if (a > b) [a, b] = [b, a];
+      let h = (Math.imul(a, 0x9e3779b1) ^ Math.imul(b, 0x85ebca6b)) & mask;
+      while (kA[h] !== -1 && (kA[h] !== a || kB[h] !== b)) h = (h + 1) & mask;
+      if (kA[h] === -1) {
+        kA[h] = a;
+        kB[h] = b;
+        id[h] = ne;
+        eA[ne] = a;
+        eB[ne] = b;
+        ne++;
+      }
+      fe[f * 3 + k] = id[h];
+    }
+  return { eA: eA.slice(0, ne), eB: eB.slice(0, ne), fe };
+}
+
+/** Каждый треугольник на 4: (a,ab,ca) (ab,b,bc) (ca,bc,c) (ab,bc,ca); новая вершина ребра e = nv + e. */
+function subdivide(faces: ArrayLike<number>, nv: number, e: Edges) {
+  const F = faces.length / 3;
+  const out = new Uint32Array(F * 12);
+  for (let f = 0, o = 0; f < F; f++, o += 12) {
+    const a = faces[f * 3], b = faces[f * 3 + 1], c = faces[f * 3 + 2];
+    const ab = nv + e.fe[f * 3], bc = nv + e.fe[f * 3 + 1], ca = nv + e.fe[f * 3 + 2];
+    out[o] = a; out[o + 1] = ab; out[o + 2] = ca;
+    out[o + 3] = ab; out[o + 4] = b; out[o + 5] = bc;
+    out[o + 6] = ca; out[o + 7] = bc; out[o + 8] = c;
+    out[o + 9] = ab; out[o + 10] = bc; out[o + 11] = ca;
+  }
+  return out;
+}
+
+/** Новые вершины: середина родительского ребра плюс сохранённая поправка (в единицах step_mm). */
+function grow(q: Int32Array, hemi: Uint8Array, from: number, e: Edges, d: ArrayLike<number>) {
+  for (let k = 0; k < e.eA.length; k++) {
+    const a = e.eA[k] * 3, b = e.eB[k] * 3, o = (from + k) * 3, dk = k * 3;
+    q[o] = ((q[a] + q[b]) >> 1) + d[dk];
+    q[o + 1] = ((q[a + 1] + q[b + 1]) >> 1) + d[dk + 1];
+    q[o + 2] = ((q[a + 2] + q[b + 2]) >> 1) + d[dk + 2];
+    hemi[from + k] = hemi[e.eA[k]];
+  }
+}
+
+async function loadCortex(): Promise<Cortex> {
+  const [meta, buf] = await Promise.all([getJson<Meta>(`${CORTEX}/meta.json`), getBuf(`${CORTEX}/fs6.bin`)]);
+  const c = meta.fs6.chunks;
+  const n5 = meta.counts.fs5, h5 = meta.fs5_per_hemi;
+  const faces5 = view(buf, c.faces5) as Uint16Array;
+  const e5 = edgeTable(faces5);
+  const faces6 = subdivide(faces5, n5, e5);
+  const nv = n5 + e5.eA.length;
+  const q = new Int32Array(nv * 3);
+  q.set(view(buf, c.q5));
+  const hemi = new Uint8Array(nv);
+  hemi.fill(1, h5, n5);
+  grow(q, hemi, n5, e5, view(buf, c.d6));
+  return {
+    meta,
+    n5,
+    e5,
+    e6: edgeTable(faces6),
+    fs6: { nv, q, hemi, faces: faces6, tone: view(buf, c.tone) as Uint8Array, ao: view(buf, c.ao) as Uint8Array },
+  };
+}
+
+async function loadIco7(cx: Cortex): Promise<Lod> {
+  const buf = await getBuf(`${CORTEX}/${cx.meta.ico7.file}`);
+  const c = cx.meta.ico7.chunks;
+  const n6 = cx.fs6.nv;
+  const nv = n6 + cx.e6.eA.length;
+  const q = new Int32Array(nv * 3);
+  q.set(cx.fs6.q);
+  const hemi = new Uint8Array(nv);
+  hemi.set(cx.fs6.hemi);
+  grow(q, hemi, n6, cx.e6, view(buf, c.d7));
+  return { nv, q, hemi, faces: subdivide(cx.fs6.faces, n6, cx.e6), tone: view(buf, c.tone) as Uint8Array, ao: view(buf, c.ao) as Uint8Array };
 }
 
 const getBin = async (id: string): Promise<Uint8Array> => {
@@ -123,7 +239,7 @@ export function BrainPlayer({
 
   const [mode, setMode] = useState<"idle" | "loading" | "live" | "static">("idle");
   const [index, setIndex] = useState<Index | null>(null);
-  const [mesh, setMesh] = useState<Mesh | null>(null);
+  const [mesh, setMesh] = useState<Cortex | null>(null);
   const [active, setActive] = useState(0);
   const [playing, setPlaying] = useState(true);
   const [frames, setFrames] = useState(30);
@@ -146,7 +262,7 @@ export function BrainPlayer({
       try {
         const [ix, m] = await Promise.all([
           fetch(`${BASE}/index.json`).then((r) => (r.ok ? (r.json() as Promise<Index>) : Promise.reject(r.status))),
-          fetch("/brain/mesh.json").then((r) => (r.ok ? (r.json() as Promise<Mesh>) : Promise.reject(r.status))),
+          loadCortex(),
         ]);
         const first = ix.exercises[0];
         const bin = await getBin(first.id);
@@ -186,40 +302,131 @@ export function BrainPlayer({
       const { OrbitControls } = await import("three/examples/jsm/controls/OrbitControls.js");
       if (disposed) return;
 
-      const { positions, indices, hemi_split } = mesh;
-      const n = positions.length / 3;
-      const pos = new Float32Array(positions);
-      const split = hemi_split && hemi_split > 0 && hemi_split < n ? hemi_split : 0;
-      if (split) {
-        let lMax = -Infinity, rMin = Infinity, lMin = Infinity, rMax = -Infinity;
-        for (let i = 0; i < n; i++) {
-          const x = pos[i * 3];
-          if (i < split) { lMax = Math.max(lMax, x); lMin = Math.min(lMin, x); }
-          else { rMin = Math.min(rMin, x); rMax = Math.max(rMax, x); }
-        }
-        const width = Math.max(rMax, lMax) - Math.min(lMin, rMin);
-        const overlap = lMax - rMin + width * 0.04;
-        if (overlap > 0) for (let i = 0; i < n; i++) pos[i * 3] += i < split ? -overlap / 2 : overlap / 2;
+      const n5 = mesh.n5;
+      const n6 = mesh.fs6.nv;
+      const step = mesh.meta.step_mm, ctr = mesh.meta.center;
+
+      // разводим полушария и нормируем размер по fs6; то же преобразование потом для ico7, чтобы подмена была незаметной
+      const q6 = mesh.fs6.q, hemi6 = mesh.fs6.hemi;
+      let lMax = -Infinity, rMin = Infinity, lMin = Infinity, rMax = -Infinity;
+      for (let i = 0; i < n6; i++) {
+        const x = q6[i * 3] * step + ctr[0];
+        if (!hemi6[i]) { lMax = Math.max(lMax, x); lMin = Math.min(lMin, x); }
+        else { rMin = Math.min(rMin, x); rMax = Math.max(rMax, x); }
       }
+      const width = Math.max(rMax, lMax) - Math.min(lMin, rMin);
+      const gap = Math.max(0, lMax - rMin + width * 0.04) / 2;
+      const decode = (lod: Lod) => {
+        const p = new Float32Array(lod.nv * 3);
+        for (let i = 0; i < lod.nv; i++) {
+          p[i * 3] = lod.q[i * 3] * step + ctr[0] + (lod.hemi[i] ? gap : -gap);
+          p[i * 3 + 1] = lod.q[i * 3 + 1] * step + ctr[1];
+          p[i * 3 + 2] = lod.q[i * 3 + 2] * step + ctr[2];
+        }
+        return p;
+      };
+      let fit: { c: number[]; s: number } | null = null;
+      const makeGeo = (lod: Lod, idx: Float32Array) => {
+        const g = new THREE.BufferGeometry();
+        g.setAttribute("position", new THREE.BufferAttribute(decode(lod), 3));
+        g.setIndex(new THREE.BufferAttribute(lod.faces, 1));
+        g.setAttribute("aTone", new THREE.BufferAttribute(lod.tone, 1, true));
+        g.setAttribute("aAo", new THREE.BufferAttribute(lod.ao, 1, true));
+        g.setAttribute("aIdx", new THREE.BufferAttribute(idx, 2));
+        if (!fit) {
+          g.computeBoundingSphere();
+          const bs = g.boundingSphere!;
+          fit = { c: [bs.center.x, bs.center.y, bs.center.z], s: 1 / bs.radius };
+        }
+        g.translate(-fit.c[0], -fit.c[1], -fit.c[2]);
+        g.scale(fit.s, fit.s, fit.s);
+        g.computeVertexNormals(); // по площади граней: ровный свет на извилинах
+        g.computeBoundingSphere();
+        return g;
+      };
+      // aIdx: какие две вершины fs6 усреднить (у вершин fs6 это она сама)
+      const idx6 = new Float32Array(n6 * 2);
+      for (let v = 0; v < n6; v++) idx6[v * 2] = idx6[v * 2 + 1] = v;
+      const geo = makeGeo(mesh.fs6, idx6);
 
-      const geo = new THREE.BufferGeometry();
-      geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
-      geo.setIndex(indices);
-      geo.computeVertexNormals();
-      geo.computeBoundingSphere();
-      const bs = geo.boundingSphere!;
-      geo.translate(-bs.center.x, -bs.center.y, -bs.center.z);
-      const s = 1 / bs.radius;
-      geo.scale(s, s, s);
+      // значения fs6 для шейдера
+      const texH = Math.ceil(n6 / TEX_W);
+      const texData = new Float32Array(TEX_W * texH).fill(128);
+      const valTex = new THREE.DataTexture(texData, TEX_W, texH, THREE.RedFormat, THREE.FloatType);
+      valTex.minFilter = valTex.magFilter = THREE.NearestFilter;
+      valTex.needsUpdate = true;
 
-      const colors = new Float32Array(n * 3);
-      const colorAttr = new THREE.BufferAttribute(colors, 3);
-      colorAttr.setUsage(THREE.DynamicDrawUsage);
-      geo.setAttribute("color", colorAttr);
-      const lut = buildLut();
-      for (let i = 0; i < n; i++) colors.set(lut.subarray(128 * 3, 128 * 3 + 3), i * 3);
+      const e5 = mesh.e5, e6 = mesh.e6;
+      const deg5 = new Float32Array(n5), deg6 = new Float32Array(n6);
+      for (let e = 0; e < e5.eA.length; e++) { deg5[e5.eA[e]]++; deg5[e5.eB[e]]++; }
+      for (let e = 0; e < e6.eA.length; e++) { deg6[e6.eA[e]]++; deg6[e6.eB[e]]++; }
+      const raw5 = new Float32Array(n5), sum5 = new Float32Array(n5), val5 = new Float32Array(n5);
+      const val6 = new Float32Array(n6), sum6 = new Float32Array(n6);
 
-      const mat = new THREE.MeshLambertMaterial({ vertexColors: true });
+      const v3 = (c: number[]) => new THREE.Vector3(c[0], c[1], c[2]);
+      const uniforms = {
+        uVal: { value: valTex },
+        uGain: { value: GAIN },
+        uStops: { value: v3(STOPS) },
+        uC0: { value: v3(RAMP[0]) },
+        uC1: { value: v3(RAMP[1]) },
+        uC2: { value: v3(RAMP[2]) },
+        uC3: { value: v3(RAMP[3]) },
+        uSulcus: { value: v3(SULCUS) },
+        uGyrus: { value: v3(GYRUS) },
+      };
+      // тонкий блеск на гребнях извилин без пластика
+      const mat = new THREE.MeshStandardMaterial({ roughness: 0.5, metalness: 0 });
+      mat.onBeforeCompile = (sh) => {
+        Object.assign(sh.uniforms, uniforms);
+        sh.vertexShader = sh.vertexShader
+          .replace(
+            "#include <common>",
+            `#include <common>
+            attribute vec2 aIdx;
+            attribute float aTone;
+            attribute float aAo;
+            uniform highp sampler2D uVal;
+            varying float vVal;
+            varying float vTone;
+            varying float vAo;
+            float bpVal(float i) { int k = int(i + 0.5); return texelFetch(uVal, ivec2(k & ${TEX_W - 1}, k >> ${Math.log2(TEX_W)}), 0).r; }`,
+          )
+          .replace(
+            "#include <begin_vertex>",
+            `#include <begin_vertex>
+            vVal = 0.5 * (bpVal(aIdx.x) + bpVal(aIdx.y));
+            vTone = aTone;
+            vAo = aAo;`,
+          );
+        sh.fragmentShader = sh.fragmentShader
+          .replace(
+            "#include <common>",
+            `#include <common>
+            uniform float uGain;
+            uniform vec3 uStops, uC0, uC1, uC2, uC3, uSulcus, uGyrus;
+            varying float vVal;
+            varying float vTone;
+            varying float vAo;`,
+          )
+          .replace(
+            "#include <color_fragment>",
+            `float bpT = clamp((vVal / 255.0 - 0.5) * 2.0 * uGain, 0.0, 1.0);
+            vec3 bpRamp = bpT < uStops.x ? mix(uC0, uC1, bpT / uStops.x)
+              : bpT < uStops.y ? mix(uC1, uC2, (bpT - uStops.x) / (uStops.y - uStops.x))
+              : mix(uC2, uC3, (bpT - uStops.y) / (uStops.z - uStops.y));
+            float bpA = 0.9 * smoothstep(0.07, 0.36, bpT);
+            vec3 bpBase = mix(uSulcus, uGyrus, smoothstep(0.0, 1.0, vTone));
+            diffuseColor.rgb = mix(bpBase * vAo, bpRamp * mix(1.0, vAo, 0.5), bpA); // активность во впадинах темнеет вдвое слабее, цвет остаётся чистым`,
+          )
+          // мягкий контровой свет по краю силуэта (френель), чтобы кора отделялась от фона
+          .replace(
+            "#include <opaque_fragment>",
+            `float rimF = 1.0 - clamp(dot(normalize(normal), normalize(vViewPosition)), 0.0, 1.0);
+            outgoingLight += vec3(0.80, 0.90, 0.92) * pow(rimF, 3.0) * 0.3;
+            #include <opaque_fragment>`,
+          );
+      };
       const brain = new THREE.Mesh(geo, mat);
       brain.rotation.x = -Math.PI / 2; // fsaverage Z-вверх -> Y-вверх
       const group = new THREE.Group();
@@ -227,12 +434,15 @@ export function BrainPlayer({
 
       const scene = new THREE.Scene();
       scene.add(group);
-      scene.add(new THREE.AmbientLight(0xffffff, 1.15));
+      scene.add(new THREE.HemisphereLight(0xffffff, 0xaab8bf, 1.05));
       const camera = new THREE.PerspectiveCamera(28, 1, 0.1, 50);
       camera.position.set(-3.9, 0.95, -0.35);
-      const key = new THREE.DirectionalLight(0xffffff, 1.45);
-      key.position.set(0.4, 1, 1);
+      const key = new THREE.DirectionalLight(0xffffff, 1.6);
+      key.position.set(0.5, 1, 1);
       camera.add(key);
+      const fill = new THREE.DirectionalLight(0xe8f1f2, 0.4);
+      fill.position.set(-1, -0.4, 0.6);
+      camera.add(fill);
       scene.add(camera);
 
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "low-power" });
@@ -260,7 +470,7 @@ export function BrainPlayer({
         camera.aspect = w / h;
         // узкий экран: камера чуть дальше, чтобы мозг не обрезался
         const fit = Math.max(1, 1.05 / camera.aspect);
-        camera.position.setLength((variant === "compact" ? 3.7 : 4.6) * Math.min(fit, 1.35));
+        camera.position.setLength((variant === "compact" ? 4.25 : 4.6) * Math.min(fit, 1.35));
         camera.updateProjectionMatrix();
       };
       resize();
@@ -271,8 +481,11 @@ export function BrainPlayer({
       const P = geo.getAttribute("position").array as Float32Array;
       const Nn = geo.getAttribute("normal").array as Float32Array;
       const anchors = ZONES.map((z) => {
-        const i = index.anchors?.[z];
-        if (typeof i !== "number" || i < 0 || i >= n) return null;
+        // якорь из сетки (лобная часть языковой сети, видимая часть слуховой коры), иначе из index.json; номера fs5 общие для всех уровней
+        const fromMesh = mesh.meta.anchors?.[z];
+        const from5 = index.anchors?.[z];
+        const i = typeof fromMesh === "number" ? fromMesh : typeof from5 === "number" ? from5 : -1;
+        if (i < 0 || i >= n5) return null;
         return {
           z,
           p: new THREE.Vector3(P[i * 3], P[i * 3 + 1], P[i * 3 + 2]),
@@ -283,9 +496,9 @@ export function BrainPlayer({
       const nMat = new THREE.Matrix3();
 
       const L = live.current;
-      // снимок текущих цветов для перетекания при смене упражнения
+      // снимок показанных значений для перетекания при смене упражнения
       snapshotRef.current = () => {
-        if (L.frames) L.morphFrom = colors.slice();
+        if (L.frames) L.morphFrom = texData.slice(0, n6);
       };
       let lastColor = 0;
       let lastNow = performance.now();
@@ -297,7 +510,7 @@ export function BrainPlayer({
         const nf = ex.frames;
         const t = Math.min(Math.max(L.t, 0), nf - 1);
         const i0 = Math.floor(t), i1 = Math.min(nf - 1, i0 + 1), f = t - i0;
-        const b0 = i0 * n, b1 = i1 * n;
+        const b0 = i0 * n5, b1 = i1 * n5;
         let m = 1, from: Float32Array | null = null;
         if (L.morphFrom && L.morphStart >= 0) {
           const k = Math.min(1, (now - L.morphStart) / MORPH_MS);
@@ -305,20 +518,32 @@ export function BrainPlayer({
           from = L.morphFrom;
           if (k >= 1) { L.morphFrom = null; L.morphStart = -1; from = null; m = 1; }
         }
-        for (let v = 0; v < n; v++) {
-          const val = (fr[b0 + v] * (1 - f) + fr[b1 + v] * f) | 0;
-          const li = val * 3, ci = v * 3;
-          if (from) {
-            colors[ci] = from[ci] + (lut[li] - from[ci]) * m;
-            colors[ci + 1] = from[ci + 1] + (lut[li + 1] - from[ci + 1]) * m;
-            colors[ci + 2] = from[ci + 2] + (lut[li + 2] - from[ci + 2]) * m;
-          } else {
-            colors[ci] = lut[li];
-            colors[ci + 1] = lut[li + 1];
-            colors[ci + 2] = lut[li + 2];
+        // кадр fs5 -> два прохода сглаживания -> fs6 (середина ребра) -> ещё проход на fs6 -> текстура
+        for (let v = 0; v < n5; v++) raw5[v] = fr[b0 + v] * (1 - f) + fr[b1 + v] * f;
+        for (let pass = 0; pass < 2; pass++) {
+          const src = pass ? val5 : raw5;
+          sum5.fill(0);
+          for (let e = 0; e < e5.eA.length; e++) {
+            const x = e5.eA[e], y = e5.eB[e];
+            sum5[x] += src[y];
+            sum5[y] += src[x];
           }
+          // второй проход пишет поверх val5: сумма соседей уже собрана, порядок не важен
+          for (let v = 0; v < n5; v++) val5[v] = src[v] * (1 - SMOOTH) + (sum5[v] / deg5[v]) * SMOOTH;
         }
-        colorAttr.needsUpdate = true;
+        val6.set(val5);
+        for (let k = 0; k < e5.eA.length; k++) val6[n5 + k] = (val5[e5.eA[k]] + val5[e5.eB[k]]) * 0.5;
+        sum6.fill(0);
+        for (let e = 0; e < e6.eA.length; e++) {
+          const x = e6.eA[e], y = e6.eB[e];
+          sum6[x] += val6[y];
+          sum6[y] += val6[x];
+        }
+        for (let v = 0; v < n6; v++) {
+          const val = val6[v] * (1 - SMOOTH) + (sum6[v] / deg6[v]) * SMOOTH;
+          texData[v] = from ? from[v] + (val - from[v]) * m : val;
+        }
+        valTex.needsUpdate = true;
 
         // полоски зон и подписи уровня
         for (const z of ZONES) {
@@ -402,15 +627,48 @@ export function BrainPlayer({
 
       setMode("live");
       kick();
+      performance.mark("brain:fs6-live");
+
+      // десктоп: в простое догружаем ico7 и подменяем геометрию (те же номера fs5/fs6, то же преобразование)
+      let idleId = 0;
+      const upgrade = async () => {
+        try {
+          const lod = await loadIco7(mesh);
+          if (disposed) return;
+          const idx = new Float32Array(lod.nv * 2);
+          idx.set(idx6);
+          for (let k = 0; k < e6.eA.length; k++) {
+            idx[(n6 + k) * 2] = e6.eA[k];
+            idx[(n6 + k) * 2 + 1] = e6.eB[k];
+          }
+          const g7 = makeGeo(lod, idx);
+          const old = brain.geometry;
+          brain.geometry = g7;
+          old.dispose();
+          L.dirty = true;
+          kick();
+          performance.mark("brain:ico7-live");
+        } catch {
+          // остаёмся на fs6
+        }
+      };
+      if (wantIco7()) {
+        const ric = (window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
+        idleId = ric ? ric(() => void upgrade(), { timeout: 1500 }) : window.setTimeout(() => void upgrade(), 400);
+      }
 
       cleanup = () => {
+        const cic = (window as Window & { cancelIdleCallback?: (id: number) => void }).cancelIdleCallback;
+        if (idleId && cic) cic(idleId);
+        else if (idleId) window.clearTimeout(idleId);
         if (raf) cancelAnimationFrame(raf);
         vio.disconnect();
         ro.disconnect();
         document.removeEventListener("visibilitychange", kick);
         controls.dispose();
-        geo.dispose();
+        brain.geometry.dispose();
         mat.dispose();
+        valTex.dispose();
         renderer.dispose();
         renderer.domElement.remove();
         kickRef.current = () => {};

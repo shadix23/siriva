@@ -1514,7 +1514,7 @@
   inset: 0;
   transform-origin: left center;
   transform: scaleX(0.5);
-  background: linear-gradient(90deg, var(--bp-blue), var(--bp-accent));
+  background: linear-gradient(90deg, #8fc4bb, #1c8a7a 55%, #e3a64a 85%, #dc6a4f);
   border-radius: inherit;
 }
 .s-bp__legend {
@@ -1530,7 +1530,8 @@
   flex: 0 0 140px;
   height: 8px;
   border-radius: 999px;
-  background: linear-gradient(90deg, #f1f4f6 0%, #d3dbe1 50%, #2f5d7c 77%, #1c5a51 100%);
+  /* левая половина: цвета нет, видна серая кора; правая: бирюза, янтарь, коралл */
+  background: linear-gradient(90deg, #b9c2c8 0%, #dbe1e4 50%, #8fc4bb 56%, #1c8a7a 68%, #2a9a88 73%, #e3a64a 81%, #dc6a4f 100%);
   border: 1px solid var(--bp-line);
 }
 .s-bp__caption {

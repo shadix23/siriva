@@ -1,0 +1,71 @@
+{
+ "about": "fsaverage ico7 cortex (pial blended toward inflated), nested LOD, see es/tribe/viz/export_mesh_fs6.py",
+ "blend_inflated": 0.35,
+ "step_mm": 0.02,
+ "center": [
+  0.4574,
+  -17.9693,
+  15.8865
+ ],
+ "fs5_per_hemi": 10242,
+ "counts": {
+  "fs5": 20484,
+  "fs6": 81924,
+  "ico7": 327684,
+  "faces5": 40960
+ },
+ "anchors": {
+  "language": 1154,
+  "auditory": 5038
+ },
+ "fs6": {
+  "file": "fs6.bin",
+  "chunks": {
+   "faces5": {
+    "offset": 0,
+    "length": 122880,
+    "type": "uint16"
+   },
+   "q5": {
+    "offset": 245760,
+    "length": 61452,
+    "type": "int16"
+   },
+   "d6": {
+    "offset": 368664,
+    "length": 184320,
+    "type": "int8"
+   },
+   "tone": {
+    "offset": 552984,
+    "length": 81924,
+    "type": "uint8"
+   },
+   "ao": {
+    "offset": 634908,
+    "length": 81924,
+    "type": "uint8"
+   }
+  }
+ },
+ "ico7": {
+  "file": "ico7.bin",
+  "chunks": {
+   "d7": {
+    "offset": 0,
+    "length": 737280,
+    "type": "int8"
+   },
+   "tone": {
+    "offset": 737280,
+    "length": 327684,
+    "type": "uint8"
+   },
+   "ao": {
+    "offset": 1064964,
+    "length": 327684,
+    "type": "uint8"
+   }
+  }
+ }
+}

@@ -40,7 +40,7 @@ OBJECTS = {"memory": "es-3d-memory.png", "links": "es-3d-links.png", "trajectory
 C = dict(bg="FFFFFF", card="F3F6F8", card2="E3E9ED", line="DCE3E8", line_strong="857D6E",
          ink="1E2320", ink2="454C47", ink3="5E655F", navy="2F5D7C", teal="1C5A51", teal_soft="DCEAE5",
          deep="12332E", on_deep="E3EFEA", on_deep2="A9D3C6",
-         shadow="E6EBEF", white="FFFFFF", syn="45376A", syn_soft="ECE6F4")
+         shadow="E6EBEF", brainbg="F0F4F5", white="FFFFFF", syn="45376A", syn_soft="ECE6F4")
 MIN_PX = 23  # 14 pt on a 13.333 in slide (DESIGN-MEDTECH section 10: nothing smaller than 14 pt)
 W, H = 1600, 900
 MX = 96
@@ -267,21 +267,26 @@ def slides():
     els += banner(756, "Отличие от тренажёров: разметка по предсказанной нагрузке, адаптация по микрометрикам, **обход трудной функции, без обещаний лечения.**", h=90)
     S.append(dict(sec="Решение", els=els))
 
-    # 04 TRIBE v2 maps ---------------------------------------------------
+    # 04 TRIBE v2: detailed cortex (retell) + speech-minus-visual map + agreement
     els = [title("Как TRIBE v2 видит упражнения"),
-           T(MX, 182, 1408, 80, "Предсказание по 20 484 точкам коры. У речевых заданий выше отклик **в височной коре слева, в контуре языковой сети.**",
+           T(MX, 182, 1408, 72, "Предсказание по 20 484 точкам коры. У речевых заданий выше отклик **в височной коре слева, в контуре языковой сети.**",
              size=24, color="ink", lh=1.35, hl="teal"),
-           card(MX, 262, 960, 476, fill="white"),
-           T(MX + 26, 278, 900, 30, "Речевые минус зрительные задания (9 против 11)", size=23, bold=True, color="navy", lh=1.1),
-           IMG(MX + 16, 316, 928, 408, os.path.join(TR, "diff_lateral.png")),
-           card(MX + 984, 262, 424, 476, fill="teal_soft"),
-           T(MX + 1012, 284, 370, 30, "Совпадение с нашей оценкой", size=23, bold=True, lh=1.2),
-           T(MX + 1012, 326, 220, 104, "0,88", size=88, bold=True, color="teal", lh=1.0),
-           T(MX + 1012, 436, 370, 30, "подбор слов", size=23, color="ink2", lh=1.0),
-           T(MX + 1012, 478, 220, 104, "0,68", size=88, bold=True, color="teal", lh=1.0),
-           T(MX + 1012, 588, 370, 30, "построение фраз", size=23, color="ink2", lh=1.0),
-           T(MX + 1012, 636, 370, 96, "Спирмен, 25 упражнений. Внимание: 0,03, не совпало.", size=23, color="ink", lh=1.35)]
-    els += banner(756, "Модель усреднённого мозга по звуку и тексту стимула, **не измерение человека.** TRIBE v2 (Meta), fsaverage5.", h=84)
+           T(MX, 262, 560, 30, "Пересказ истории: предсказанный отклик коры", size=23, bold=True, color="navy", lh=1.1),
+           R(MX, 300, 560, 444, fill="brainbg", radius=RAD),
+           IMG(MX + 8, 302, 544, 440, os.path.join(TR, "brain-crop.png"))]
+    rx, rw = MX + 584, 824
+    els += [card(rx, 300, rw, 210, fill="white"),
+            T(rx + 24, 318, 360, 110, "Речевые минус зрительные задания (9 против 11)", size=23, bold=True, color="navy", lh=1.25),
+            T(rx + 24, 434, 360, 64, "контур: языковая сеть", size=23, color="ink3", lh=1.2),
+            IMG(rx + rw - 24 - 386, 310, 386, 190, os.path.join(TR, "diff_lateral.png")),
+            card(rx, 534, rw, 210, fill="teal_soft"),
+            T(rx + 24, 552, rw - 48, 30, "Совпадение с нашей оценкой (Спирмен, 25 упражнений)", size=23, bold=True, lh=1.2),
+            T(rx + 24, 596, 220, 90, "0,88", size=80, bold=True, color="teal", lh=1.0),
+            T(rx + 24, 690, 220, 30, "подбор слов", size=23, color="ink2", lh=1.0),
+            T(rx + 284, 596, 220, 90, "0,68", size=80, bold=True, color="teal", lh=1.0),
+            T(rx + 284, 690, 240, 30, "построение фраз", size=23, color="ink2", lh=1.0),
+            T(rx + 556, 604, 244, 110, "Внимание: 0,03, не совпало.", size=23, color="ink", lh=1.35)]
+    els += banner(760, "Модель усреднённого мозга по звуку и тексту стимула, **не измерение человека.** TRIBE v2 (Meta).", h=84)
     S.append(dict(sec="Решение", els=els))
 
     # 05 Live demo + reserve main frame ---------------------------------
